@@ -69,7 +69,11 @@ export default function RootLayout({
       lang="it"
       className={`${archivo.variable} ${cardo.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        {children}
+        {/* Lead capture embed — fires on contact form submit */}
+        <script src="/embed.js" async />
+      </body>
     </html>
   );
 }

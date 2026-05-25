@@ -28,22 +28,38 @@ export default function Contact() {
     setError(null);
 
     const fd = new FormData(e.currentTarget);
+    const payload = {
+      name:    String(fd.get("name") ?? ""),
+      email:   String(fd.get("email") ?? ""),
+      company: (fd.get("company") as string) || undefined,
+      budget:  (fd.get("budget")  as string) || undefined,
+      message: (fd.get("message") as string) || undefined,
+      source:  "website",
+      page_url: typeof window !== "undefined" ? window.location.href : undefined,
+    };
 
     try {
-      const res = await fetch("/api/contact", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name:    fd.get("name"),
-          email:   fd.get("email"),
-          company: fd.get("company") || undefined,
-          budget:  fd.get("budget")  || undefined,
-          message: fd.get("message"),
+      // Send email via Resend + capture lead in CRM in parallel
+      const [emailRes] = await Promise.all([
+        fetch("/api/contact", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify(payload),
         }),
-      });
+        // Fire-and-forget CRM capture — never blocks UX
+        fetch(
+          "https://voyhwqqubcathcvjatyk.supabase.co/functions/v1/capture-lead",
+          {
+            method:  "POST",
+            headers: { "Content-Type": "application/json" },
+            body:    JSON.stringify(payload),
+            keepalive: true,
+          }
+        ).catch(() => undefined),
+      ]);
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({})) as { error?: string };
+      if (!emailRes.ok) {
+        const data = await emailRes.json().catch(() => ({})) as { error?: string };
         throw new Error(data.error ?? "Errore server");
       }
 
