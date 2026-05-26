@@ -136,8 +136,31 @@ export default async function LeadsPage({
         )}
       </form>
 
-      {/* Table */}
-      <div className="bg-[#141414] border border-white/[0.06] rounded-xl overflow-hidden">
+      {/* Mobile card list */}
+      <div className="md:hidden space-y-2 mb-4">
+        {leads.length === 0 && (
+          <p className="text-white/20 text-sm text-center py-8">Nessun lead trovato.</p>
+        )}
+        {leads.map((lead) => (
+          <Link
+            key={lead.id}
+            href={`/crm/leads/${lead.id}`}
+            className="flex items-center gap-3 bg-[#141414] border border-white/[0.06] rounded-xl px-4 py-3.5 active:bg-white/[0.04]"
+          >
+            <div className="w-9 h-9 rounded-full bg-[#E63B2E]/10 flex items-center justify-center shrink-0 text-[#E63B2E] text-sm font-bold">
+              {(lead.name?.[0] ?? "?").toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-white/80 text-sm font-medium truncate">{lead.name}</p>
+              <p className="text-white/30 text-xs truncate">{lead.company ?? lead.email}</p>
+            </div>
+            <StatusBadge status={lead.status} />
+          </Link>
+        ))}
+      </div>
+
+      {/* Desktop Table */}
+      <div className="hidden md:block bg-[#141414] border border-white/[0.06] rounded-xl overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-white/[0.06]">
