@@ -19,6 +19,12 @@ function LoginForm() {
     setError(null);
 
     startTransition(async () => {
+      const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      if (!url || !key) {
+        setError(`[debug] ENV mancanti — URL: ${url ?? "undefined"} KEY: ${key ? key.slice(0,10) : "undefined"}`);
+        return;
+      }
       const supabase = createClient();
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -26,7 +32,7 @@ function LoginForm() {
       });
 
       if (error) {
-        setError(`[debug] ${error.message} (${error.status ?? "no status"})`);
+        setError(`[debug] ${error.message} (${error.status ?? "no status"}) URL:${url?.slice(0,30)}`);
         return;
       }
 
