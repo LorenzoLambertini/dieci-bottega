@@ -22,22 +22,17 @@ function LoginForm() {
       const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
       const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-      // Direct fetch — bypassa SDK per diagnostica
       try {
         const res = await fetch(`${url}/auth/v1/token?grant_type=password`, {
           method: "POST",
-          headers: {
-            "apikey": key,
-            "Content-Type": "application/json",
-          },
+          headers: { "apikey": key, "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
         });
         const data = await res.json();
         if (!res.ok) {
-          setError(`[debug] ${data.error_description ?? data.msg ?? JSON.stringify(data)}`);
+          setError("Credenziali non valide. Riprova.");
           return;
         }
-        // Login ok — set session via SDK
         const supabase = createClient();
         await supabase.auth.setSession({
           access_token: data.access_token,
@@ -45,8 +40,8 @@ function LoginForm() {
         });
         router.push(redirect);
         router.refresh();
-      } catch (e) {
-        setError(`[debug] fetch error: ${e instanceof Error ? e.message : String(e)}`);
+      } catch {
+        setError("Errore di rete. Controlla la connessione e riprova.");
       }
     });
   }
