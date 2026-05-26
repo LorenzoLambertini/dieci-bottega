@@ -76,7 +76,7 @@ export function Sidebar({ profile }: SidebarProps) {
   }
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-[220px] bg-[#0f0f0f] border-r border-white/[0.06] flex flex-col z-40">
+    <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-[220px] bg-[#0f0f0f] border-r border-white/[0.06] flex-col z-40">
       {/* Brand */}
       <div className="px-5 py-5 border-b border-white/[0.06]">
         <div className="flex items-center gap-2.5">
