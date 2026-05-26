@@ -19,25 +19,35 @@ function LoginForm() {
     setError(null);
 
     startTransition(async () => {
-      const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-      if (!url || !key) {
-        setError(`[debug] ENV mancanti — URL: ${url ?? "undefined"} KEY: ${key ? key.slice(0,10) : "undefined"}`);
-        return;
-      }
-      const supabase = createClient();
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+      const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-      if (error) {
-        setError(`[debug] ${error.message} (${error.status ?? "no status"}) URL:${url?.slice(0,30)}`);
-        return;
+      // Direct fetch — bypassa SDK per diagnostica
+      try {
+        const res = await fetch(`${url}/auth/v1/token?grant_type=password`, {
+          method: "POST",
+          headers: {
+            "apikey": key,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setError(`[debug] ${data.error_description ?? data.msg ?? JSON.stringify(data)}`);
+          return;
+        }
+        // Login ok — set session via SDK
+        const supabase = createClient();
+        await supabase.auth.setSession({
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
+        });
+        router.push(redirect);
+        router.refresh();
+      } catch (e) {
+        setError(`[debug] fetch error: ${e instanceof Error ? e.message : String(e)}`);
       }
-
-      router.push(redirect);
-      router.refresh();
     });
   }
 
