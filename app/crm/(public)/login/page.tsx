@@ -26,7 +26,7 @@ function LoginForm() {
       });
 
       if (error) {
-        setError("Credenziali non valide. Riprova.");
+        setError(`[debug] ${error.message} (${error.status ?? "no status"})`);
         return;
       }
 
