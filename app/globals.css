@@ -19,9 +19,12 @@
   --font-mono:    var(--db-jetbrains), ui-monospace, monospace;
 
   /* Animations */
-  --animate-fade-up: fade-up 0.7s cubic-bezier(0.16,1,0.3,1) both;
-  --animate-fade-in: fade-in 0.5s cubic-bezier(0.16,1,0.3,1) both;
-  --animate-marquee: marquee 30s linear infinite;
+  --animate-fade-up:    fade-up 0.7s cubic-bezier(0.16,1,0.3,1) both;
+  --animate-fade-in:    fade-in 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  --animate-marquee:    marquee 30s linear infinite;
+  --animate-shimmer:    shimmer 1.8s linear infinite;
+  --animate-spin-slow:  spin 1.2s linear infinite;
+  --animate-pulse-soft: pulse-soft 2s ease-in-out infinite;
 
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(28px); }
@@ -34,6 +37,30 @@
   @keyframes marquee {
     from { transform: translateX(0);    }
     to   { transform: translateX(-50%); }
+  }
+  @keyframes shimmer {
+    from { background-position: -200% 0; }
+    to   { background-position: 200% 0;  }
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg);   }
+    to   { transform: rotate(360deg); }
+  }
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 0.6; }
+    50%       { opacity: 1;   }
+  }
+  @keyframes slide-in-right {
+    from { opacity: 0; transform: translateX(-12px); }
+    to   { opacity: 1; transform: translateX(0);     }
+  }
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to   { opacity: 1; transform: scale(1);    }
+  }
+  @keyframes underline-in {
+    from { transform: scaleX(0); transform-origin: left; }
+    to   { transform: scaleX(1); transform-origin: left; }
   }
 }
 
@@ -51,6 +78,11 @@ body {
   font-feature-settings: "kern" 1, "liga" 1;
 }
 
+/* Section anchor offsets — account for fixed navbar */
+section[id] {
+  scroll-margin-top: 5rem;
+}
+
 /* Respect user motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -66,9 +98,11 @@ body {
   color: #F4EFE6;
 }
 
-::-webkit-scrollbar        { width: 4px; }
-::-webkit-scrollbar-track  { background: #F4EFE6; }
+/* ─── Custom Scrollbar ───────────────────────────────────── */
+::-webkit-scrollbar        { width: 3px; }
+::-webkit-scrollbar-track  { background: transparent; }
 ::-webkit-scrollbar-thumb  { background: #E63B2E; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #C44A38; }
 
 /* ─── Focus Styles (a11y) ───────────────────────────────── */
 :focus-visible {
@@ -76,7 +110,24 @@ body {
   outline-offset: 3px;
 }
 
-/* ─── Utility Classes ───────────────────────────────────── */
+/* ─── Form Elements Base ─────────────────────────────────── */
+input, textarea, select {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Autofill override — keep dark theme */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill {
+  -webkit-text-fill-color: #F4EFE6;
+  -webkit-box-shadow: 0 0 0 1000px #1A1414 inset;
+  caret-color: #F4EFE6;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* ─── Utility Classes ────────────────────────────────────── */
 .text-display {
   font-family: var(--db-archivo), system-ui, sans-serif;
   font-weight: 900;
@@ -105,4 +156,75 @@ body {
   height: 1px;
   background: currentColor;
   flex-shrink: 0;
+}
+
+/* ─── Hover Link Underline ───────────────────────────────── */
+.link-underline {
+  position: relative;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.25s cubic-bezier(0.16,1,0.3,1);
+}
+.link-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ─── Skeleton / Loading ─────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(244,239,230,0.05) 25%,
+    rgba(244,239,230,0.10) 50%,
+    rgba(244,239,230,0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s linear infinite;
+}
+
+/* ─── Premium Card Hover ─────────────────────────────────── */
+.card-hover {
+  transition: transform 0.3s cubic-bezier(0.16,1,0.3,1),
+              box-shadow 0.3s cubic-bezier(0.16,1,0.3,1),
+              background 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+}
+
+/* ─── Spinner ────────────────────────────────────────────── */
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ─── Noise Texture (reusable) ───────────────────────────── */
+.noise-overlay {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+}
+
+/* ─── Section Separator ──────────────────────────────────── */
+.section-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(26,20,20,0.12) 20%, rgba(26,20,20,0.12) 80%, transparent);
 }

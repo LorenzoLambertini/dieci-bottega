@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Campi obbligatori mancanti" }, { status: 422 });
   }
 
-  const contactEmail = process.env.CONTACT_EMAIL ?? "ciao@diecibottega.it";
+  const contactEmail = process.env.CONTACT_EMAIL ?? "info@diecibottega.it";
   const apiKey       = process.env.RESEND_API_KEY;
 
   if (apiKey) {

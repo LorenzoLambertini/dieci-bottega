@@ -66,7 +66,7 @@ export default function Services() {
       <div className="mx-auto max-w-[1400px] px-6 lg:px-12 pt-24 pb-20 lg:pt-36 lg:pb-28">
         <div className="grid lg:grid-cols-2 gap-8 items-end">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-10%" }}
             transition={{ duration: 0.7, ease }}
@@ -90,11 +90,11 @@ export default function Services() {
             </h2>
           </motion.div>
           <motion.p
-            className="text-ivory/50 max-w-md lg:ml-auto"
-            initial={{ opacity: 0, y: 20 }}
+            className="text-ivory/45 max-w-md lg:ml-auto"
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-10%" }}
-            transition={{ duration: 0.7, ease, delay: 0.1 }}
+            transition={{ duration: 0.7, ease, delay: 0.12 }}
             style={{ fontFamily: "var(--db-archivo)", fontSize: "clamp(0.9375rem, 1.4vw, 1.0625rem)", lineHeight: 1.65 }}
           >
             Tre servizi core per le PMI italiane. Zero fronzoli, zero gergo.
@@ -111,23 +111,35 @@ export default function Services() {
         {SERVICES.map((svc, i) => (
           <motion.div
             key={svc.idx}
-            className="flex flex-col gap-8 p-8 lg:p-10 border-r border-b border-ivory/8 hover:bg-plum/15 group"
-            initial={{ opacity: 0, y: 20 }}
+            className="relative flex flex-col gap-8 p-8 lg:p-10 border-r border-b border-ivory/8 group overflow-hidden"
+            initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-5%" }}
-            transition={{ duration: 0.6, ease, delay: i * 0.1 }}
-            style={{ transition: "background 0.3s" }}
+            transition={{ duration: 0.65, ease, delay: i * 0.1 }}
+            style={{ transition: "background 0.35s ease" }}
           >
+            {/* Hover background fill */}
+            <div
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              style={{ background: "linear-gradient(135deg, rgba(74,56,56,0.25) 0%, rgba(74,56,56,0.08) 100%)" }}
+              aria-hidden
+            />
+            {/* Left accent border on hover */}
+            <div
+              className="absolute left-0 top-0 bottom-0 w-[2px] bg-rosewood scale-y-0 group-hover:scale-y-100 origin-bottom transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              aria-hidden
+            />
+
             {/* Index + time */}
-            <div className="flex items-center justify-between">
+            <div className="relative flex items-center justify-between">
               <span className="text-ivory/20" style={{ ...labelStyle, letterSpacing: "0.12em" }}>{svc.idx}</span>
-              <span className="text-ivory/20" style={{ ...labelStyle, fontSize: "0.625rem", letterSpacing: "0.08em" }}>{svc.time}</span>
+              <span className="text-ivory/20 bg-ivory/5 px-2.5 py-1" style={{ ...labelStyle, fontSize: "0.5625rem", letterSpacing: "0.08em" }}>{svc.time}</span>
             </div>
 
             {/* Title */}
-            <div>
+            <div className="relative">
               <h3
-                className="text-ivory"
+                className="text-ivory group-hover:text-ivory transition-colors duration-200"
                 style={{
                   fontFamily:    "var(--db-archivo)",
                   fontWeight:    900,
@@ -150,19 +162,25 @@ export default function Services() {
 
             {/* Desc */}
             <p
-              className="text-ivory/50 flex-1"
+              className="relative text-ivory/45 flex-1 group-hover:text-ivory/60 transition-colors duration-300"
               style={{ fontFamily: "var(--db-archivo)", fontSize: "0.875rem", lineHeight: 1.65 }}
             >
               {svc.desc}
             </p>
 
             {/* Features */}
-            <ul className="space-y-2.5">
+            <ul className="relative space-y-2.5">
               {svc.features.map(f => (
                 <li key={f} className="flex items-start gap-3">
-                  <span className="mt-[5px] block w-1.5 h-1.5 bg-rosewood shrink-0" />
                   <span
-                    className="text-ivory/60"
+                    className="mt-[5px] shrink-0 text-rosewood"
+                    style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.5rem", lineHeight: 1 }}
+                    aria-hidden
+                  >
+                    ◆
+                  </span>
+                  <span
+                    className="text-ivory/55 group-hover:text-ivory/70 transition-colors duration-300"
                     style={{ fontFamily: "var(--db-archivo)", fontSize: "0.8125rem", lineHeight: 1.5 }}
                   >
                     {f}
@@ -172,19 +190,20 @@ export default function Services() {
             </ul>
 
             {/* Footer */}
-            <div className="pt-5 border-t border-ivory/10 flex items-center justify-between">
+            <div className="relative pt-5 border-t border-ivory/10 flex items-center justify-between">
               <span
-                className="text-ivory/30"
+                className="text-ivory/25 group-hover:text-ivory/40 transition-colors duration-200"
                 style={{ fontFamily: "var(--db-archivo)", fontWeight: 700, fontSize: "0.8125rem", letterSpacing: "0.04em", textTransform: "uppercase" }}
               >
                 {svc.from}
               </span>
               <a
                 href="#contatti"
-                className="text-rosewood group-hover:text-ivory transition-colors duration-200"
+                className="flex items-center gap-1 text-rosewood hover:text-ivory transition-colors duration-200"
                 style={{ ...labelStyle, fontSize: "0.625rem" }}
               >
-                PARLACI →
+                PARLACI
+                <span className="group-hover:translate-x-0.5 transition-transform duration-200">→</span>
               </a>
             </div>
           </motion.div>

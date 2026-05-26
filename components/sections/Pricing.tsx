@@ -1,3 +1,9 @@
+"use client";
+
+import { motion } from "framer-motion";
+
+const ease = [0.16, 1, 0.3, 1] as const;
+
 const PLANS = [
   {
     tier: "TIER 01",
@@ -14,11 +20,13 @@ const PLANS = [
       "SEO on-page",
       "1 round di revisione",
     ],
-    cta: "INIZIA DA BASIC →",
+    cta: "INIZIA DA BASIC",
     dark: false,
+    featured: false,
   },
   {
-    tier: "TIER 02 · PIÙ SCELTO",
+    tier: "TIER 02",
+    badge: "PIÙ SCELTO",
     name: "Pro",
     min: "1.500",
     max: "2.000",
@@ -32,8 +40,9 @@ const PLANS = [
       "Form avanzato + GMB",
       "2 round di revisione",
     ],
-    cta: "PRENOTA UNA CALL →",
+    cta: "PRENOTA UNA CALL",
     dark: true,
+    featured: true,
   },
   {
     tier: "TIER 03",
@@ -50,28 +59,36 @@ const PLANS = [
       "Multi-form + CRM",
       "Revisioni illimitate",
     ],
-    cta: "PARLIAMONE →",
+    cta: "PARLIAMONE",
     dark: false,
+    featured: false,
   },
 ];
+
+const labelStyle: React.CSSProperties = {
+  fontFamily:    "var(--db-jetbrains)",
+  fontSize:      "0.6875rem",
+  letterSpacing: "0.10em",
+  textTransform: "uppercase",
+};
 
 export default function Pricing() {
   return (
     <section id="prezzi" className="bg-ivory">
-      <div className="border-t border-obsidian/10" />
+      <div className="section-divider" />
 
       {/* Header */}
       <div className="mx-auto max-w-[1400px] px-6 lg:px-12 pt-24 pb-20 lg:pt-36 lg:pb-28">
         <div className="grid lg:grid-cols-2 gap-8 items-end">
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.7, ease }}
+          >
             <div className="flex items-center gap-3 mb-8">
               <span className="block w-8 h-px bg-rosewood" />
-              <span
-                className="text-rosewood"
-                style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.6875rem", letterSpacing: "0.10em", textTransform: "uppercase" }}
-              >
-                05 · PREZZI
-              </span>
+              <span className="text-rosewood" style={labelStyle}>05 · PREZZI</span>
             </div>
             <h2
               className="text-obsidian"
@@ -86,14 +103,18 @@ export default function Pricing() {
             >
               Listino chiaro.<br />Niente sorprese.
             </h2>
-          </div>
-          <p
-            className="text-obsidian/50 max-w-md lg:ml-auto"
+          </motion.div>
+          <motion.p
+            className="text-obsidian/45 max-w-md lg:ml-auto"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-10%" }}
+            transition={{ duration: 0.7, ease, delay: 0.12 }}
             style={{ fontFamily: "var(--db-archivo)", fontSize: "clamp(0.9375rem, 1.4vw, 1.0625rem)", lineHeight: 1.65 }}
           >
             Ogni pacchetto include revisioni, supporto post-lancio e deploy su
             Vercel. Pagamento 50% all&apos;avvio, 50% al lancio.
-          </p>
+          </motion.p>
         </div>
       </div>
 
@@ -102,20 +123,49 @@ export default function Pricing() {
         className="grid grid-cols-1 lg:grid-cols-3 border-t border-obsidian/10"
         style={{ borderLeft: "1px solid rgba(26,20,20,0.10)" }}
       >
-        {PLANS.map(plan => (
-          <div
+        {PLANS.map((plan, i) => (
+          <motion.div
             key={plan.name}
-            className="flex flex-col p-8 lg:p-10 border-r border-b border-obsidian/10"
-            style={{ backgroundColor: plan.dark ? "#1A1414" : "transparent" }}
+            className={[
+              "relative flex flex-col p-8 lg:p-10 border-r border-b border-obsidian/10 group",
+              plan.featured ? "lg:-mt-px lg:-mb-px" : "",
+            ].join(" ")}
+            style={{
+              backgroundColor: plan.dark ? "#1A1414" : "transparent",
+              ...(plan.featured ? { boxShadow: "0 0 0 1px rgba(230,59,46,0.3), 0 24px 48px rgba(26,20,20,0.15)" } : {}),
+              zIndex: plan.featured ? 1 : 0,
+            }}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-5%" }}
+            transition={{ duration: 0.65, ease, delay: i * 0.1 }}
           >
+            {/* Featured badge */}
+            {plan.badge && (
+              <div
+                className="absolute -top-px left-1/2 -translate-x-1/2 bg-rosewood px-4 py-1"
+                style={{ ...labelStyle, fontSize: "0.5rem", color: "#F4EFE6", letterSpacing: "0.14em", whiteSpace: "nowrap" }}
+              >
+                ◆ {plan.badge}
+              </div>
+            )}
+
+            {/* Hover overlay for light cards */}
+            {!plan.dark && (
+              <div
+                className="absolute inset-0 bg-ash/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                aria-hidden
+              />
+            )}
+
             {/* Tier label */}
             <p
+              className="relative"
               style={{
-                fontFamily:    "var(--db-jetbrains)",
-                fontSize:      "0.5625rem",
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                color: plan.dark ? "#E63B2E" : "rgba(26,20,20,0.30)",
+                ...labelStyle,
+                fontSize:     "0.5rem",
+                letterSpacing: "0.14em",
+                color:         plan.dark ? "#E63B2E" : "rgba(26,20,20,0.25)",
                 marginBottom:  "1.5rem",
               }}
             >
@@ -124,6 +174,7 @@ export default function Pricing() {
 
             {/* Name */}
             <h3
+              className="relative"
               style={{
                 fontFamily:    "var(--db-archivo)",
                 fontWeight:    900,
@@ -139,7 +190,7 @@ export default function Pricing() {
             </h3>
 
             {/* Price */}
-            <div className="flex items-baseline gap-1 mb-1">
+            <div className="relative flex items-baseline gap-1 mb-1">
               <span
                 style={{
                   fontFamily: "var(--db-archivo)",
@@ -154,10 +205,10 @@ export default function Pricing() {
               <span style={{ fontFamily: "var(--db-archivo)", fontWeight: 900, fontSize: "1.5rem", color: "#E63B2E" }}>€</span>
               <span
                 style={{
-                  fontFamily:  "var(--db-archivo)",
-                  fontSize:    "0.875rem",
-                  color:       plan.dark ? "rgba(244,239,230,0.35)" : "rgba(26,20,20,0.30)",
-                  marginLeft:  "0.25rem",
+                  fontFamily: "var(--db-archivo)",
+                  fontSize:   "0.875rem",
+                  color:      plan.dark ? "rgba(244,239,230,0.30)" : "rgba(26,20,20,0.28)",
+                  marginLeft: "0.25rem",
                 }}
               >
                 — {plan.max}€
@@ -166,42 +217,48 @@ export default function Pricing() {
 
             {/* Time */}
             <div
-              className="flex items-center gap-2 mb-6"
-              style={{ color: plan.dark ? "rgba(244,239,230,0.30)" : "rgba(26,20,20,0.30)" }}
+              className="relative flex items-center gap-2 mb-6"
+              style={{ color: plan.dark ? "rgba(244,239,230,0.28)" : "rgba(26,20,20,0.28)" }}
             >
-              <span style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.5625rem", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              <span style={{ ...labelStyle, fontSize: "0.5rem", letterSpacing: "0.08em" }}>
                 {plan.time}
               </span>
               <span style={{ width: "3px", height: "3px", borderRadius: "50%", backgroundColor: "currentColor", display: "block" }} />
-              <span style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.5625rem", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              <span style={{ ...labelStyle, fontSize: "0.5rem", letterSpacing: "0.08em" }}>
                 {plan.hours}
               </span>
             </div>
 
             {/* Desc */}
             <p
-              className="mb-8 flex-1"
+              className="relative mb-8 flex-1"
               style={{
                 fontFamily: "var(--db-archivo)",
                 fontSize:   "0.875rem",
                 lineHeight: 1.65,
-                color:      plan.dark ? "rgba(244,239,230,0.50)" : "rgba(26,20,20,0.50)",
+                color:      plan.dark ? "rgba(244,239,230,0.45)" : "rgba(26,20,20,0.48)",
               }}
             >
               {plan.desc}
             </p>
 
             {/* Features */}
-            <ul className="space-y-3 mb-10">
+            <ul className="relative space-y-3 mb-10">
               {plan.features.map(f => (
                 <li key={f} className="flex items-start gap-3">
-                  <span className="mt-[6px] block w-1.5 h-1.5 shrink-0 bg-rosewood" />
+                  <span
+                    className="mt-[5px] shrink-0 text-rosewood"
+                    style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.45rem", lineHeight: 1 }}
+                    aria-hidden
+                  >
+                    ◆
+                  </span>
                   <span
                     style={{
                       fontFamily: "var(--db-archivo)",
                       fontSize:   "0.8125rem",
                       lineHeight: 1.5,
-                      color:      plan.dark ? "rgba(244,239,230,0.65)" : "rgba(26,20,20,0.65)",
+                      color:      plan.dark ? "rgba(244,239,230,0.60)" : "rgba(26,20,20,0.62)",
                     }}
                   >
                     {f}
@@ -210,42 +267,57 @@ export default function Pricing() {
               ))}
             </ul>
 
-            {/* CTA — pure CSS hover, no JS */}
+            {/* CTA */}
             <a
               href="#contatti"
-              className={
+              className={[
+                "relative flex items-center justify-center gap-2 overflow-hidden group/cta",
                 plan.dark
-                  ? "flex items-center justify-center bg-rosewood text-ivory hover:bg-ivory hover:text-obsidian transition-colors duration-200"
-                  : "flex items-center justify-center border border-obsidian/20 text-obsidian hover:bg-obsidian hover:text-ivory transition-colors duration-200"
-              }
+                  ? "bg-rosewood text-ivory"
+                  : "border border-obsidian/20 text-obsidian hover:border-obsidian/40",
+              ].join(" ")}
               style={{
-                fontFamily:    "var(--db-jetbrains)",
-                fontSize:      "0.6875rem",
+                ...labelStyle,
                 letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                padding:       "1rem",
+                padding: "1rem",
               }}
             >
-              {plan.cta}
+              <span
+                className={[
+                  "absolute inset-0 translate-y-full group-hover/cta:translate-y-0 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                  plan.dark ? "bg-ivory" : "bg-obsidian",
+                ].join(" ")}
+                aria-hidden
+              />
+              <span
+                className={[
+                  "relative flex items-center gap-2 transition-colors duration-100",
+                  plan.dark ? "group-hover/cta:text-obsidian" : "group-hover/cta:text-ivory",
+                ].join(" ")}
+              >
+                {plan.cta}
+                <span className="group-hover/cta:translate-x-0.5 transition-transform duration-200">→</span>
+              </span>
             </a>
-          </div>
+          </motion.div>
         ))}
       </div>
 
       {/* Note */}
       <div className="mx-auto max-w-[1400px] px-6 lg:px-12 py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <p
-          className="text-obsidian/25"
-          style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.5625rem", letterSpacing: "0.08em", textTransform: "uppercase" }}
+          className="text-obsidian/20"
+          style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.5rem", letterSpacing: "0.08em", textTransform: "uppercase" }}
         >
           * TUTTI I PREZZI IVA ESCLUSA
         </p>
         <a
           href="#contatti"
-          className="text-obsidian/30 hover:text-rosewood transition-colors duration-200"
-          style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.5625rem", letterSpacing: "0.10em", textTransform: "uppercase" }}
+          className="inline-flex items-center gap-1.5 text-obsidian/28 hover:text-rosewood transition-colors duration-200 group/link"
+          style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.5rem", letterSpacing: "0.10em", textTransform: "uppercase" }}
         >
-          ESIGENZE PARTICOLARI? PARLIAMONE →
+          ESIGENZE PARTICOLARI? PARLIAMONE
+          <span className="group-hover/link:translate-x-0.5 transition-transform duration-200">→</span>
         </a>
       </div>
 
