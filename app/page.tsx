@@ -1,6 +1,7 @@
 import Navbar           from "@/components/layout/Navbar";
 import Footer           from "@/components/layout/Footer";
 import StickyMobileCTA  from "@/components/layout/StickyMobileCTA";
+import Quiz             from "@/components/Quiz";
 import Hero             from "@/components/sections/Hero";
 import Soluzioni        from "@/components/sections/Services";
 import BottegaAperta    from "@/components/sections/Portfolio";
@@ -24,6 +25,7 @@ export default function Home() {
       </main>
       <Footer />
       <StickyMobileCTA />
+      <Quiz />
     </>
   );
 }

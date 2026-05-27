@@ -56,9 +56,6 @@ export const metadata: Metadata = {
     description: "Costruiamo siti web professionali per PMI italiane in 10 giorni.",
   },
   robots: { index: true, follow: true },
-  icons: {
-    icon: "/favicon.svg",
-  },
 };
 
 export default function RootLayout({

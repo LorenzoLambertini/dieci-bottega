@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -20,11 +20,53 @@ const labelStyle: React.CSSProperties = {
   textTransform: "uppercase",
 };
 
+type QuizPrefill = {
+  product: string;
+  tier:    string;
+  price:   string;
+  time:    string;
+} | null;
+
 export default function Contact() {
-  const [sent,    setSent]    = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error,   setError]   = useState<string | null>(null);
+  const [sent,     setSent]     = useState(false);
+  const [loading,  setLoading]  = useState(false);
+  const [error,    setError]    = useState<string | null>(null);
+  const [prefill,  setPrefill]  = useState<QuizPrefill>(null);
+  const [defaultMsg, setDefaultMsg] = useState<string>("");
+  const [defaultBudget, setDefaultBudget] = useState<string>("");
   const formRef = useRef<HTMLFormElement>(null);
+
+  // Read quiz recommendation from sessionStorage on mount
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = sessionStorage.getItem("db-quiz-recommendation");
+      const ansRaw = sessionStorage.getItem("db-quiz-answers");
+      if (raw) {
+        const rec = JSON.parse(raw) as QuizPrefill;
+        setPrefill(rec);
+        if (rec) {
+          setDefaultMsg(
+            `Ciao, ho completato il vostro quiz online.\n` +
+            `Mi avete consigliato: ${rec.product} (${rec.tier}).\n` +
+            `Vorrei capire meglio i prossimi passi e ricevere un preventivo.`
+          );
+        }
+      }
+      if (ansRaw) {
+        const ans = JSON.parse(ansRaw) as Record<string, string>;
+        const budgetMap: Record<string, string> = {
+          low:     "Fino a €1.000",
+          mid:     "€1.000 – €2.000",
+          high:    "€2.000 – €4.000",
+          premium: "Oltre €4.000",
+        };
+        if (ans["5"] && budgetMap[ans["5"]]) {
+          setDefaultBudget(budgetMap[ans["5"]]);
+        }
+      }
+    } catch { /* noop */ }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -233,6 +275,28 @@ export default function Contact() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
+                  {prefill && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, ease }}
+                      className="border border-rosewood/30 bg-rosewood/8 px-4 py-3.5 flex items-start gap-3"
+                    >
+                      <span className="live-dot mt-1.5 shrink-0" />
+                      <div>
+                        <p className="text-ivory" style={{ ...labelStyle, fontSize: "0.5625rem", letterSpacing: "0.14em", marginBottom: "0.25rem" }}>
+                          DAL QUIZ · RACCOMANDAZIONE PRE-COMPILATA
+                        </p>
+                        <p
+                          className="text-ivory/60"
+                          style={{ fontFamily: "var(--db-archivo)", fontSize: "0.8125rem", lineHeight: 1.55 }}
+                        >
+                          {prefill.product} · {prefill.price} · {prefill.time}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+
                   <div className="grid sm:grid-cols-2 gap-4">
                     <Field label="NOME *"  id="name"  name="name"  placeholder="Marco Rossi"       required />
                     <Field label="EMAIL *" id="email" name="email" type="email" placeholder="marco@azienda.it" required />
@@ -247,6 +311,7 @@ export default function Contact() {
                       <select
                         id="budget"
                         name="budget"
+                        defaultValue={defaultBudget || ""}
                         className="w-full bg-ivory/[0.03] border border-ivory/12 focus:border-rosewood/60 focus:bg-ivory/[0.05] text-ivory/70 py-3 px-4 outline-none appearance-none cursor-pointer transition-all duration-200"
                         style={{ fontFamily: "var(--db-archivo)", fontSize: "0.875rem" }}
                       >
@@ -271,7 +336,8 @@ export default function Contact() {
                       id="message"
                       name="message"
                       required
-                      rows={4}
+                      rows={prefill ? 5 : 4}
+                      defaultValue={defaultMsg}
                       placeholder="Ciao, ho bisogno di un sito vetrina per la mia attività…"
                       className="bg-ivory/[0.03] border border-ivory/12 focus:border-rosewood/60 focus:bg-ivory/[0.05] text-ivory py-3 px-4 outline-none resize-none placeholder:text-ivory/18 transition-all duration-200"
                       style={{ fontFamily: "var(--db-archivo)", fontSize: "0.875rem" }}
