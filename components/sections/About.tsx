@@ -2,157 +2,170 @@
 
 import { motion } from "framer-motion";
 
-const ease = [0.16, 1, 0.3, 1] as const;
+const ease = [0.2, 0.8, 0.2, 1] as const;
 
 const VALUES = [
-  { n: "01", title: "Mestiere", body: "Non vendiamo \"soluzioni digitali\". Vendiamo lavoro fatto bene. Ogni font, ogni microcopy, ogni millisecondo è una scelta consapevole." },
-  { n: "02", title: "Velocità", body: "Consegnare in 10 giorni è dire al cliente: il tuo tempo conta quanto il nostro. La velocità non è scorciatoia, è metodo." },
-  { n: "03", title: "Onestà", body: "Prezzi pubblici, tempi reali, limiti chiari. Mai soprapromettere per chiudere. Meglio perdere un cliente che mentirgli." },
+  { n: "01", title: "Mestiere",   body: "Non vendiamo \"soluzioni digitali\". Vendiamo lavoro fatto bene. Ogni font, ogni microcopy, ogni millisecondo è una scelta consapevole." },
+  { n: "02", title: "Velocità",   body: "Consegnare in dieci giorni è dire al cliente: il tuo tempo conta quanto il nostro. La velocità non è scorciatoia, è metodo." },
+  { n: "03", title: "Onestà",     body: "Prezzi pubblici, tempi reali, limiti chiari. Mai sovrapromettere per chiudere. Meglio perdere un cliente che mentirgli." },
   { n: "04", title: "Prossimità", body: "Parliamo italiano, lavoriamo da Bologna, conosciamo le PMI. La distanza zero è il nostro vantaggio competitivo." },
-  { n: "05", title: "Dettagli", body: "\"È tutto nei dettagli\" non è una tagline: è un protocollo. Spaziature, microcopy, performance, accessibilità. Tutto curato." },
+  { n: "05", title: "Dettagli",   body: "\"È tutto nei dettagli\" non è una tagline: è un protocollo. Spaziature, microcopy, performance, accessibilità. Tutto curato." },
 ];
 
 const TEAM = [
   {
-    role: "CO-FOUNDER · DESIGN & WEB",
+    role:      "CO-FOUNDER · DESIGN & WEB",
     firstName: "Lorenzo",
-    lastName: "Lambertini",
-    bio: "Sviluppa siti e design per PMI italiane dal 2024. Crede che ogni pixel debba guadagnarsi il proprio posto.",
-    email: "lorenzo@diecibottega.it",
+    lastName:  "Lambertini",
+    bio:       "Sviluppa siti e design per PMI italiane dal 2024. Crede che ogni pixel debba guadagnarsi il proprio posto.",
+    email:     "lorenzo@diecibottega.it",
+    cv:        ["Front-end · Next.js", "Brand systems", "AI co-working"],
   },
   {
-    role: "CO-FOUNDER · STRATEGY & SALES",
+    role:      "CO-FOUNDER · STRATEGY & SALES",
     firstName: "Tommaso",
-    lastName: "Villa",
-    bio: "Consulente commerciale per agenzie digitali. Trasforma un brief in un piano d'azione concreto.",
-    email: "tommaso@diecibottega.it",
+    lastName:  "Villa",
+    bio:       "Consulente commerciale per agenzie digitali. Trasforma un brief in un piano d'azione concreto.",
+    email:     "tommaso@diecibottega.it",
+    cv:        ["Sales discovery", "Account growth", "Operations"],
   },
 ];
 
 const labelStyle: React.CSSProperties = {
   fontFamily:    "var(--db-jetbrains)",
   fontSize:      "0.6875rem",
-  letterSpacing: "0.10em",
+  letterSpacing: "0.12em",
   textTransform: "uppercase",
 };
 
-export default function About() {
+export default function Studio() {
   return (
-    <section id="bottega" style={{ backgroundColor: "#E63B2E" }}>
+    <section id="studio" className="relative bg-rosewood text-ivory overflow-hidden">
+      <div className="grain-soft" aria-hidden />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 60% 50% at 70% 30%, rgba(255,255,255,0.06) 0%, transparent 60%)",
+        }}
+      />
 
-      <div className="noise-overlay" aria-hidden />
+      {/* Header */}
+      <div className="relative mx-auto max-w-[1480px] px-6 lg:px-12 pt-24 pb-16 lg:pt-36 lg:pb-24">
+        <div className="grid lg:grid-cols-12 gap-10 items-end">
 
-      {/* ── Header ── */}
-      <div className="mx-auto max-w-[1400px] px-6 lg:px-12 pt-24 pb-20 lg:pt-36 lg:pb-28 relative">
-        <div className="grid lg:grid-cols-2 gap-8 items-end">
           <motion.div
+            className="lg:col-span-7"
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-10%" }}
-            transition={{ duration: 0.7, ease }}
+            viewport={{ once: true, margin: "-15%" }}
+            transition={{ duration: 0.8, ease }}
           >
             <div className="flex items-center gap-3 mb-8">
               <span className="block w-8 h-px bg-ivory/40" />
-              <span
-                className="text-ivory/50"
-                style={labelStyle}
-              >
-                04 · BOTTEGA
-              </span>
+              <span className="text-ivory/55" style={labelStyle}>04 · STUDIO</span>
             </div>
             <h2
               className="text-ivory"
               style={{
                 fontFamily:    "var(--db-archivo)",
                 fontWeight:    900,
-                fontSize:      "clamp(2.25rem, 5.5vw, 5rem)",
-                lineHeight:    0.93,
-                letterSpacing: "-0.03em",
+                fontSize:      "clamp(2.5rem, 7vw, 6.5rem)",
+                lineHeight:    0.9,
+                letterSpacing: "-0.04em",
                 textTransform: "uppercase",
               }}
             >
-              Nati da un<br />caffè a<br />Bologna.
+              Nati da un<br />
+              <span className="text-ivory/55">caffè</span><br />
+              a Bologna.
             </h2>
           </motion.div>
 
           <motion.div
-            className="flex flex-col gap-8 lg:ml-auto max-w-md"
+            className="lg:col-span-5 flex flex-col gap-6 lg:pl-8 lg:mt-2"
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-10%" }}
-            transition={{ duration: 0.7, ease, delay: 0.12 }}
+            viewport={{ once: true, margin: "-15%" }}
+            transition={{ duration: 0.8, ease, delay: 0.15 }}
           >
             <p
               className="text-ivory/85"
               style={{
                 fontFamily: "var(--db-cardo)",
                 fontStyle:  "italic",
-                fontSize:   "clamp(1.2rem, 2vw, 1.6rem)",
-                lineHeight: 1.35,
+                fontSize:   "clamp(1.25rem, 2vw, 1.75rem)",
+                lineHeight: 1.3,
               }}
             >
-              &ldquo;Veloci, ma non frettolosi.
-              <br />È tutto nei dettagli.&rdquo;
+              &ldquo;Veloci, ma non frettolosi.<br />
+              È tutto nei dettagli.&rdquo;
             </p>
             <p
-              className="text-ivory/60"
-              style={{ fontFamily: "var(--db-archivo)", fontSize: "0.9375rem", lineHeight: 1.65 }}
+              className="text-ivory/65"
+              style={{ fontFamily: "var(--db-archivo)", fontSize: "0.9375rem", lineHeight: 1.7 }}
             >
-              Dieci Bottega nasce dall&apos;incontro di due percorsi: chi sa fare
-              design e codice (Lorenzo) e chi sa parlare con i clienti (Tommaso).
-              Entrambi convinti che le PMI italiane meritino di meglio.
+              Dieci Bottega nasce dall&apos;incontro di due percorsi:
+              chi sa fare design e codice (Lorenzo) e chi sa parlare
+              con i clienti (Tommaso). Entrambi convinti che le PMI
+              italiane meritino di meglio.
             </p>
           </motion.div>
         </div>
       </div>
 
-      {/* ── Values ── */}
-      <div
-        className="border-t grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5"
-        style={{
-          borderColor: "rgba(244,239,230,0.15)",
-          borderLeft:  "1px solid rgba(244,239,230,0.15)",
-        }}
-      >
-        {VALUES.map((v, i) => (
-          <motion.div
-            key={v.n}
-            className="relative p-7 lg:p-8 border-r border-b flex flex-col gap-4 group overflow-hidden"
-            style={{ borderColor: "rgba(244,239,230,0.15)" }}
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-5%" }}
-            transition={{ duration: 0.55, ease, delay: i * 0.07 }}
-          >
-            {/* Hover fill */}
-            <div
-              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              style={{ background: "rgba(122,24,24,0.35)" }}
-              aria-hidden
-            />
-            <span
-              className="relative text-ivory/30 group-hover:text-ivory/50 transition-colors duration-200"
-              style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.5625rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
+      {/* Values */}
+      <div className="relative">
+        <div className="section-divider-dark" />
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5"
+          style={{ borderLeft: "1px solid rgba(244,239,230,0.15)" }}
+        >
+          {VALUES.map((v, i) => (
+            <motion.div
+              key={v.n}
+              className="relative p-7 lg:p-8 border-r border-b flex flex-col gap-4 group overflow-hidden"
+              style={{ borderColor: "rgba(244,239,230,0.15)" }}
+              initial={{ opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-5%" }}
+              transition={{ duration: 0.6, ease, delay: i * 0.08 }}
             >
-              {v.n}
-            </span>
-            <h3
-              className="relative text-ivory"
-              style={{ fontFamily: "var(--db-archivo)", fontWeight: 900, fontSize: "1.25rem", textTransform: "uppercase", letterSpacing: "-0.01em" }}
-            >
-              {v.title}
-            </h3>
-            <p
-              className="relative text-ivory/50 group-hover:text-ivory/70 transition-colors duration-300"
-              style={{ fontFamily: "var(--db-archivo)", fontSize: "0.8125rem", lineHeight: 1.65 }}
-            >
-              {v.body}
-            </p>
-          </motion.div>
-        ))}
+              <div
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400"
+                style={{ background: "rgba(122,24,24,0.40)" }}
+                aria-hidden
+              />
+              <div
+                className="absolute left-0 top-0 h-px bg-ivory scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500 w-full"
+                style={{ transitionTimingFunction: "cubic-bezier(0.2,0.8,0.2,1)" }}
+                aria-hidden
+              />
+              <span
+                className="relative text-ivory/35 group-hover:text-ivory/55 transition-colors duration-300"
+                style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.5625rem", letterSpacing: "0.14em", textTransform: "uppercase" }}
+              >
+                {v.n}
+              </span>
+              <h3
+                className="relative text-ivory"
+                style={{ fontFamily: "var(--db-archivo)", fontWeight: 900, fontSize: "1.25rem", textTransform: "uppercase", letterSpacing: "-0.01em" }}
+              >
+                {v.title}
+              </h3>
+              <p
+                className="relative text-ivory/55 group-hover:text-ivory/75 transition-colors duration-400"
+                style={{ fontFamily: "var(--db-archivo)", fontSize: "0.8125rem", lineHeight: 1.65 }}
+              >
+                {v.body}
+              </p>
+            </motion.div>
+          ))}
+        </div>
       </div>
 
-      {/* ── Team ── */}
+      {/* Team */}
       <div
         className="grid md:grid-cols-2 border-t"
         style={{ borderColor: "rgba(244,239,230,0.15)" }}
@@ -165,22 +178,21 @@ export default function About() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-5%" }}
-            transition={{ duration: 0.6, ease, delay: i * 0.1 }}
+            transition={{ duration: 0.7, ease, delay: i * 0.12 }}
           >
-            {/* Hover fill */}
             <div
-              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              style={{ background: "rgba(122,24,24,0.25)" }}
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400"
+              style={{ background: "rgba(122,24,24,0.30)" }}
               aria-hidden
             />
             {/* Ghost initial */}
             <span
-              className="absolute right-8 bottom-6 select-none pointer-events-none text-ivory/[0.04] group-hover:text-ivory/[0.06] transition-colors duration-300"
+              className="absolute right-6 -bottom-2 select-none pointer-events-none text-ivory/[0.04] group-hover:text-ivory/[0.07] transition-colors duration-500"
               style={{
                 fontFamily:    "var(--db-archivo)",
                 fontWeight:    900,
-                fontSize:      "8rem",
-                lineHeight:    1,
+                fontSize:      "12rem",
+                lineHeight:    0.9,
                 letterSpacing: "-0.06em",
               }}
               aria-hidden
@@ -189,8 +201,8 @@ export default function About() {
             </span>
 
             <span
-              className="relative text-ivory/35"
-              style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.5625rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
+              className="relative text-ivory/40"
+              style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.5625rem", letterSpacing: "0.14em", textTransform: "uppercase" }}
             >
               {person.role}
             </span>
@@ -199,32 +211,46 @@ export default function About() {
               style={{
                 fontFamily:    "var(--db-archivo)",
                 fontWeight:    900,
-                fontSize:      "clamp(1.75rem, 3vw, 2.5rem)",
-                lineHeight:    1.05,
-                letterSpacing: "-0.02em",
+                fontSize:      "clamp(2rem, 3.2vw, 2.75rem)",
+                lineHeight:    1,
+                letterSpacing: "-0.03em",
                 textTransform: "uppercase",
               }}
             >
               {person.firstName}<br />{person.lastName}
             </h3>
             <p
-              className="relative text-ivory/55 group-hover:text-ivory/70 transition-colors duration-300"
-              style={{ fontFamily: "var(--db-archivo)", fontSize: "0.9rem", lineHeight: 1.65, maxWidth: "26rem" }}
+              className="relative text-ivory/65 max-w-md"
+              style={{ fontFamily: "var(--db-archivo)", fontSize: "0.9375rem", lineHeight: 1.65 }}
             >
               {person.bio}
             </p>
+
+            {/* CV tags */}
+            <div className="relative flex flex-wrap gap-2 mt-1">
+              {person.cv.map(tag => (
+                <span
+                  key={tag}
+                  className="text-ivory/70 border border-ivory/15 px-2.5 py-1"
+                  style={{ ...labelStyle, fontSize: "0.5rem", letterSpacing: "0.14em" }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+
             <a
               href={`mailto:${person.email}`}
-              className="relative text-ivory/30 hover:text-ivory transition-colors duration-200 mt-auto inline-flex items-center gap-1.5 group/link"
+              className="relative text-ivory/35 hover:text-ivory transition-colors duration-300 mt-auto inline-flex items-center gap-1.5 group/link link-underline"
               style={{
                 fontFamily:    "var(--db-jetbrains)",
                 fontSize:      "0.5625rem",
-                letterSpacing: "0.10em",
+                letterSpacing: "0.12em",
                 textTransform: "uppercase",
               }}
             >
               {person.email.toUpperCase()}
-              <span className="group-hover/link:translate-x-0.5 transition-transform duration-200">→</span>
+              <span className="group-hover/link:translate-x-0.5 transition-transform duration-300">→</span>
             </a>
           </motion.div>
         ))}
