@@ -18,17 +18,27 @@ const corsHeaders = (origin: string) => ({
   "Access-Control-Max-Age": "86400",
 });
 
+interface QuizRecommendation {
+  product: string;
+  tier:    string;
+  price:   string;
+  time:    string;
+  reason?: string;
+}
+
 interface LeadPayload {
   name: string;
   email: string;
   phone?: string;
   company?: string;
   message?: string;
+  budget?: string;
   source?: string;
   utm_source?: string;
   utm_medium?: string;
   utm_campaign?: string;
   page_url?: string;
+  recommendation?: QuizRecommendation;
 }
 
 function isValidEmail(email: string): boolean {
@@ -93,8 +103,13 @@ Deno.serve(async (req: Request) => {
 
   // Upsert lead (on conflict with email, update score + metadata)
   const metadata: Record<string, unknown> = {};
-  if (body.message) metadata.message = body.message;
-  if (body.page_url) metadata.page_url = body.page_url;
+  if (body.message)        metadata.message        = body.message;
+  if (body.page_url)       metadata.page_url       = body.page_url;
+  if (body.budget)         metadata.budget         = body.budget;
+  if (body.recommendation) metadata.recommendation = body.recommendation;
+
+  // Score boost: leads from quiz have stronger intent (+15)
+  const baseScore  = body.recommendation ? 25 : 10;
 
   const { data: lead, error } = await supabase
     .from("leads")
@@ -109,7 +124,7 @@ Deno.serve(async (req: Request) => {
         utm_source: body.utm_source ?? null,
         utm_medium: body.utm_medium ?? null,
         utm_campaign: body.utm_campaign ?? null,
-        score: 10,
+        score: baseScore,
         metadata,
         updated_at: new Date().toISOString(),
       },
@@ -129,18 +144,35 @@ Deno.serve(async (req: Request) => {
     );
   }
 
-  // Log activity
+  // Log activity (lead acquisito)
   await supabase.from("activities").insert({
     lead_id: lead.id,
     user_id: null,
-    type: "system",
+    type:    "system",
     subject: "Lead acquisito via sito web",
-    body: body.message ?? null,
+    body:    body.message ?? null,
     metadata: {
-      source: body.source ?? "website",
+      source:   body.source ?? "website",
       page_url: body.page_url ?? null,
     },
   });
+
+  // If lead came from quiz, log a second activity with the recommendation
+  if (body.recommendation) {
+    await supabase.from("activities").insert({
+      lead_id: lead.id,
+      user_id: null,
+      type:    "note",
+      subject: `Quiz: consigliato ${body.recommendation.product}`,
+      body:    [
+        `Tier: ${body.recommendation.tier}`,
+        `Prezzo indicativo: ${body.recommendation.price}`,
+        `Consegna: ${body.recommendation.time}`,
+        body.recommendation.reason ? `\nRagione: "${body.recommendation.reason}"` : "",
+      ].filter(Boolean).join("\n"),
+      metadata: { recommendation: body.recommendation },
+    });
+  }
 
   // Trigger workflows — find active workflows with trigger "lead_created"
   const { data: workflows } = await supabase

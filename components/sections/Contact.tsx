@@ -75,13 +75,14 @@ export default function Contact() {
 
     const fd = new FormData(e.currentTarget);
     const payload = {
-      name:     String(fd.get("name") ?? ""),
-      email:    String(fd.get("email") ?? ""),
-      company:  (fd.get("company") as string) || undefined,
-      budget:   (fd.get("budget")  as string) || undefined,
-      message:  (fd.get("message") as string) || undefined,
-      source:   "website",
-      page_url: typeof window !== "undefined" ? window.location.href : undefined,
+      name:           String(fd.get("name") ?? ""),
+      email:          String(fd.get("email") ?? ""),
+      company:        (fd.get("company") as string) || undefined,
+      budget:         (fd.get("budget")  as string) || undefined,
+      message:        (fd.get("message") as string) || undefined,
+      source:         prefill ? "website-quiz" : "website",
+      page_url:       typeof window !== "undefined" ? window.location.href : undefined,
+      recommendation: prefill ?? undefined,
     };
 
     try {
@@ -235,7 +236,7 @@ export default function Contact() {
               {sent ? (
                 <motion.div
                   key="success"
-                  className="flex flex-col items-center justify-center text-center py-24 px-8 gap-6 min-h-[400px]"
+                  className="flex flex-col items-center justify-center text-center py-16 px-8 gap-5 min-h-[400px]"
                   initial={{ opacity: 0, scale: 0.97 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, ease }}
@@ -248,20 +249,36 @@ export default function Contact() {
                   <div>
                     <h3
                       className="text-ivory"
-                      style={{ fontFamily: "var(--db-archivo)", fontWeight: 900, fontSize: "1.75rem", textTransform: "uppercase", letterSpacing: "-0.02em", marginBottom: "0.75rem" }}
+                      style={{ fontFamily: "var(--db-archivo)", fontWeight: 900, fontSize: "clamp(1.5rem, 2.4vw, 2rem)", textTransform: "uppercase", letterSpacing: "-0.02em", marginBottom: "0.75rem", lineHeight: 1 }}
                     >
-                      Messaggio inviato!
+                      Controlla la tua email.
                     </h3>
-                    <p className="text-ivory/40" style={{ fontFamily: "var(--db-archivo)", fontSize: "0.9rem", lineHeight: 1.65 }}>
-                      Abbiamo ricevuto il tuo messaggio.
-                      <br />Ti risponderemo entro 24 ore lavorative.
+                    <p className="text-ivory/55 max-w-sm mx-auto" style={{ fontFamily: "var(--db-archivo)", fontSize: "0.9375rem", lineHeight: 1.65 }}>
+                      Ti abbiamo appena scritto da{" "}
+                      <span className="text-rosewood" style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.8125rem" }}>info@diecibottega.it</span>{" "}
+                      — rispondi indicando 2&ndash;3 fasce orarie per fissare la call gratuita.
                     </p>
                   </div>
+
+                  <div className="border border-ivory/12 px-5 py-3 mt-2">
+                    <p className="text-ivory/45 mb-1" style={{ ...labelStyle, fontSize: "0.5rem", letterSpacing: "0.18em" }}>
+                      I NOSTRI ORARI
+                    </p>
+                    <p className="text-ivory" style={{ fontFamily: "var(--db-archivo)", fontSize: "0.8125rem", lineHeight: 1.5 }}>
+                      Lun&nbsp;→&nbsp;Ven · 9:00&ndash;13:00 · 14:30&ndash;19:00
+                    </p>
+                  </div>
+
+                  <p className="text-ivory/30 mt-1" style={{ fontFamily: "var(--db-archivo)", fontSize: "0.75rem", lineHeight: 1.5 }}>
+                    Non vedi l&apos;email? Controlla in spam o scrivici a{" "}
+                    <a href="mailto:info@diecibottega.it" className="text-ivory/60 underline">info@diecibottega.it</a>.
+                  </p>
+
                   <p
-                    className="text-ivory/20 mt-2"
+                    className="text-ivory/25 mt-3"
                     style={{ fontFamily: "var(--db-cardo)", fontStyle: "italic", fontSize: "0.875rem" }}
                   >
-                    A presto. — Dieci Bottega
+                    A presto. — Lorenzo &amp; Tommaso
                   </p>
                 </motion.div>
               ) : (
