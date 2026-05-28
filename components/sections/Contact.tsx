@@ -86,22 +86,12 @@ export default function Contact() {
     };
 
     try {
-      const [emailRes] = await Promise.all([
-        fetch("/api/contact", {
-          method:  "POST",
-          headers: { "Content-Type": "application/json" },
-          body:    JSON.stringify(payload),
-        }),
-        fetch(
-          "https://voyhwqqubcathcvjatyk.supabase.co/functions/v1/capture-lead",
-          {
-            method:    "POST",
-            headers:   { "Content-Type": "application/json" },
-            body:      JSON.stringify(payload),
-            keepalive: true,
-          }
-        ).catch(() => undefined),
-      ]);
+      // /api/contact gestisce internamente: 1) CRM via Edge Function, 2) email team, 3) email cliente con slot cliccabili
+      const emailRes = await fetch("/api/contact", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(payload),
+      });
 
       if (!emailRes.ok) {
         const data = await emailRes.json().catch(() => ({})) as { error?: string };
@@ -256,7 +246,7 @@ export default function Contact() {
                     <p className="text-ivory/55 max-w-sm mx-auto" style={{ fontFamily: "var(--db-archivo)", fontSize: "0.9375rem", lineHeight: 1.65 }}>
                       Ti abbiamo appena scritto da{" "}
                       <span className="text-rosewood" style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.8125rem" }}>info@diecibottega.it</span>{" "}
-                      — rispondi indicando 2&ndash;3 fasce orarie per fissare la call gratuita.
+                      — dentro trovi 6 orari cliccabili: scegli quello che preferisci e l&apos;appuntamento è fissato.
                     </p>
                   </div>
 
