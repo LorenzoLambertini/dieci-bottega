@@ -344,7 +344,7 @@ export async function POST(req: NextRequest) {
     : [];
 
   const apiKey   = process.env.RESEND_API_KEY;
-  const teamRaw  = process.env.TEAM_EMAILS ?? "lorenzo@diecibottega.it,tommaso@diecibottega.it";
+  const teamRaw  = process.env.TEAM_EMAILS ?? "lollo.lambertini@gmail.com,tommaso.villa02@gmail.com";
   const teamEmails = teamRaw.split(",").map(s => s.trim()).filter(Boolean);
 
   if (!apiKey) {
