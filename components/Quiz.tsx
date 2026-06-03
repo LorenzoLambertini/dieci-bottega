@@ -364,13 +364,63 @@ export default function Quiz() {
               </button>
             </div>
 
-            {/* Progress bar */}
-            <div className="relative h-px bg-obsidian/8">
+            {/* Progress · device-style tilted card */}
+            <div className="relative px-5 lg:px-7 py-3 bg-gradient-to-b from-obsidian/[0.03] to-transparent border-b border-obsidian/8">
               <motion.div
-                className="absolute inset-y-0 left-0 bg-rosewood"
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.6, ease }}
-              />
+                className="mx-auto max-w-[280px]"
+                style={{
+                  perspective: "600px",
+                }}
+              >
+                <motion.div
+                  initial={{ rotateX: 8, opacity: 0 }}
+                  animate={{ rotateX: 2, opacity: 1 }}
+                  transition={{ duration: 0.6, ease }}
+                  className="bg-obsidian border border-plum/60 rounded-lg shadow-atelier p-2 relative overflow-hidden"
+                  style={{ transformStyle: "preserve-3d" }}
+                >
+                  <div className="bg-ivory rounded-md p-2.5 flex items-center gap-2.5">
+                    {/* Status chip */}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span className="live-dot" />
+                      <span
+                        className="text-obsidian tabular-nums"
+                        style={{
+                          fontFamily:    "var(--db-jetbrains)",
+                          fontSize:      "0.5625rem",
+                          letterSpacing: "0.14em",
+                          textTransform: "uppercase",
+                          fontWeight:    700,
+                        }}
+                      >
+                        {step <= 5 ? `${step.toString().padStart(2, "0")} / 05` : "DONE"}
+                      </span>
+                    </div>
+
+                    {/* Mini progress bar */}
+                    <div className="relative flex-1 h-1 bg-obsidian/10 rounded-full overflow-hidden">
+                      <motion.div
+                        className="absolute inset-y-0 left-0 bg-rosewood rounded-full"
+                        animate={{ width: `${progress}%` }}
+                        transition={{ duration: 0.6, ease }}
+                      />
+                    </div>
+
+                    {/* Percentage */}
+                    <span
+                      className="text-rosewood tabular-nums shrink-0"
+                      style={{
+                        fontFamily:    "var(--db-jetbrains)",
+                        fontSize:      "0.5625rem",
+                        letterSpacing: "0.10em",
+                        fontWeight:    700,
+                      }}
+                    >
+                      {Math.round(progress)}%
+                    </span>
+                  </div>
+                </motion.div>
+              </motion.div>
             </div>
 
             {/* Body */}
