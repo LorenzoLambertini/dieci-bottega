@@ -182,7 +182,7 @@ export function CinematicHero({
   metricValue     = 10,
   metricLabel     = "Giorni di consegna",
   ctaHeading      = "Inizia il tuo progetto.",
-  ctaDescription  = "Una call di 30 minuti. Gratis. Senza impegno. Capiamo se siamo i giusti per te.",
+  ctaDescription  = "Prima call gratuita di 30 minuti, senza impegno. Capiamo se siamo i giusti per te.",
   primaryHref     = "/inizia-progetto",
   secondaryHref   = "/servizi",
   className,
@@ -360,7 +360,7 @@ export function CinematicHero({
               fontWeight:    700,
             }}
           >
-            <span className="live-dot" /> Il tuo sito gratis →
+            <span className="live-dot" /> Inizia il progetto →
           </a>
           <a
             href={secondaryHref}
@@ -489,7 +489,7 @@ export function CinematicHero({
                   </div>
                   <div>
                     <p className="text-ivory tracking-tight" style={{ fontFamily: "var(--db-archivo)", fontWeight: 700, fontSize: "0.75rem" }}>10 giorni</p>
-                    <p className="text-rosewood/70 font-medium" style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.5625rem", letterSpacing: "0.12em", textTransform: "uppercase" }}>Consegna garantita</p>
+                    <p className="text-rosewood/70 font-medium" style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.5625rem", letterSpacing: "0.12em", textTransform: "uppercase" }}>Consegna in 10 giorni</p>
                   </div>
                 </div>
 

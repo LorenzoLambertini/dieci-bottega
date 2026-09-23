@@ -77,9 +77,10 @@ export default function Studio() {
                 textTransform: "uppercase",
               }}
             >
-              Nati da un<br />
-              <span className="text-ivory/55">caffè</span><br />
-              a Bologna.
+              Amici da<br />
+              <span className="text-ivory/55">dieci anni.</span><br />
+              Una bottega<br />
+              da oggi.
             </h2>
           </motion.div>
 
@@ -106,10 +107,10 @@ export default function Studio() {
               className="text-ivory/65"
               style={{ fontFamily: "var(--db-archivo)", fontSize: "0.9375rem", lineHeight: 1.7 }}
             >
-              Dieci Bottega nasce dall&apos;incontro di due percorsi:
-              chi sa fare design e codice (Lorenzo) e chi sa parlare
-              con i clienti (Tommaso). Entrambi convinti che le PMI
-              italiane meritino di meglio.
+              Ci conosciamo da più di dieci anni. Lorenzo ha imparato a
+              disegnare e scrivere codice, Tommaso a capire cosa serve
+              davvero a chi ha un&apos;attività. Dieci Bottega è il momento
+              in cui abbiamo deciso di mettere insieme quello che sappiamo fare.
             </p>
           </motion.div>
         </div>

@@ -11,11 +11,12 @@ const labelStyle: React.CSSProperties = {
   textTransform: "uppercase",
 };
 
+// Solo progetti reali. Niente orari: sono estratti, non un feed live.
 const COMMITS = [
-  { time: "14:32", what: "Form contatto · validazione lato server",   project: "Trattoria Da Mario" },
-  { time: "11:08", what: "Hero · animazione lettera per lettera",      project: "Studio Legale F." },
-  { time: "09:21", what: "CRM · vista pipeline drag&drop",             project: "Immobiliare A." },
-  { time: "—",     what: "Refactor componenti Soluzioni",              project: "diecibottega.it" },
+  { what: "Selettore lingua IT/EN/ES/FR",               project: "Virtus Welcome Kit" },
+  { what: "WhatsApp con messaggio precompilato",        project: "Villa Pet Sitter"   },
+  { what: "Embed SoundCloud dei set",                   project: "LAMBO"              },
+  { what: "Slider prima/dopo accessibile da tastiera",  project: "diecibottega.it"    },
 ];
 
 const STACK = [
@@ -88,9 +89,9 @@ export default function BottegaAperta() {
               className="text-obsidian/45"
               style={{ fontFamily: "var(--db-archivo)", fontSize: "0.9375rem", lineHeight: 1.7 }}
             >
-              Niente case study patinati né testimonial finti. Solo
-              estratti reali da progetti in corso: codice, workflow,
-              snippet di prompt, scelte di design.
+              Niente testimonial inventati. Solo estratti reali dai
+              nostri progetti: codice, workflow, snippet di prompt,
+              scelte di design.
             </p>
           </motion.div>
         </div>
@@ -100,28 +101,28 @@ export default function BottegaAperta() {
       <div className="mx-auto max-w-[1480px] px-6 lg:px-12 pb-16 lg:pb-24">
         <div className="grid grid-cols-12 gap-3 lg:gap-4">
 
-          {/* ── Card 1: Live project ── */}
+          {/* ── Card 1: Ultimo lavoro ── */}
           <motion.div
-            className="col-span-12 lg:col-span-7 bg-obsidian text-ivory p-6 lg:p-8 relative overflow-hidden card-tactile shadow-atelier"
+            className="col-span-12 lg:col-span-7 bg-obsidian text-ivory p-6 lg:p-8 relative overflow-hidden card-tactile shadow-atelier flex flex-col"
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-10%" }}
             transition={{ duration: 0.7, ease }}
           >
             <div className="grain-soft" aria-hidden />
-            <div className="relative">
+            <div className="relative flex flex-col h-full">
               <div className="flex items-center justify-between mb-6">
                 <span className="flex items-center gap-2 text-ivory/70" style={{ ...labelStyle, fontSize: "0.5625rem", letterSpacing: "0.14em" }}>
                   <span className="live-dot" />
-                  IN CORSO · OGGI
+                  ULTIMO LAVORO
                 </span>
                 <span className="text-ivory/30" style={{ ...labelStyle, fontSize: "0.5rem" }}>
-                  W47 · 2026
+                  WEB APP
                 </span>
               </div>
 
               <h3
-                className="text-ivory mb-2"
+                className="text-ivory mb-3"
                 style={{
                   fontFamily:    "var(--db-archivo)",
                   fontWeight:    900,
@@ -131,55 +132,38 @@ export default function BottegaAperta() {
                   textTransform: "uppercase",
                 }}
               >
-                Trattoria Da Mario
+                Virtus Bologna — Welcome Kit
               </h3>
               <p
-                className="text-ivory/45 mb-8"
-                style={{ fontFamily: "var(--db-cardo)", fontStyle: "italic", fontSize: "1.0625rem" }}
+                className="text-ivory/60 max-w-xl"
+                style={{ fontFamily: "var(--db-cardo)", fontStyle: "italic", fontSize: "1.125rem", lineHeight: 1.45 }}
               >
-                Sito vetrina con prenotazione diretta · Bologna
+                Web app in quattro lingue per i nuovi giocatori: città, trasporti,
+                regole della strada, trasferte, calendario, convenzioni, palazzetti.
               </p>
 
-              {/* Progress steps */}
-              <div className="space-y-3.5">
-                {[
-                  { d: "01–02", t: "Brief & moodboard",       done: true  },
-                  { d: "03–05", t: "Design Figma + revisioni",done: true  },
-                  { d: "06–08", t: "Sviluppo & integrazioni", done: false, current: true },
-                  { d: "09–10", t: "Deploy + handover",       done: false },
-                ].map(s => (
-                  <div key={s.d} className="grid grid-cols-[44px_18px_1fr] gap-3 items-center">
-                    <span className="text-ivory/30" style={{ ...labelStyle, fontSize: "0.5625rem" }}>{s.d}</span>
+              <div className="mt-8 lg:mt-auto lg:pt-10 flex flex-wrap items-center justify-between gap-4">
+                <div className="flex gap-2">
+                  {["IT", "EN", "ES", "FR"].map(l => (
                     <span
-                      className="w-2 h-2 rounded-full"
-                      style={{
-                        background: s.done ? "#E63B2E" : s.current ? "#F2B8A2" : "rgba(244,239,230,0.18)",
-                        boxShadow:  s.current ? "0 0 0 3px rgba(242,184,162,0.25)" : "none",
-                      }}
-                    />
-                    <span
-                      className={s.done || s.current ? "text-ivory" : "text-ivory/40"}
-                      style={{ fontFamily: "var(--db-archivo)", fontSize: "0.9375rem", fontWeight: s.current ? 700 : 400 }}
+                      key={l}
+                      className="text-ivory/70 border border-ivory/15 px-2.5 py-1"
+                      style={{ ...labelStyle, fontSize: "0.5625rem", letterSpacing: "0.14em" }}
                     >
-                      {s.t}
+                      {l}
                     </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Progress bar */}
-              <div className="mt-8 h-px bg-ivory/12 relative overflow-hidden">
-                <motion.div
-                  className="absolute inset-y-0 left-0 bg-rosewood"
-                  initial={{ width: 0 }}
-                  whileInView={{ width: "62%" }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1.6, ease, delay: 0.4 }}
-                />
-              </div>
-              <div className="mt-3 flex items-center justify-between">
-                <span className="text-ivory/40" style={{ ...labelStyle, fontSize: "0.5rem" }}>GIORNO 6 DI 10</span>
-                <span className="text-ivory/70" style={{ ...labelStyle, fontSize: "0.5rem" }}>62% COMPLETATO</span>
+                  ))}
+                </div>
+                <a
+                  href="https://virtus-welcome-kit.vercel.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-center gap-2 text-peach hover:text-ivory transition-colors duration-200 ease-out"
+                  style={{ ...labelStyle, fontWeight: 700 }}
+                >
+                  Guarda il progetto
+                  <span className="inline-block transition-transform duration-300 ease-out group-hover:translate-x-1">→</span>
+                </a>
               </div>
             </div>
           </motion.div>
@@ -356,7 +340,7 @@ export default function BottegaAperta() {
             <div className="flex items-center justify-between mb-6">
               <span className="text-obsidian/55 flex items-center gap-2" style={{ ...labelStyle, fontSize: "0.5625rem", letterSpacing: "0.14em" }}>
                 <span className="live-dot" />
-                COMMIT · OGGI
+                COMMIT · RECENTI
               </span>
               <span className="text-obsidian/25" style={{ ...labelStyle, fontSize: "0.5rem" }}>
                 MAIN
@@ -366,17 +350,18 @@ export default function BottegaAperta() {
               {COMMITS.map((c, i) => (
                 <motion.li
                   key={i}
-                  className="grid grid-cols-[44px_1fr] gap-3 pb-4 border-b border-obsidian/8 last:border-b-0 last:pb-0"
+                  className="grid grid-cols-[16px_1fr] gap-3 pb-4 border-b border-obsidian/8 last:border-b-0 last:pb-0"
                   initial={{ opacity: 0, x: -8 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, ease, delay: 0.3 + i * 0.06 }}
                 >
                   <span
-                    className="text-obsidian/30 pt-px"
-                    style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.625rem", letterSpacing: "0.05em" }}
+                    className="text-rosewood/60 pt-px"
+                    style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.625rem" }}
+                    aria-hidden
                   >
-                    {c.time}
+                    ◆
                   </span>
                   <div>
                     <p
@@ -457,7 +442,7 @@ export default function BottegaAperta() {
           className="text-obsidian/30"
           style={{ ...labelStyle, fontSize: "0.5rem", letterSpacing: "0.14em" }}
         >
-          * ESTRATTI REALI · AGGIORNATI MANUALMENTE OGNI VENERDÌ
+          * ESTRATTI REALI DAI NOSTRI PROGETTI
         </p>
       </div>
     </section>

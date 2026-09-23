@@ -51,12 +51,6 @@ export default function Promise() {
               Non venderemo mai veloce a chi vuole approfondito. Non venderemo mai
               approfondito a chi vuole veloce. Queste tre regole le rispettiamo o non lavoriamo.
             </p>
-            <p
-              className="text-obsidian/45 mt-5 max-w-md"
-              style={{ fontFamily: "var(--db-archivo)", fontSize: "0.9375rem", lineHeight: 1.65 }}
-            >
-              Hover sulle card per vederle a fuoco — sono tre, non quattro.
-            </p>
           </motion.div>
 
           {/* RIGHT — stacked cards */}

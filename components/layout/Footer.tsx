@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { EMAIL, WHATSAPP_URL } from "@/lib/contacts";
 
 const ease = [0.2, 0.8, 0.2, 1] as const;
 
@@ -30,8 +31,8 @@ const NAV = [
   {
     label: "Contatti",
     links: [
-      { label: "info@diecibottega.it", href: "mailto:info@diecibottega.it" },
-      { label: "WhatsApp",             href: "https://wa.me/393331234567"  },
+      { label: EMAIL,                   href: `mailto:${EMAIL}`           },
+      { label: "WhatsApp",             href: WHATSAPP_URL                },
       { label: "Bologna · Italia",     href: null                          },
     ] as Array<{ label: string; href: string | null }>,
   },
@@ -81,7 +82,7 @@ export default function Footer() {
             <span className="absolute inset-0 bg-ivory translate-y-full group-hover:translate-y-0 transition-transform duration-500" style={{ transitionTimingFunction: "cubic-bezier(0.2,0.8,0.2,1)" }} aria-hidden />
             <span className="relative flex items-center gap-2 group-hover:text-obsidian transition-colors duration-150">
               <span className="live-dot" />
-              <span>Il tuo sito gratis</span>
+              <span>Inizia il progetto</span>
               <span>→</span>
             </span>
           </Link>

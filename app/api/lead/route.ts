@@ -181,7 +181,7 @@ function customerEmailHtml(p: LeadPayload, slots: Array<Slot & { url: string }>)
         <p style="margin:0 0 16px;color:#1A1414;font-size:15px;line-height:1.7">Ciao ${escapeHtml(firstName)},</p>
         <p style="margin:0 0 16px;color:#333;font-size:15px;line-height:1.7">
           abbiamo ricevuto la tua richiesta dalla chat. Per non far perdere tempo a nessuno,
-          ti proponiamo subito una <strong>call gratuita di 30 minuti</strong> — senza impegno.
+          ti proponiamo subito una <strong>prima call gratuita di 30 minuti</strong> — senza impegno.
           <strong>Scegli l&apos;orario che preferisci</strong>: ti basta un click.
         </p>
 

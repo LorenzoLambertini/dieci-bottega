@@ -35,14 +35,14 @@ const CATEGORIES: Category[] = [
         target: "PMI locali, studi, attività di quartiere",
         time:   "10 giorni",
         price:  "da €1.200",
-        impact: "Presenza digitale credibile, indicizzata, gestibile",
+        impact: "Un sito che ti fa prendere sul serio. Trovato su Google, aggiornabile da te.",
       },
       {
         name:   "Landing Page",
         target: "Un prodotto, un servizio, una campagna",
         time:   "5–7 giorni",
         price:  "da €800",
-        impact: "Conversioni misurate, ottimizzate, ripetibili",
+        impact: "Una pagina, un obiettivo: farti contattare.",
       },
       {
         name:   "E-commerce Light",
