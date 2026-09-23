@@ -84,7 +84,6 @@ export default function Hero() {
               lineHeight:    0.9,
               letterSpacing: "-0.045em",
               textTransform: "uppercase",
-              textShadow:    "0 4px 24px rgba(26,20,20,0.25)",
             }}
           >
             {["Il sito", "che ti", "serve."].map((line, i) => (
@@ -112,7 +111,6 @@ export default function Hero() {
               fontStyle:  "italic",
               fontSize:   "clamp(1.375rem, 2.8vw, 2.5rem)",
               lineHeight: 1.25,
-              textShadow: "0 2px 12px rgba(26,20,20,0.20)",
             }}
           >
             In dieci giorni. Fatto bene.
@@ -171,9 +169,9 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* ── Colonna video (a lato su desktop, sotto il testo su mobile) ── */}
+        {/* ── Colonna video (a lato su desktop, sopra il testo su mobile) ── */}
         <motion.div
-          className="relative w-full max-w-[420px] sm:max-w-[480px] lg:max-w-none mx-auto lg:mx-0"
+          className="relative order-first lg:order-none w-full max-w-[420px] sm:max-w-[480px] lg:max-w-none mx-auto lg:mx-0"
           style={{ mixBlendMode: "screen" }}
           initial={{ opacity: 0, y: 20, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -206,14 +204,13 @@ export default function Hero() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, ease, delay: 1.0 }}
       >
-        <div
-          className="flex gap-12 whitespace-nowrap"
-          style={{ animation: "marquee 40s linear infinite" }}
-        >
-          {[...ticker, ...ticker, ...ticker].map((item, i) => (
+        {/* 2 metà identiche + translateX(-50%) = loop continuo senza scatti */}
+        <div className="flex w-max whitespace-nowrap animate-marquee">
+          {[...ticker, ...ticker, ...ticker, ...ticker].map((item, i) => (
             <span
               key={i}
-              className="text-ivory/45 flex items-center gap-12"
+              aria-hidden={i >= ticker.length}
+              className="text-ivory/45 flex items-center gap-12 pr-12"
               style={{ ...labelStyle, fontSize: "0.625rem", letterSpacing: "0.18em" }}
             >
               <span>{item}</span>
