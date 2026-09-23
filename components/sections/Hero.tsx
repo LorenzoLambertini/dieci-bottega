@@ -54,22 +54,22 @@ export default function Hero() {
       <div className="relative z-10 h-16 lg:h-[72px]" />
 
       {/* Main content */}
-      <div className="relative mx-auto w-full max-w-[1480px] px-6 lg:px-12 pt-10 lg:pt-16 pb-16 lg:pb-24">
+      <div className="relative mx-auto w-full max-w-[1480px] px-6 lg:px-12 pt-4 lg:pt-16 pb-10 lg:pb-24">
 
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] items-center gap-10 lg:gap-14 xl:gap-20">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] items-center gap-4 lg:gap-14 xl:gap-20">
 
         {/* ── Colonna testo ── */}
         <div className="min-w-0">
 
           {/* Meta tag */}
           <motion.div
-            className="flex items-center gap-3 mb-8 lg:mb-10"
+            className="flex items-center gap-3 mb-5 lg:mb-10"
             initial={{ opacity: 0, x: -12 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, ease, delay: 0.1 }}
           >
             <span className="live-dot" style={{ background: "#F4EFE6" }} />
-            <span className="text-ivory/75" style={labelStyle}>
+            <span className="text-ivory/75" style={{ ...labelStyle, fontSize: "clamp(0.5625rem, 2.6vw, 0.6875rem)" }}>
               BOTTEGA APERTA · DISPONIBILITÀ NOVEMBRE
             </span>
           </motion.div>
@@ -80,7 +80,7 @@ export default function Hero() {
             style={{
               fontFamily:    "var(--db-archivo)",
               fontWeight:    900,
-              fontSize:      "clamp(3rem, 8vw, 7rem)",
+              fontSize:      "clamp(2.25rem, 8vw, 7rem)",
               lineHeight:    0.9,
               letterSpacing: "-0.045em",
               textTransform: "uppercase",
@@ -102,14 +102,14 @@ export default function Hero() {
 
           {/* Subtitle */}
           <motion.p
-            className="text-ivory/90 mt-5 lg:mt-7"
+            className="text-ivory/90 mt-3 lg:mt-7"
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease, delay: 0.5 }}
             style={{
               fontFamily: "var(--db-cardo)",
               fontStyle:  "italic",
-              fontSize:   "clamp(1.375rem, 2.8vw, 2.5rem)",
+              fontSize:   "clamp(1.125rem, 2.8vw, 2.5rem)",
               lineHeight: 1.25,
             }}
           >
@@ -118,14 +118,14 @@ export default function Hero() {
 
           {/* Body */}
           <motion.p
-            className="text-ivory/75 mt-6 lg:mt-7 max-w-2xl"
+            className="text-ivory/75 mt-3 lg:mt-7 max-w-2xl"
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease, delay: 0.65 }}
             style={{
               fontFamily: "var(--db-archivo)",
-              fontSize:   "clamp(1rem, 1.5vw, 1.1875rem)",
-              lineHeight: 1.65,
+              fontSize:   "clamp(0.9375rem, 1.5vw, 1.1875rem)",
+              lineHeight: 1.6,
             }}
           >
             Micro-agenzia di Bologna. Costruiamo siti, CRM e automazioni per
@@ -134,15 +134,15 @@ export default function Hero() {
 
           {/* CTAs */}
           <motion.div
-            className="mt-9 lg:mt-11 flex flex-col sm:flex-row sm:flex-wrap gap-3"
+            className="mt-5 lg:mt-11 flex flex-col sm:flex-row sm:flex-wrap gap-2.5 sm:gap-3"
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease, delay: 0.8 }}
           >
             <Link
               href="/inizia-progetto"
-              className="relative flex items-center justify-center gap-2.5 bg-ivory text-rosewood overflow-hidden group press shadow-atelier-lg"
-              style={{ ...labelStyle, padding: "1.0625rem 1.875rem", whiteSpace: "nowrap" }}
+              className="relative flex items-center justify-center gap-2.5 bg-ivory text-rosewood overflow-hidden group press shadow-atelier-lg px-[1.875rem] py-3.5 lg:py-[1.0625rem]"
+              style={{ ...labelStyle, whiteSpace: "nowrap" }}
             >
               <span
                 className="absolute inset-0 bg-obsidian translate-y-full group-hover:translate-y-0 transition-transform duration-500"
@@ -156,8 +156,8 @@ export default function Hero() {
             </Link>
             <Link
               href="/servizi"
-              className="relative flex items-center justify-center gap-2.5 border border-ivory/40 text-ivory backdrop-blur-sm overflow-hidden group press hover:border-ivory/70 transition-colors duration-300"
-              style={{ ...labelStyle, padding: "1.0625rem 1.875rem", whiteSpace: "nowrap" }}
+              className="relative flex items-center justify-center gap-2.5 border border-ivory/40 text-ivory overflow-hidden group press hover:border-ivory/70 transition-colors duration-300 px-[1.875rem] py-3.5 lg:py-[1.0625rem]"
+              style={{ ...labelStyle, whiteSpace: "nowrap" }}
             >
               <span
                 className="absolute inset-0 bg-ivory/15 translate-y-full group-hover:translate-y-0 transition-transform duration-500"
@@ -171,7 +171,7 @@ export default function Hero() {
 
         {/* ── Colonna video (a lato su desktop, sopra il testo su mobile) ── */}
         <motion.div
-          className="relative order-first lg:order-none w-full max-w-[420px] sm:max-w-[480px] lg:max-w-none mx-auto lg:mx-0"
+          className="relative order-first lg:order-none w-full max-w-[180px] sm:max-w-[280px] lg:max-w-none mx-auto lg:mx-0"
           style={{ mixBlendMode: "screen" }}
           initial={{ opacity: 0, y: 20, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -199,7 +199,7 @@ export default function Hero() {
 
       {/* Ticker */}
       <motion.div
-        className="relative z-10 border-t border-ivory/15 overflow-hidden py-3.5 cursor-default backdrop-blur-sm bg-rosewood/30"
+        className="relative z-10 border-t border-ivory/15 overflow-hidden py-3.5 cursor-default bg-rosewood/30"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, ease, delay: 1.0 }}
