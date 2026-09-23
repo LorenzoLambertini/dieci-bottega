@@ -43,7 +43,7 @@ export default function Hero() {
       {/* Vignette overlay sopra blob */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-[2]"
+        className="pointer-events-none absolute inset-0"
         style={{
           background:
             "radial-gradient(ellipse 100% 80% at 50% 50%, transparent 50%, rgba(26,20,20,0.30) 100%)",
@@ -54,9 +54,12 @@ export default function Hero() {
       <div className="relative z-10 h-16 lg:h-[72px]" />
 
       {/* Main content */}
-      <div className="relative z-10 mx-auto w-full max-w-[1480px] px-6 lg:px-12 pt-10 lg:pt-16 pb-16 lg:pb-24">
+      <div className="relative mx-auto w-full max-w-[1480px] px-6 lg:px-12 pt-10 lg:pt-16 pb-16 lg:pb-24">
 
-        <div className="max-w-4xl">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] items-center gap-10 lg:gap-14 xl:gap-20">
+
+        {/* ── Colonna testo ── */}
+        <div className="min-w-0">
 
           {/* Meta tag */}
           <motion.div
@@ -77,11 +80,10 @@ export default function Hero() {
             style={{
               fontFamily:    "var(--db-archivo)",
               fontWeight:    900,
-              fontSize:      "clamp(3rem, 11vw, 9.5rem)",
+              fontSize:      "clamp(3rem, 8vw, 7rem)",
               lineHeight:    0.9,
               letterSpacing: "-0.045em",
               textTransform: "uppercase",
-              textShadow:    "0 4px 24px rgba(26,20,20,0.25)",
             }}
           >
             {["Il sito", "che ti", "serve."].map((line, i) => (
@@ -109,7 +111,6 @@ export default function Hero() {
               fontStyle:  "italic",
               fontSize:   "clamp(1.375rem, 2.8vw, 2.5rem)",
               lineHeight: 1.25,
-              textShadow: "0 2px 12px rgba(26,20,20,0.20)",
             }}
           >
             In dieci giorni. Fatto bene.
@@ -133,7 +134,7 @@ export default function Hero() {
 
           {/* CTAs */}
           <motion.div
-            className="mt-9 lg:mt-11 flex flex-col sm:flex-row gap-3"
+            className="mt-9 lg:mt-11 flex flex-col sm:flex-row sm:flex-wrap gap-3"
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease, delay: 0.8 }}
@@ -167,6 +168,33 @@ export default function Hero() {
             </Link>
           </motion.div>
         </div>
+
+        {/* ── Colonna video (a lato su desktop, sopra il testo su mobile) ── */}
+        <motion.div
+          className="relative order-first lg:order-none w-full max-w-[420px] sm:max-w-[480px] lg:max-w-none mx-auto lg:mx-0"
+          style={{ mixBlendMode: "screen" }}
+          initial={{ opacity: 0, y: 20, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.9, ease, delay: 0.35 }}
+        >
+          {/* Logo panna su nero: "screen" elimina il nero e lascia solo il logo sullo sfondo */}
+          <video
+            className="block aspect-[4/3] lg:aspect-square w-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            poster="/video/logo-poster.jpg"
+            aria-label="Animazione del logo Dieci Bottega: sito, smartphone e cuore"
+          >
+            <source src="/video/logo-480.webm" type="video/webm" media="(max-width: 767px)" />
+            <source src="/video/logo-480.mp4"  type="video/mp4"  media="(max-width: 767px)" />
+            <source src="/video/logo-720.webm" type="video/webm" />
+            <source src="/video/logo-720.mp4"  type="video/mp4" />
+          </video>
+        </motion.div>
+        </div>
       </div>
 
       {/* Ticker */}
@@ -176,14 +204,13 @@ export default function Hero() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, ease, delay: 1.0 }}
       >
-        <div
-          className="flex gap-12 whitespace-nowrap"
-          style={{ animation: "marquee 40s linear infinite" }}
-        >
-          {[...ticker, ...ticker, ...ticker].map((item, i) => (
+        {/* 2 metà identiche + translateX(-50%) = loop continuo senza scatti */}
+        <div className="flex w-max whitespace-nowrap animate-marquee">
+          {[...ticker, ...ticker, ...ticker, ...ticker].map((item, i) => (
             <span
               key={i}
-              className="text-ivory/45 flex items-center gap-12"
+              aria-hidden={i >= ticker.length}
+              className="text-ivory/45 flex items-center gap-12 pr-12"
               style={{ ...labelStyle, fontSize: "0.625rem", letterSpacing: "0.18em" }}
             >
               <span>{item}</span>
