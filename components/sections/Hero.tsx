@@ -56,7 +56,10 @@ export default function Hero() {
       {/* Main content */}
       <div className="relative z-10 mx-auto w-full max-w-[1480px] px-6 lg:px-12 pt-10 lg:pt-16 pb-16 lg:pb-24">
 
-        <div className="max-w-4xl">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] items-center gap-10 lg:gap-14 xl:gap-20">
+
+        {/* ── Colonna testo ── */}
+        <div className="min-w-0">
 
           {/* Meta tag */}
           <motion.div
@@ -77,7 +80,7 @@ export default function Hero() {
             style={{
               fontFamily:    "var(--db-archivo)",
               fontWeight:    900,
-              fontSize:      "clamp(3rem, 11vw, 9.5rem)",
+              fontSize:      "clamp(3rem, 8vw, 7rem)",
               lineHeight:    0.9,
               letterSpacing: "-0.045em",
               textTransform: "uppercase",
@@ -133,7 +136,7 @@ export default function Hero() {
 
           {/* CTAs */}
           <motion.div
-            className="mt-9 lg:mt-11 flex flex-col sm:flex-row gap-3"
+            className="mt-9 lg:mt-11 flex flex-col sm:flex-row sm:flex-wrap gap-3"
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease, delay: 0.8 }}
@@ -166,6 +169,36 @@ export default function Hero() {
               <span className="relative">Sfoglia il catalogo</span>
             </Link>
           </motion.div>
+        </div>
+
+        {/* ── Colonna video (a lato su desktop, sotto il testo su mobile) ── */}
+        <motion.div
+          className="relative w-full max-w-[420px] sm:max-w-[480px] lg:max-w-none mx-auto lg:mx-0"
+          initial={{ opacity: 0, y: 20, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.9, ease, delay: 0.35 }}
+        >
+          <div
+            className="relative aspect-square w-full overflow-hidden shadow-atelier-lg"
+            style={{ background: "#FBEEDE", borderRadius: "1.25rem" }}
+          >
+            <video
+              className="absolute inset-0 h-full w-full object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              poster="/video/hero-poster.jpg"
+              aria-label="Animazione del logo Dieci Bottega: sito, smartphone e cuore"
+            >
+              <source src="/video/hero-480.webm" type="video/webm" media="(max-width: 767px)" />
+              <source src="/video/hero-480.mp4"  type="video/mp4"  media="(max-width: 767px)" />
+              <source src="/video/hero-720.webm" type="video/webm" />
+              <source src="/video/hero-720.mp4"  type="video/mp4" />
+            </video>
+          </div>
+        </motion.div>
         </div>
       </div>
 
