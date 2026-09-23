@@ -1,19 +1,20 @@
 "use client";
 
-import React, { useRef, useId, useEffect } from "react";
-import { animate, useMotionValue, type AnimationPlaybackControls } from "framer-motion";
+import React from "react";
 
 /**
  * EtherealShadows · sfondo atmosferico animato
  * Adattato dal Framer original, brand-allineato:
  * - Nessuna immagine esterna (mask = CSS radial-gradient inline)
  * - Colori brand (rosewood/burgundy/peach)
- * - Animazione hueRotate sulla turbolenza per effetto "respiro"
+ * - Movimento "respiro" dei blob con sole animazioni CSS di transform:
+ *   niente filtri SVG animati, che su Safari iOS lasciavano riquadri
+ *   di colore diverso dietro ai testi e pesavano sui telefoni
  */
 
 interface AnimationConfig {
-  scale: number;  // 1-100 → intensità del displacement
-  speed: number;  // 1-100 → velocità ciclo hueRotate
+  scale: number;  // 1-100 → ampiezza del movimento dei blob
+  speed: number;  // 1-100 → velocità del ciclo
 }
 
 interface NoiseConfig {
@@ -43,29 +44,9 @@ export default function EtherealShadows({
   className,
   style,
 }: EtherealShadowsProps) {
-  const reactId    = useId();
-  const filterId   = `ethereal-${reactId.replace(/:/g, "")}`;
-  const feMatrixRef = useRef<SVGFEColorMatrixElement>(null);
-  const hueMV       = useMotionValue(180);
-  const animationCtl = useRef<AnimationPlaybackControls | null>(null);
-
-  const animEnabled  = animation && animation.scale > 0;
-  const displaceScale = animation ? mapRange(animation.scale, 1, 100, 20, 100) : 0;
-  const animDuration  = animation ? mapRange(animation.speed, 1, 100, 1000, 50) : 1;
-
-  useEffect(() => {
-    if (!feMatrixRef.current || !animEnabled) return;
-    animationCtl.current?.stop();
-    hueMV.set(0);
-    animationCtl.current = animate(hueMV, 360, {
-      duration:   animDuration / 25,
-      repeat:     Infinity,
-      repeatType: "loop",
-      ease:       "linear",
-      onUpdate:   (v) => feMatrixRef.current?.setAttribute("values", String(v)),
-    });
-    return () => { animationCtl.current?.stop(); };
-  }, [animEnabled, animDuration, hueMV]);
+  const animEnabled = !!animation && animation.scale > 0;
+  const drift       = animation ? mapRange(animation.scale, 1, 100, 2, 12) : 0;   // % di spostamento
+  const duration    = animation ? mapRange(animation.speed, 1, 100, 40, 8) : 0;   // secondi per ciclo
 
   // Default blobs (3 in punti diversi, profondità diverse)
   const finalBlobs = blobs ?? [
@@ -85,44 +66,16 @@ export default function EtherealShadows({
       }}
       aria-hidden
     >
-      <div
-        style={{
-          position: "absolute",
-          inset:    `-${displaceScale}px`,
-          filter:   animEnabled ? `url(#${filterId}) blur(4px)` : "blur(4px)",
-        }}
-      >
-        {/* SVG filter */}
-        {animEnabled && (
-          <svg style={{ position: "absolute", width: 0, height: 0 }} aria-hidden>
-            <defs>
-              <filter id={filterId}>
-                <feTurbulence
-                  result="undulation"
-                  numOctaves="2"
-                  baseFrequency={`${mapRange(animation!.scale, 0, 100, 0.001, 0.0005)},${mapRange(animation!.scale, 0, 100, 0.004, 0.002)}`}
-                  seed="0"
-                  type="turbulence"
-                />
-                <feColorMatrix
-                  ref={feMatrixRef}
-                  in="undulation"
-                  type="hueRotate"
-                  values="180"
-                />
-                <feColorMatrix
-                  in="dist"
-                  result="circulation"
-                  type="matrix"
-                  values="4 0 0 0 1  4 0 0 0 1  4 0 0 0 1  1 0 0 0 0"
-                />
-                <feDisplacementMap in="SourceGraphic" in2="circulation" scale={displaceScale} result="dist" />
-                <feDisplacementMap in="dist" in2="undulation" scale={displaceScale} result="output" />
-              </filter>
-            </defs>
-          </svg>
-        )}
+      {/* Keyframes locali: sempre emesse, indipendenti da Tailwind */}
+      {animEnabled && (
+        <style>{`
+          @keyframes ethereal-drift-0 { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(${drift}%, ${drift * 0.6}%, 0) scale(1.08); } }
+          @keyframes ethereal-drift-1 { from { transform: translate3d(0,0,0) scale(1.05); } to { transform: translate3d(-${drift}%, -${drift * 0.5}%, 0) scale(0.97); } }
+          @keyframes ethereal-drift-2 { from { transform: translate3d(0,0,0) scale(0.98); } to { transform: translate3d(${drift * 0.5}%, -${drift}%, 0) scale(1.06); } }
+        `}</style>
+      )}
 
+      <div style={{ position: "absolute", inset: "-15%" }}>
         {/* Layered radial gradients (CSS, niente immagini esterne) */}
         {finalBlobs.map((b, i) => (
           <div
@@ -133,6 +86,10 @@ export default function EtherealShadows({
               background: `radial-gradient(ellipse ${b.rx} ${b.ry} at ${b.cx} ${b.cy}, ${b.color} 0%, ${b.color.replace(/[\d.]+\)$/, "0)")} 70%)`,
               opacity:    b.intensity ?? 1,
               mixBlendMode: "screen",
+              animation:  animEnabled
+                ? `ethereal-drift-${i % 3} ${duration * (1 + i * 0.15)}s ease-in-out ${-i * 3}s infinite alternate`
+                : undefined,
+              willChange: animEnabled ? "transform" : undefined,
             }}
           />
         ))}
