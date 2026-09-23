@@ -43,7 +43,7 @@ export default function Hero() {
       {/* Vignette overlay sopra blob */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-[2]"
+        className="pointer-events-none absolute inset-0"
         style={{
           background:
             "radial-gradient(ellipse 100% 80% at 50% 50%, transparent 50%, rgba(26,20,20,0.30) 100%)",
@@ -54,7 +54,7 @@ export default function Hero() {
       <div className="relative z-10 h-16 lg:h-[72px]" />
 
       {/* Main content */}
-      <div className="relative z-10 mx-auto w-full max-w-[1480px] px-6 lg:px-12 pt-10 lg:pt-16 pb-16 lg:pb-24">
+      <div className="relative mx-auto w-full max-w-[1480px] px-6 lg:px-12 pt-10 lg:pt-16 pb-16 lg:pb-24">
 
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] items-center gap-10 lg:gap-14 xl:gap-20">
 
@@ -174,30 +174,27 @@ export default function Hero() {
         {/* ── Colonna video (a lato su desktop, sotto il testo su mobile) ── */}
         <motion.div
           className="relative w-full max-w-[420px] sm:max-w-[480px] lg:max-w-none mx-auto lg:mx-0"
+          style={{ mixBlendMode: "screen" }}
           initial={{ opacity: 0, y: 20, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.9, ease, delay: 0.35 }}
         >
-          <div
-            className="relative aspect-square w-full overflow-hidden shadow-atelier-lg"
-            style={{ background: "#FBEEDE", borderRadius: "1.25rem" }}
+          {/* Logo panna su nero: "screen" elimina il nero e lascia solo il logo sullo sfondo */}
+          <video
+            className="block aspect-[4/3] lg:aspect-square w-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            poster="/video/logo-poster.jpg"
+            aria-label="Animazione del logo Dieci Bottega: sito, smartphone e cuore"
           >
-            <video
-              className="absolute inset-0 h-full w-full object-cover"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              poster="/video/hero-poster.jpg"
-              aria-label="Animazione del logo Dieci Bottega: sito, smartphone e cuore"
-            >
-              <source src="/video/hero-480.webm" type="video/webm" media="(max-width: 767px)" />
-              <source src="/video/hero-480.mp4"  type="video/mp4"  media="(max-width: 767px)" />
-              <source src="/video/hero-720.webm" type="video/webm" />
-              <source src="/video/hero-720.mp4"  type="video/mp4" />
-            </video>
-          </div>
+            <source src="/video/logo-480.webm" type="video/webm" media="(max-width: 767px)" />
+            <source src="/video/logo-480.mp4"  type="video/mp4"  media="(max-width: 767px)" />
+            <source src="/video/logo-720.webm" type="video/webm" />
+            <source src="/video/logo-720.mp4"  type="video/mp4" />
+          </video>
         </motion.div>
         </div>
       </div>
