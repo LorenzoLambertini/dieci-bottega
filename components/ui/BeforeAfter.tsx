@@ -7,7 +7,7 @@ import { GripVertical } from "lucide-react";
 /**
  * BeforeAfter · slider "prima / dopo" su screenshot statici.
  * - Desktop (≥ md) usa gli screenshot 16:9 (1600×900), mobile quelli 780×1392
- * - Pointer events: mouse, touch e penna con la stessa logica
+ * - Si trascina solo dal tondino (mouse, touch e penna con la stessa logica)
  * - Tastiera: frecce ←/→ (Shift = passo lungo), Home/End
  */
 
@@ -82,17 +82,7 @@ export default function BeforeAfter({ before, after, beforeLabel, afterLabel }: 
   return (
     <div
       ref={boxRef}
-      className="relative w-full max-w-[360px] md:max-w-none mx-auto aspect-[780/1392] md:aspect-[16/9] overflow-hidden rounded-xl select-none border border-obsidian/10 shadow-atelier-lg bg-obsidian cursor-ew-resize"
-      // pan-y: su mobile lo scroll verticale resta libero, il trascinamento orizzontale muove lo slider
-      style={{ touchAction: "pan-y" }}
-      onPointerDown={(e) => {
-        setDragging(true);
-        e.currentTarget.setPointerCapture(e.pointerId);
-        moveTo(e.clientX);
-      }}
-      onPointerMove={(e) => { if (dragging) moveTo(e.clientX); }}
-      onPointerUp={() => setDragging(false)}
-      onPointerCancel={() => setDragging(false)}
+      className="relative w-full max-w-[360px] md:max-w-none mx-auto aspect-[780/1392] md:aspect-[16/9] overflow-hidden rounded-xl select-none border border-obsidian/10 shadow-atelier-lg bg-obsidian"
     >
       {/* DOPO (sotto, sempre visibile) */}
       <div className="absolute inset-0 z-0">
@@ -118,7 +108,17 @@ export default function BeforeAfter({ before, after, beforeLabel, afterLabel }: 
           aria-valuenow={Math.round(inset)}
           aria-valuetext={`${Math.round(inset)}% sito di prima`}
           onKeyDown={onKeyDown}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-rosewood text-ivory hover:scale-110 transition-transform duration-200 ease-out flex items-center justify-center shadow-atelier-lg outline-none focus-visible:ring-2 focus-visible:ring-ivory focus-visible:ring-offset-2 focus-visible:ring-offset-rosewood"
+          // Si trascina solo dal tondino: sul resto dell'immagine lo scroll della pagina resta libero
+          onPointerDown={(e) => {
+            e.preventDefault();
+            setDragging(true);
+            e.currentTarget.setPointerCapture(e.pointerId);
+          }}
+          onPointerMove={(e) => { if (dragging) moveTo(e.clientX); }}
+          onPointerUp={() => setDragging(false)}
+          onPointerCancel={() => setDragging(false)}
+          style={{ touchAction: "none" }}
+          className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-rosewood text-ivory transition-transform duration-200 ease-out flex items-center justify-center shadow-atelier-lg outline-none focus-visible:ring-2 focus-visible:ring-ivory focus-visible:ring-offset-2 focus-visible:ring-offset-rosewood before:absolute before:-inset-2 before:rounded-full before:content-[''] ${dragging ? "scale-110 cursor-grabbing" : "hover:scale-110 cursor-grab"}`}
         >
           <GripVertical className="w-4 h-4" aria-hidden />
         </div>
