@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import EtherealShadows from "@/components/ui/EtherealShadows";
@@ -27,9 +27,13 @@ const labelStyle: React.CSSProperties = {
 
 export default function Hero() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  // Il video resta invisibile finché non sta davvero riproducendo: se iOS
+  // blocca l'autoplay (Risparmio energetico) si vede solo il logo statico,
+  // senza il tasto play di Safari (non nascondibile via CSS su iOS recenti).
+  const [playing, setPlaying] = useState(false);
 
   // iOS in Risparmio energetico blocca l'autoplay anche dei video muti:
-  // riproviamo al primo tocco/scroll. Se resta bloccato si vede il poster.
+  // riproviamo al primo tocco/scroll.
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -198,9 +202,20 @@ export default function Hero() {
           transition={{ duration: 0.9, ease, delay: 0.35 }}
         >
           {/* Logo panna su nero: "screen" elimina il nero e lascia solo il logo sullo sfondo */}
+          <div className="relative aspect-[4/3] lg:aspect-square w-full">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/video/logo-poster.jpg"
+            alt=""
+            aria-hidden
+            className="absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ease-out"
+            style={{ opacity: playing ? 0 : 1 }}
+          />
           <video
             ref={videoRef}
-            className="hero-video block aspect-[4/3] lg:aspect-square w-full object-cover"
+            onPlaying={() => setPlaying(true)}
+            className="hero-video absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ease-out"
+            style={{ opacity: playing ? 1 : 0 }}
             autoPlay
             muted
             loop
@@ -215,6 +230,7 @@ export default function Hero() {
             <source src="/video/logo-720.mp4"  type="video/mp4" />
             <source src="/video/logo-720.webm" type="video/webm" />
           </video>
+          </div>
         </motion.div>
         </div>
       </div>
