@@ -85,7 +85,7 @@ export default function Transformation() {
             className="text-obsidian/35"
             style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.5625rem", letterSpacing: "0.14em", textTransform: "uppercase" }}
           >
-            ◀ TRASCINA O USA LE FRECCE ▶ · VILLA PET SITTER · BOLOGNA
+            ◀ TRASCINA IL TONDINO ▶ · VILLA PET SITTER · BOLOGNA
           </p>
           <a
             href="https://villa-pet-sitter.vercel.app"
