@@ -103,7 +103,7 @@ export default function Projects() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${p.name}: apri il sito in una nuova scheda`}
-                className={`group lg:col-span-7 block relative aspect-[16/10] overflow-hidden rounded-xl border border-obsidian/10 shadow-atelier-lg bg-obsidian ${i % 2 === 1 ? "lg:order-2" : ""}`}
+                className={`group lg:col-span-7 block relative aspect-[16/9] overflow-hidden rounded-xl border border-obsidian/10 shadow-atelier-lg bg-obsidian ${i % 2 === 1 ? "lg:order-2" : ""}`}
               >
                 <Image
                   src={p.image}
