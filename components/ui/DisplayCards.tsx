@@ -32,7 +32,7 @@ function DisplayCard({
       data-active={active}
       onClick={onSelect}
       className={cn(
-        "relative flex h-36 w-[17rem] sm:w-[22rem] -skew-y-[8deg] select-none flex-col justify-between rounded-xl border-2 border-obsidian/15 bg-ivory/95 backdrop-blur-sm px-4 py-3 transition-all duration-500 after:absolute after:-right-1 after:top-[-5%] after:h-[110%] after:w-[14rem] sm:after:w-[20rem] after:bg-gradient-to-l after:from-ivory after:to-transparent after:content-[''] hover:border-rosewood/40 hover:bg-ivory data-[active=true]:border-rosewood/40 data-[active=true]:bg-ivory data-[active=true]:shadow-atelier-lg [&>*]:flex [&>*]:items-center [&>*]:gap-2 shadow-atelier",
+        "relative flex h-36 w-[17rem] sm:w-[22rem] -skew-y-[8deg] select-none flex-col justify-between rounded-xl border-2 border-obsidian/15 bg-ivory/95 backdrop-blur-sm px-4 py-3 transition-all duration-500 after:absolute after:-right-1 after:top-[-5%] after:h-[110%] after:w-[14rem] sm:after:w-[20rem] after:bg-gradient-to-l after:from-ivory after:to-transparent after:content-[''] after:transition-opacity after:duration-500 data-[active=true]:after:opacity-0 md:hover:after:opacity-0 data-[active=true]:z-30 md:hover:z-30 hover:border-rosewood/40 hover:bg-ivory data-[active=true]:border-rosewood/40 data-[active=true]:bg-ivory data-[active=true]:shadow-atelier-lg [&>*]:flex [&>*]:items-center [&>*]:gap-2 shadow-atelier",
         className,
       )}
       style={{ transitionTimingFunction: "cubic-bezier(0.2,0.8,0.2,1)" }}
@@ -88,7 +88,7 @@ const veil =
   "before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-obsidian/15 before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-ivory/40 before:left-0 before:top-0 before:transition-opacity before:duration-500 hover:before:opacity-0 data-[active=true]:before:opacity-0 hover:grayscale-0 data-[active=true]:grayscale-0";
 
 /** Intervallo del giro automatico su touch (ms) */
-const CYCLE_MS = 2600;
+const CYCLE_MS = 3500;
 
 export default function DisplayCards({ cards }: DisplayCardsProps) {
   const defaults: DisplayCardProps[] = [
@@ -99,7 +99,7 @@ export default function DisplayCards({ cards }: DisplayCardsProps) {
       date:        "Sempre",
       iconBg:      "bg-rosewood",
       accent:      "text-rosewood",
-      className:   `[grid-area:stack] grayscale-[80%] ${veil} md:hover:-translate-y-10 data-[active=true]:-translate-y-6 md:data-[active=true]:-translate-y-10`,
+      className:   `[grid-area:stack] grayscale-[80%] ${veil} md:hover:-translate-y-12 data-[active=true]:-translate-y-10 md:data-[active=true]:-translate-y-12`,
     },
     {
       icon:        <Zap className="size-4 text-ivory" />,
@@ -108,7 +108,7 @@ export default function DisplayCards({ cards }: DisplayCardsProps) {
       date:        "Consegna media",
       iconBg:      "bg-burgundy",
       accent:      "text-burgundy",
-      className:   `[grid-area:stack] translate-x-8 translate-y-8 md:translate-x-16 md:translate-y-10 grayscale-[60%] ${veil} md:hover:-translate-y-1 data-[active=true]:translate-y-1 md:data-[active=true]:-translate-y-1`,
+      className:   `[grid-area:stack] translate-x-8 translate-y-8 md:translate-x-16 md:translate-y-10 grayscale-[60%] ${veil} md:hover:-translate-y-4 data-[active=true]:-translate-y-2 md:data-[active=true]:-translate-y-4`,
     },
     {
       icon:        <TrendingUp className="size-4 text-ivory" />,
@@ -117,17 +117,17 @@ export default function DisplayCards({ cards }: DisplayCardsProps) {
       date:        "Sempre",
       iconBg:      "bg-obsidian",
       accent:      "text-obsidian",
-      className:   "[grid-area:stack] translate-x-16 translate-y-16 md:translate-x-32 md:translate-y-20 md:hover:translate-y-10 data-[active=true]:translate-y-9 md:data-[active=true]:translate-y-10",
+      className:   "[grid-area:stack] translate-x-16 translate-y-16 md:translate-x-32 md:translate-y-20 md:hover:translate-y-8 data-[active=true]:translate-y-6 md:data-[active=true]:translate-y-8",
     },
   ];
 
   const items = cards ?? defaults;
 
-  // Su touch (niente hover) le card si mettono a fuoco a turno; un tocco sceglie
-  // la card e fa ripartire il giro da lì
+  // Su touch (niente hover) le card si mettono a fuoco a turno finché
+  // l'utente non ne tocca una: da lì in poi decide lui quale alzare
   const [touch, setTouch]   = useState(false);
   const [active, setActive] = useState<number | null>(null);
-  const [cycleKey, setCycleKey] = useState(0);
+  const [picked, setPicked] = useState(false);
 
   useEffect(() => {
     const noHover = window.matchMedia("(hover: none)").matches;
@@ -135,16 +135,16 @@ export default function DisplayCards({ cards }: DisplayCardsProps) {
     setTouch(noHover);
     if (!noHover) return;
     setActive(a => a ?? 0);
-    if (reduced) return;
+    if (reduced || picked) return;
     const id = window.setInterval(() => {
       setActive(a => ((a ?? -1) + 1) % items.length);
     }, CYCLE_MS);
     return () => window.clearInterval(id);
-  }, [items.length, cycleKey]);
+  }, [items.length, picked]);
 
   const select = (i: number) => {
     setActive(i);
-    setCycleKey(k => k + 1);
+    setPicked(true);
   };
 
   return (
