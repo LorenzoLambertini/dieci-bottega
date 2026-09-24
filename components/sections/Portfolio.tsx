@@ -117,7 +117,7 @@ export default function BottegaAperta() {
                   ULTIMO LAVORO
                 </span>
                 <span className="text-ivory/30" style={{ ...labelStyle, fontSize: "0.5rem" }}>
-                  WEB APP
+                  SITO VETRINA · BOLOGNA
                 </span>
               </div>
 
@@ -132,19 +132,20 @@ export default function BottegaAperta() {
                   textTransform: "uppercase",
                 }}
               >
-                Virtus Bologna — Welcome Kit
+                Villa Pet Sitter
               </h3>
               <p
                 className="text-ivory/60 max-w-xl"
                 style={{ fontFamily: "var(--db-cardo)", fontStyle: "italic", fontSize: "1.125rem", lineHeight: 1.45 }}
               >
-                Web app in quattro lingue per i nuovi giocatori: città, trasporti,
-                regole della strada, trasferte, calendario, convenzioni, palazzetti.
+                Pet sitter professionale a Bologna. Dal vecchio sito WordPress a un
+                sito vetrina multipagina: servizi, prezzi, attestati, recensioni,
+                galleria, WhatsApp a un tocco.
               </p>
 
               <div className="mt-8 lg:mt-auto lg:pt-10 flex flex-wrap items-center justify-between gap-4">
                 <div className="flex gap-2">
-                  {["IT", "EN", "ES", "FR"].map(l => (
+                  {["Sito Vetrina", "SEO locale", "Mobile-first"].map(l => (
                     <span
                       key={l}
                       className="text-ivory/70 border border-ivory/15 px-2.5 py-1"
@@ -155,7 +156,7 @@ export default function BottegaAperta() {
                   ))}
                 </div>
                 <a
-                  href="https://virtus-welcome-kit.vercel.app"
+                  href="https://villa-pet-sitter.vercel.app"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group inline-flex items-center gap-2 text-peach hover:text-ivory transition-colors duration-200 ease-out"
