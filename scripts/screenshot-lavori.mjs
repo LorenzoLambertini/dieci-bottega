@@ -23,12 +23,12 @@ const MOBILE  = { width: 390,  height: 844 };
 
 // Virtus: solo la home. MAI la sezione Staff & Contatti (telefoni ed email personali).
 const SHOTS = [
-  { file: "villa-pet-sitter/prima-desktop.webp", url: "https://villapetsitter.eu",               vp: DESKTOP },
-  { file: "villa-pet-sitter/prima-mobile.webp",  url: "https://villapetsitter.eu",               vp: MOBILE  },
-  { file: "villa-pet-sitter/dopo-desktop.webp",  url: "https://villa-pet-sitter.vercel.app",     vp: DESKTOP },
-  { file: "villa-pet-sitter/dopo-mobile.webp",   url: "https://villa-pet-sitter.vercel.app",     vp: MOBILE  },
-  { file: "virtus-welcome-kit/desktop.webp",     url: "https://virtus-welcome-kit.vercel.app",   vp: DESKTOP },
-  { file: "lambo/desktop.webp",                  url: "https://djlambogiulio.vercel.app",        vp: DESKTOP },
+  { file: "villa-pet-sitter/prima-desktop-v2.webp", url: "https://villapetsitter.eu",               vp: DESKTOP },
+  { file: "villa-pet-sitter/prima-mobile-v2.webp",  url: "https://villapetsitter.eu",               vp: MOBILE  },
+  { file: "villa-pet-sitter/dopo-desktop-v2.webp",  url: "https://villa-pet-sitter.vercel.app",     vp: DESKTOP },
+  { file: "villa-pet-sitter/dopo-mobile-v2.webp",   url: "https://villa-pet-sitter.vercel.app",     vp: MOBILE  },
+  { file: "virtus-welcome-kit/desktop-v2.webp",     url: "https://virtus-welcome-kit.vercel.app",   vp: DESKTOP },
+  { file: "lambo/desktop-v2.webp",                  url: "https://djlambogiulio.vercel.app",        vp: DESKTOP },
 ];
 
 const placeholder = process.argv.includes("--placeholder");

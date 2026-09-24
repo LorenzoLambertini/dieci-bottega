@@ -66,13 +66,13 @@ export default function Transformation() {
         >
           <BeforeAfter
             before={{
-              desktop: "/lavori/villa-pet-sitter/prima-desktop.webp",
-              mobile:  "/lavori/villa-pet-sitter/prima-mobile.webp",
+              desktop: "/lavori/villa-pet-sitter/prima-desktop-v2.webp",
+              mobile:  "/lavori/villa-pet-sitter/prima-mobile-v2.webp",
               alt:     "Home page del vecchio sito di Villa Pet Sitter (villapetsitter.eu), fatto in WordPress con Elementor",
             }}
             after={{
-              desktop: "/lavori/villa-pet-sitter/dopo-desktop.webp",
-              mobile:  "/lavori/villa-pet-sitter/dopo-mobile.webp",
+              desktop: "/lavori/villa-pet-sitter/dopo-desktop-v2.webp",
+              mobile:  "/lavori/villa-pet-sitter/dopo-mobile-v2.webp",
               alt:     "Home page del nuovo sito di Villa Pet Sitter, pet sitter professionale a Bologna, costruito da Dieci Bottega in Next.js",
             }}
             beforeLabel="◆ PRIMA · villapetsitter.eu"
