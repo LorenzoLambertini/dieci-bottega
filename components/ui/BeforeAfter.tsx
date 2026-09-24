@@ -6,7 +6,7 @@ import { GripVertical } from "lucide-react";
 
 /**
  * BeforeAfter · slider "prima / dopo" su screenshot statici.
- * - Desktop (≥ md) usa gli screenshot 1440×900, mobile quelli 390×844
+ * - Desktop (≥ md) usa gli screenshot 16:9 (1600×900), mobile quelli 780×1392
  * - Pointer events: mouse, touch e penna con la stessa logica
  * - Tastiera: frecce ←/→ (Shift = passo lungo), Home/End
  */
@@ -82,7 +82,7 @@ export default function BeforeAfter({ before, after, beforeLabel, afterLabel }: 
   return (
     <div
       ref={boxRef}
-      className="relative w-full max-w-[360px] md:max-w-none mx-auto aspect-[390/844] md:aspect-[16/10] overflow-hidden rounded-xl select-none border border-obsidian/10 shadow-atelier-lg bg-obsidian cursor-ew-resize"
+      className="relative w-full max-w-[360px] md:max-w-none mx-auto aspect-[780/1392] md:aspect-[16/9] overflow-hidden rounded-xl select-none border border-obsidian/10 shadow-atelier-lg bg-obsidian cursor-ew-resize"
       // pan-y: su mobile lo scroll verticale resta libero, il trascinamento orizzontale muove lo slider
       style={{ touchAction: "pan-y" }}
       onPointerDown={(e) => {
