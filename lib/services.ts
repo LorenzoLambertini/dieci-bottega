@@ -653,8 +653,13 @@ export function getRelatedServices(slug: string): Service[] {
     .filter((s): s is Service => Boolean(s));
 }
 
+/**
+ * Prezzo con il punto delle migliaia ("1.500"). Fatto a mano perché
+ * toLocaleString("it-IT") dà "1500" in Node e "1.500" nel browser (dati ICU
+ * diversi): la differenza rompe l'idratazione React (#418).
+ */
 export function formatPrice(price: number): string {
-  return price.toLocaleString("it-IT");
+  return Math.round(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
 /** Display price as range or single value */

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import EtherealShadows from "@/components/ui/EtherealShadows";
@@ -25,6 +26,25 @@ const labelStyle: React.CSSProperties = {
 };
 
 export default function Hero() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // iOS in Risparmio energetico blocca l'autoplay anche dei video muti:
+  // riproviamo al primo tocco/scroll. Se resta bloccato si vede il poster.
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = true;
+    const events = ["touchstart", "pointerdown", "scroll", "keydown"] as const;
+    const retry = () => {
+      v.play().then(cleanup).catch(() => {});
+    };
+    const cleanup = () => events.forEach(e => window.removeEventListener(e, retry));
+    v.play().catch(() => {
+      events.forEach(e => window.addEventListener(e, retry, { passive: true }));
+    });
+    return cleanup;
+  }, []);
+
   return (
     <section className="relative bg-rosewood text-ivory overflow-hidden">
 
@@ -179,7 +199,8 @@ export default function Hero() {
         >
           {/* Logo panna su nero: "screen" elimina il nero e lascia solo il logo sullo sfondo */}
           <video
-            className="block aspect-[4/3] lg:aspect-square w-full object-cover"
+            ref={videoRef}
+            className="hero-video block aspect-[4/3] lg:aspect-square w-full object-cover"
             autoPlay
             muted
             loop
@@ -188,10 +209,11 @@ export default function Hero() {
             poster="/video/logo-poster.jpg"
             aria-label="Animazione del logo Dieci Bottega: sito, smartphone e cuore"
           >
-            <source src="/video/logo-480.webm" type="video/webm" media="(max-width: 767px)" />
+            {/* MP4 prima: su iPhone è decodificato in hardware (WebM resta per i browser senza H.264) */}
             <source src="/video/logo-480.mp4"  type="video/mp4"  media="(max-width: 767px)" />
-            <source src="/video/logo-720.webm" type="video/webm" />
+            <source src="/video/logo-480.webm" type="video/webm" media="(max-width: 767px)" />
             <source src="/video/logo-720.mp4"  type="video/mp4" />
+            <source src="/video/logo-720.webm" type="video/webm" />
           </video>
         </motion.div>
         </div>

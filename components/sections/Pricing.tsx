@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { formatPrice } from "@/lib/services";
 
 const ease = [0.2, 0.8, 0.2, 1] as const;
 
@@ -31,14 +32,15 @@ const COMPLEXITIES: { key: Complexity; label: string; mult: number; time: [numbe
   { key: "premium",  label: "Premium",  mult: 2.0, time: [14, 21], desc: "Design custom, revisioni illimitate." },
 ];
 
-function formatPrice(n: number) {
-  return n.toLocaleString("it-IT");
-}
 
 function Configurator() {
   const [type, setType] = useState<TypeKey>("vetrina");
   const [pages, setPages] = useState(5);
   const [complexity, setComplexity] = useState<Complexity>("standard");
+  // Numero di stima decorativo: generato solo nel browser, altrimenti server e
+  // client renderizzano numeri diversi e l'idratazione fallisce (React #418)
+  const [quoteNo, setQuoteNo] = useState<number | null>(null);
+  useEffect(() => { setQuoteNo(Math.floor(Math.random() * 9000) + 1000); }, []);
 
   const currentType = useMemo(() => TYPES.find(t => t.key === type)!, [type]);
   const currentComplexity = useMemo(() => COMPLEXITIES.find(c => c.key === complexity)!, [complexity]);
@@ -197,7 +199,7 @@ function Configurator() {
               STIMA · LIVE
             </span>
             <span className="text-ivory/30" style={{ ...labelStyle, fontSize: "0.5rem" }}>
-              N° {Math.floor(Math.random() * 9000) + 1000}
+              N° {quoteNo ?? "····"}
             </span>
           </div>
 
