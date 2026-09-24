@@ -23,7 +23,7 @@ export default function IniziaProgettoPage() {
         <div className="text-center mb-12 lg:mb-16">
           <div className="inline-flex items-center gap-3 mb-6">
             <span className="block w-8 h-px bg-rosewood" />
-            <span className="text-rosewood" style={labelStyle}>FUNNEL · IL TUO SITO GRATIS</span>
+            <span className="text-rosewood" style={labelStyle}>INIZIA IL PROGETTO</span>
             <span className="block w-8 h-px bg-rosewood" />
           </div>
           <h1
@@ -54,7 +54,7 @@ export default function IniziaProgettoPage() {
           {[
             { n: "01", t: "Compila", d: "5 sezioni guidate. 60 secondi. Nessun obbligo." },
             { n: "02", t: "Riceviamo", d: "Lead in CRM + email di conferma con 6 orari per la call." },
-            { n: "03", t: "Parliamo", d: "Call di 30 min, gratis. Capiamo se siamo i giusti per te." },
+            { n: "03", t: "Parliamo", d: "Prima call gratuita di 30 minuti. Capiamo se siamo i giusti per te." },
           ].map(step => (
             <div key={step.n} className="border-l-2 border-rosewood pl-5 py-2">
               <p className="text-rosewood mb-2" style={{ ...labelStyle, fontSize: "0.5625rem", letterSpacing: "0.14em", fontWeight: 700 }}>

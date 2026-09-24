@@ -1,7 +1,7 @@
 import Hero            from "@/components/sections/Hero";
 import Soluzioni       from "@/components/sections/Services";
 import Transformation  from "@/components/sections/Transformation";
-import Growth          from "@/components/sections/Growth";
+import Deliverables    from "@/components/sections/Deliverables";
 import BottegaAperta   from "@/components/sections/Portfolio";
 import Promise         from "@/components/sections/Promise";
 import Process         from "@/components/sections/Process";
@@ -21,8 +21,8 @@ export default function Home() {
       {/* Transformation · Before/After slider */}
       <Transformation />
 
-      {/* Growth · 4 metriche di impatto */}
-      <Growth />
+      {/* Deliverables · cosa ti consegniamo il giorno dieci */}
+      <Deliverables />
 
       {/* Bottega Aperta · bento grid workshop */}
       <BottegaAperta />

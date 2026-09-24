@@ -124,7 +124,7 @@ export default function Hero() {
             transition={{ duration: 0.7, ease, delay: 0.65 }}
             style={{
               fontFamily: "var(--db-archivo)",
-              fontSize:   "clamp(0.9375rem, 1.5vw, 1.1875rem)",
+              fontSize:   "clamp(0.9375rem, 1.5vw, 1.2rem)",
               lineHeight: 1.6,
             }}
           >
@@ -150,7 +150,7 @@ export default function Hero() {
                 aria-hidden
               />
               <span className="relative flex items-center gap-2 group-hover:text-ivory transition-colors duration-150">
-                Il tuo sito gratis
+                Inizia il progetto
                 <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
               </span>
             </Link>

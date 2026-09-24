@@ -19,6 +19,10 @@ interface ContactPayload {
   budget?:        string;
   source?:        string;
   page_url?:      string;
+  goal?:          string;
+  utm_source?:    string;
+  utm_medium?:    string;
+  utm_campaign?:  string;
   recommendation?: QuizRecommendation;
 }
 
@@ -71,6 +75,10 @@ function teamEmailHtml(p: ContactPayload, leadId: string | null): string {
     p.company ? ["Azienda", escapeHtml(p.company)] : null,
     p.budget  ? ["Budget",  escapeHtml(p.budget)]  : null,
     p.source  ? ["Fonte",   escapeHtml(p.source)]  : null,
+    p.goal    ? ["Obiettivo", escapeHtml(p.goal)]  : null,
+    p.utm_source || p.utm_medium || p.utm_campaign
+      ? ["UTM", escapeHtml([p.utm_source, p.utm_medium, p.utm_campaign].map(v => v ?? "—").join(" / "))]
+      : null,
   ].filter(Boolean) as [string, string][];
 
   const table = rows
@@ -206,7 +214,7 @@ function customerEmailHtml(p: ContactPayload, leadId: string | null, slots: Arra
           abbiamo ricevuto il tuo messaggio e siamo già al lavoro per capire come aiutarti.
         </p>
         <p style="margin:0 0 28px;color:#333;font-size:15px;line-height:1.7;font-family:Arial,sans-serif">
-          Per non far perdere tempo a nessuno, ti proponiamo subito una <strong>call gratuita di 30 minuti</strong>
+          Per non far perdere tempo a nessuno, ti proponiamo subito una <strong>prima call gratuita di 30 minuti</strong>
           — senza impegno. <strong>Scegli l&apos;orario che preferisci</strong>: ti basta un click.
         </p>
 

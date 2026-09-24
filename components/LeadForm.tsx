@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/lib/cart";
+import { getUtm, UTM_KEYS, type Utm } from "@/lib/utm";
 
 const ease = [0.2, 0.8, 0.2, 1] as const;
 
@@ -59,6 +60,11 @@ export default function LeadForm({ onSuccess }: { onSuccess?: () => void }) {
   const [styles, setStyles]         = useState<Style[]>([]);
   const [colors, setColors]         = useState("");
   const [notes, setNotes]           = useState("");
+  const [goal, setGoal]             = useState("");
+  const [utm, setUtm]               = useState<Utm>({});
+
+  // UTM dalla query string (o da sessionStorage se l'utente ha navigato)
+  useEffect(() => { setUtm(getUtm()); }, []);
 
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState<string | null>(null);
@@ -70,8 +76,8 @@ export default function LeadForm({ onSuccess }: { onSuccess?: () => void }) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim() || !email.trim() || !businessName.trim()) {
-      setError("Compila nome, email e nome attività.");
+    if (!name.trim() || !email.trim() || !businessName.trim() || !goal.trim()) {
+      setError("Compila nome, email, nome attività e cosa deve fare il sito per te.");
       return;
     }
     setLoading(true);
@@ -84,6 +90,7 @@ export default function LeadForm({ onSuccess }: { onSuccess?: () => void }) {
 
     const message = [
       `Tipo progetto: ${SITE_TYPES.find(t => t.key === siteType)?.label}`,
+      `Cosa deve fare il sito: ${goal.trim()}`,
       `Attività: ${businessName}${businessType ? ` (${businessType})` : ""}`,
       socials  ? `Social: ${socials}`                                                   : null,
       website  ? `Sito attuale: ${website}`                                              : null,
@@ -104,6 +111,8 @@ export default function LeadForm({ onSuccess }: { onSuccess?: () => void }) {
           phone:   phone.trim() || undefined,
           company: businessName.trim(),
           message,
+          goal:    goal.trim(),
+          ...getUtm(),
           source:  cartItems.length > 0 ? "website-cart" : "website-form",
           page_url: typeof window !== "undefined" ? window.location.href : undefined,
         }),
@@ -167,6 +176,7 @@ export default function LeadForm({ onSuccess }: { onSuccess?: () => void }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-10" noValidate>
+      {UTM_KEYS.map(k => <input key={k} type="hidden" name={k} value={utm[k] ?? ""} />)}
 
       {/* ── SECTION 1 — Tipo progetto ── */}
       <Section number="01" title="Che progetto vuoi?">
@@ -201,6 +211,21 @@ export default function LeadForm({ onSuccess }: { onSuccess?: () => void }) {
             );
           })}
         </div>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="goal" className="text-obsidian/45" style={labelStyle}>COSA DEVE FARE IL SITO PER TE? *</label>
+          <textarea
+            id="goal"
+            name="goal"
+            value={goal}
+            onChange={e => setGoal(e.target.value)}
+            rows={2}
+            maxLength={500}
+            required
+            placeholder="Es. più prenotazioni, più contatti, vendere online"
+            className="bg-ivory border border-obsidian/15 focus:border-obsidian/40 text-obsidian py-3 px-4 outline-none resize-none placeholder:text-obsidian/25 transition-colors duration-200"
+            style={{ fontFamily: "var(--db-archivo)", fontSize: "0.9375rem" }}
+          />
+        </div>
       </Section>
 
       {/* ── SECTION 2 — Anagrafica ── */}
@@ -209,7 +234,7 @@ export default function LeadForm({ onSuccess }: { onSuccess?: () => void }) {
           <Field label="NOME *"  value={name}  onChange={setName}  placeholder="Marco Rossi" required />
           <Field label="EMAIL *" value={email} onChange={setEmail} placeholder="marco@azienda.it" type="email" required />
           <Field label="TELEFONO / WHATSAPP" value={phone} onChange={setPhone} placeholder="+39 333 1234567" />
-          <Field label="NOME ATTIVITÀ *" value={businessName} onChange={setBN} placeholder="Trattoria Da Mario" required />
+          <Field label="NOME ATTIVITÀ *" value={businessName} onChange={setBN} placeholder="Il nome della tua attività" required />
         </div>
         <Field label="TIPO ATTIVITÀ" value={businessType} onChange={setBT} placeholder="Ristorante / Studio legale / E-commerce / …" />
       </Section>
@@ -344,7 +369,7 @@ export default function LeadForm({ onSuccess }: { onSuccess?: () => void }) {
           ) : (
             <>
               <span className="live-dot" />
-              Il mio sito gratis
+              Invia
               <span>→</span>
             </>
           )}

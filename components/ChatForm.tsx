@@ -128,7 +128,7 @@ export default function ChatForm({ type, selectedPackage, onSuccess }: Props) {
           letterSpacing: '0.02em',
         }}
       >
-        {isQuote ? '— Preventivo gratuito' : '— Contattaci'}
+        {isQuote ? '— Richiedi un preventivo' : '— Contattaci'}
       </div>
 
       {selectedPackage && isQuote && (
@@ -236,7 +236,7 @@ export default function ChatForm({ type, selectedPackage, onSuccess }: Props) {
         {status === 'loading'
           ? 'INVIO IN CORSO...'
           : isQuote
-          ? 'RICHIEDI PREVENTIVO GRATUITO →'
+          ? 'RICHIEDI PREVENTIVO →'
           : 'INVIA MESSAGGIO →'}
       </button>
 

@@ -55,7 +55,7 @@ export default function StickyMobileCTA() {
                     textTransform: "uppercase",
                   }}
                 >
-                  Inizia un progetto
+                  Inizia il progetto
                 </span>
               </span>
               <span className="flex items-center gap-2">

@@ -53,9 +53,8 @@ export default function Transformation() {
             transition={{ duration: 0.8, ease, delay: 0.15 }}
             style={{ fontFamily: "var(--db-cardo)", fontStyle: "italic", fontSize: "clamp(1.0625rem, 1.6vw, 1.375rem)", lineHeight: 1.4 }}
           >
-            Trascina lo slider. A sinistra: un sito anni 2000, lento,
-            illeggibile da telefono. A destra: il sito che ti serve davvero
-            — costruito in dieci giorni, mobile-first, su Google.
+            Trascina lo slider. A sinistra il sito di prima, a destra quello
+            che abbiamo costruito: mobile-first, veloce, con WhatsApp a un tocco.
           </motion.p>
         </div>
 
@@ -65,15 +64,40 @@ export default function Transformation() {
           viewport={{ once: true, margin: "-10%" }}
           transition={{ duration: 0.9, ease }}
         >
-          <BeforeAfter />
+          <BeforeAfter
+            before={{
+              desktop: "/lavori/villa-pet-sitter/prima-desktop.webp",
+              mobile:  "/lavori/villa-pet-sitter/prima-mobile.webp",
+              alt:     "Home page del vecchio sito di Villa Pet Sitter (villapetsitter.eu), fatto in WordPress con Elementor",
+            }}
+            after={{
+              desktop: "/lavori/villa-pet-sitter/dopo-desktop.webp",
+              mobile:  "/lavori/villa-pet-sitter/dopo-mobile.webp",
+              alt:     "Home page del nuovo sito di Villa Pet Sitter, pet sitter professionale a Bologna, costruito da Dieci Bottega in Next.js",
+            }}
+            beforeLabel="◆ PRIMA · villapetsitter.eu"
+            afterLabel="◆ DOPO · il nuovo sito"
+          />
         </motion.div>
 
-        <p
-          className="text-obsidian/30 mt-4 text-center"
-          style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.5625rem", letterSpacing: "0.14em", textTransform: "uppercase" }}
-        >
-          ◀ TRASCINA PER CONFRONTARE ▶
-        </p>
+        <div className="mt-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p
+            className="text-obsidian/35"
+            style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.5625rem", letterSpacing: "0.14em", textTransform: "uppercase" }}
+          >
+            ◀ TRASCINA O USA LE FRECCE ▶ · VILLA PET SITTER · BOLOGNA
+          </p>
+          <a
+            href="https://villa-pet-sitter.vercel.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-2 text-rosewood hover:text-obsidian transition-colors duration-200 ease-out"
+            style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.6875rem", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700 }}
+          >
+            Guarda il sito
+            <span className="inline-block transition-transform duration-300 ease-out group-hover:translate-x-1">→</span>
+          </a>
+        </div>
       </div>
     </section>
   );

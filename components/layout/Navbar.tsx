@@ -347,7 +347,7 @@ export default function Navbar() {
               />
               <span className="relative flex items-center gap-2">
                 <span className="live-dot" />
-                <span>Il tuo sito gratis</span>
+                <span>Inizia il progetto</span>
               </span>
             </Link>
 
@@ -544,7 +544,7 @@ export default function Navbar() {
                   }}
                 >
                   <span className="live-dot" />
-                  <span>Il tuo sito gratis</span>
+                  <span>Inizia il progetto</span>
                 </Link>
               </motion.div>
             </div>

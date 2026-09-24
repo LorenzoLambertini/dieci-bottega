@@ -22,16 +22,16 @@ const STEPS = [
   {
     n: "03",
     title: "Sviluppo",
-    time: "Giorno 6–12",
+    time: "Giorno 6–8",
     desc: "Il design prende vita in Next.js. Stack moderno, performance elevate. Nessun compromesso.",
     quote: "Codice pulito. Performance vere.",
   },
   {
     n: "04",
     title: "Deploy",
-    time: "Giorno 13–14",
+    time: "Giorno 9–10",
     desc: "Go-live su Vercel. SEO finale, test cross-device, analytics, handover credenziali. Online.",
-    quote: "Online. In tempi record.",
+    quote: "Online. Nei tempi detti.",
   },
 ];
 
@@ -94,7 +94,7 @@ export default function Process() {
                 lineHeight: 1.35,
               }}
             >
-              Quattordici giorni dal brief al deploy. Un processo
+              Dieci giorni dal brief al sito online. Un processo
               rodato, veloce, e completamente trasparente.
             </p>
             <p

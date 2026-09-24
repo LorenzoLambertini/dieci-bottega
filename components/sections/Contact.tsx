@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { WHATSAPP_URL } from "@/lib/contacts";
+import { getUtm, UTM_KEYS, type Utm } from "@/lib/utm";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -34,11 +36,13 @@ export default function Contact() {
   const [prefill,  setPrefill]  = useState<QuizPrefill>(null);
   const [defaultMsg, setDefaultMsg] = useState<string>("");
   const [defaultBudget, setDefaultBudget] = useState<string>("");
+  const [utm, setUtm] = useState<Utm>({});
   const formRef = useRef<HTMLFormElement>(null);
 
   // Read quiz recommendation from sessionStorage on mount
   useEffect(() => {
     if (typeof window === "undefined") return;
+    setUtm(getUtm());
     try {
       const raw = sessionStorage.getItem("db-quiz-recommendation");
       const ansRaw = sessionStorage.getItem("db-quiz-answers");
@@ -70,16 +74,27 @@ export default function Contact() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const fd   = new FormData(e.currentTarget);
+    const goal = String(fd.get("goal") ?? "").trim();
+    const msg  = String(fd.get("message") ?? "").trim();
+    if (!String(fd.get("name") ?? "").trim() || !String(fd.get("email") ?? "").trim() || !goal || !msg) {
+      setError("Compila nome, email, cosa deve fare il sito e il messaggio.");
+      return;
+    }
     setLoading(true);
     setError(null);
 
-    const fd = new FormData(e.currentTarget);
+    const utmFields = Object.fromEntries(
+      UTM_KEYS.map(k => [k, (fd.get(k) as string) || undefined]),
+    );
     const payload = {
       name:           String(fd.get("name") ?? ""),
       email:          String(fd.get("email") ?? ""),
       company:        (fd.get("company") as string) || undefined,
       budget:         (fd.get("budget")  as string) || undefined,
-      message:        (fd.get("message") as string) || undefined,
+      message:        `Cosa deve fare il sito: ${goal}\n\n${msg}`,
+      goal,
+      ...utmFields,
       source:         prefill ? "website-quiz" : "website",
       page_url:       typeof window !== "undefined" ? window.location.href : undefined,
       recommendation: prefill ?? undefined,
@@ -154,7 +169,7 @@ export default function Contact() {
             style={{ fontFamily: "var(--db-archivo)", fontSize: "clamp(0.9375rem, 1.4vw, 1.0625rem)", lineHeight: 1.65 }}
           >
             Raccontaci il tuo progetto. Ti risponderemo entro 24 ore
-            con un piano d&apos;azione. Prima call sempre gratuita, senza impegno.
+            con un piano d&apos;azione. Prima call gratuita, senza impegno.
           </motion.p>
         </div>
 
@@ -172,7 +187,7 @@ export default function Contact() {
             <div className="border border-ivory/8">
               {[
                 { label: "EMAIL",    value: "info@diecibottega.it",      href: "mailto:info@diecibottega.it" },
-                { label: "WHATSAPP", value: "Scrivici direttamente",      href: "https://wa.me/393331234567"  },
+                { label: "WHATSAPP", value: "Scrivici direttamente",      href: WHATSAPP_URL                 },
                 { label: "RISPOSTA", value: "Entro 24 ore lavorative",    href: null },
               ].map(row => (
                 <div key={row.label} className="border-b border-ivory/8 last:border-b-0">
@@ -282,6 +297,8 @@ export default function Contact() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
+                  {UTM_KEYS.map(k => <input key={k} type="hidden" name={k} value={utm[k] ?? ""} />)}
+
                   {prefill && (
                     <motion.div
                       initial={{ opacity: 0, y: -8 }}
@@ -334,6 +351,21 @@ export default function Contact() {
                         ▼
                       </span>
                     </div>
+                  </div>
+
+                  {/* Obiettivo */}
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="goal" className="text-ivory/30" style={labelStyle}>COSA DEVE FARE IL SITO PER TE? *</label>
+                    <textarea
+                      id="goal"
+                      name="goal"
+                      required
+                      rows={2}
+                      maxLength={500}
+                      placeholder="Es. più prenotazioni, più contatti, vendere online"
+                      className="bg-ivory/[0.03] border border-ivory/12 focus:border-rosewood/60 focus:bg-ivory/[0.05] text-ivory py-3 px-4 outline-none resize-none placeholder:text-ivory/18 transition-all duration-200"
+                      style={{ fontFamily: "var(--db-archivo)", fontSize: "0.875rem" }}
+                    />
                   </div>
 
                   {/* Message */}

@@ -53,7 +53,7 @@ site/
 │   └── sections/
 │       ├── Hero.tsx          ← DRENCHED rosewood hero (framer-motion)
 │       ├── Services.tsx      ← 3 servizi core (framer-motion whileInView)
-│       ├── Portfolio.tsx     ← case study (server component)
+│       ├── Portfolio.tsx     ← Bottega Aperta (estratti reali)
 │       ├── Process.tsx       ← timeline 4 step (server component)
 │       ├── About.tsx         ← bottega + valori + team (server component)
 │       ├── Pricing.tsx       ← 3 tier listino (server component, CSS hover)

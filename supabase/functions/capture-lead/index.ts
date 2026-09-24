@@ -38,6 +38,7 @@ interface LeadPayload {
   utm_medium?: string;
   utm_campaign?: string;
   page_url?: string;
+  goal?: string;
   recommendation?: QuizRecommendation;
 }
 
@@ -106,6 +107,7 @@ Deno.serve(async (req: Request) => {
   if (body.message)        metadata.message        = body.message;
   if (body.page_url)       metadata.page_url       = body.page_url;
   if (body.budget)         metadata.budget         = body.budget;
+  if (body.goal)           metadata.goal           = body.goal;
   if (body.recommendation) metadata.recommendation = body.recommendation;
 
   // Score boost: leads from quiz have stronger intent (+15)
