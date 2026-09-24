@@ -128,6 +128,14 @@ section[id] {
   scroll-margin-top: 5rem;
 }
 
+/* Hero video: niente tasto play di iOS se l'autoplay è bloccato (es. Risparmio energetico) */
+.hero-video::-webkit-media-controls,
+.hero-video::-webkit-media-controls-start-playback-button,
+.hero-video::-webkit-media-controls-overlay-play-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
