@@ -61,6 +61,22 @@ const NAV = [
   },
 ];
 
+const SOCIAL_NAV = [
+  { href: "/crm/social", label: "Dashboard", exact: true },
+  { href: "/crm/social/inbox", label: "Inbox" },
+  { href: "/crm/leads?channel=social", label: "Contatti" },
+  { href: "/crm/social/guides", label: "Guide" },
+  { href: "/crm/social/automations", label: "Automazioni" },
+  { href: "/crm/ai/knowledge", label: "Knowledge" },
+  { href: "/crm/social/logs", label: "AI Logs" },
+  { href: "/crm/settings/social-ai", label: "Impostazioni" },
+];
+
+function isSocialActive(pathname: string, href: string, exact?: boolean) {
+  if (href.includes("?")) return false;
+  return exact ? pathname === href : pathname === href || pathname.startsWith(href + "/");
+}
+
 interface SidebarProps {
   profile: Profile | null;
 }
@@ -93,7 +109,9 @@ export function Sidebar({ profile }: SidebarProps) {
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
         {NAV.map(({ href, label, icon }) => {
-          const active = pathname === href || pathname.startsWith(href + "/");
+          const active =
+            (pathname === href || pathname.startsWith(href + "/")) &&
+            !(href === "/crm/settings" && pathname.startsWith("/crm/settings/social-ai"));
           return (
             <Link
               key={href}
@@ -107,6 +125,30 @@ export function Sidebar({ profile }: SidebarProps) {
               `}
             >
               <span className={active ? "text-[#E63B2E]" : ""}>{icon}</span>
+              {label}
+            </Link>
+          );
+        })}
+
+        {/* Social AI */}
+        <p className="px-3 pt-5 pb-1.5 text-white/25 text-[10px] font-semibold uppercase tracking-wider">
+          Social AI
+        </p>
+        {SOCIAL_NAV.map(({ href, label, exact }) => {
+          const active = isSocialActive(pathname, href, exact);
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={`
+                flex items-center gap-3 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors
+                ${active
+                  ? "bg-white/[0.08] text-white"
+                  : "text-white/40 hover:text-white/70 hover:bg-white/[0.04]"
+                }
+              `}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ml-[5px] mr-[5px] ${active ? "bg-[#E63B2E]" : "bg-white/20"}`} />
               {label}
             </Link>
           );

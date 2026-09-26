@@ -73,6 +73,17 @@ export default async function SettingsPage() {
         </div>
       </div>
 
+      {/* Social AI */}
+      <a
+        href="/crm/settings/social-ai"
+        className="block bg-[#141414] border border-white/[0.06] rounded-xl p-5 mb-6 hover:border-[#E63B2E]/30 transition-colors"
+      >
+        <h2 className="text-white font-semibold text-sm">Social AI →</h2>
+        <p className="text-white/40 text-sm mt-1">
+          Collegamento Instagram, Facebook, LinkedIn, TikTok e comportamento dell&apos;assistente AI.
+        </p>
+      </a>
+
       {/* Info block */}
       <div className="bg-[#141414] border border-white/[0.06] rounded-xl p-5">
         <h2 className="text-white font-semibold text-sm mb-3">
