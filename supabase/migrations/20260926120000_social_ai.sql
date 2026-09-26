@@ -37,6 +37,12 @@ as $$
   select exists (select 1 from public.profiles where id = auth.uid() and role = 'admin');
 $$;
 
+-- Le policy RLS le usano come utente autenticato; l'utente anonimo non serve.
+revoke execute on function public.is_crm_user() from public, anon;
+revoke execute on function public.is_crm_admin() from public, anon;
+grant execute on function public.is_crm_user() to authenticated, service_role;
+grant execute on function public.is_crm_admin() to authenticated, service_role;
+
 -- ─── leads: estensioni minime ───────────────────────────────────────
 alter table public.leads alter column email drop not null;
 alter table public.leads add column if not exists temperature text
