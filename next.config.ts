@@ -5,7 +5,8 @@ const CSP = [
   "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
-  "img-src 'self' data: blob:",
+  // + CDN avatar dei profili social (Social AI inbox)
+  "img-src 'self' data: blob: https://*.fbcdn.net https://*.cdninstagram.com https://*.licdn.com https://*.tiktokcdn.com https://*.tiktokcdn-eu.com",
   "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
   "frame-ancestors 'none'",
 ].join("; ");

@@ -8,6 +8,7 @@ interface SearchParams {
   status?: string;
   stage?: string;
   assigned?: string;
+  channel?: string;
   page?: string;
 }
 
@@ -53,6 +54,10 @@ export default async function LeadsPage({
   if (searchParams.assigned) {
     query = query.eq("assigned_to", searchParams.assigned);
   }
+  // Contatti arrivati dai social (modulo Social AI)
+  if (searchParams.channel === "social") {
+    query = query.in("source", ["instagram", "facebook", "linkedin", "tiktok"]);
+  }
 
   const [leadsRes, stagesRes] = await Promise.all([
     query,
@@ -76,7 +81,7 @@ export default async function LeadsPage({
         <div>
           <h1 className="text-white text-2xl font-bold">Lead</h1>
           <p className="text-white/40 text-sm mt-0.5">
-            {total} lead totali
+            {total} {searchParams.channel === "social" ? "contatti dai social" : "lead totali"}
           </p>
         </div>
         <Link
@@ -89,6 +94,7 @@ export default async function LeadsPage({
 
       {/* Filters bar */}
       <form method="GET" className="flex flex-wrap gap-3 mb-6">
+        {searchParams.channel && <input type="hidden" name="channel" value={searchParams.channel} />}
         <input
           name="q"
           type="search"
@@ -126,7 +132,7 @@ export default async function LeadsPage({
         >
           Filtra
         </button>
-        {(searchParams.q || searchParams.status || searchParams.stage) && (
+        {(searchParams.q || searchParams.status || searchParams.stage || searchParams.channel) && (
           <Link
             href="/crm/leads"
             className="text-white/30 hover:text-white/60 text-sm px-3 py-2 transition-colors"

@@ -4,6 +4,9 @@
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
+  "crons": [
+    { "path": "/api/cron/social-retry", "schedule": "0 7 * * *" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

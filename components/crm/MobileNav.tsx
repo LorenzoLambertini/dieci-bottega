@@ -14,6 +14,17 @@ const NAV = [
   { href: "/crm/settings",     label: "Impostazioni", emoji: "◈" },
 ];
 
+const SOCIAL_NAV = [
+  { href: "/crm/social",               label: "Social AI · Dashboard" },
+  { href: "/crm/social/inbox",         label: "Social AI · Inbox" },
+  { href: "/crm/leads?channel=social", label: "Social AI · Contatti" },
+  { href: "/crm/social/guides",        label: "Social AI · Guide" },
+  { href: "/crm/social/automations",   label: "Social AI · Automazioni" },
+  { href: "/crm/ai/knowledge",         label: "Social AI · Knowledge" },
+  { href: "/crm/social/logs",          label: "Social AI · AI Logs" },
+  { href: "/crm/settings/social-ai",   label: "Social AI · Impostazioni" },
+];
+
 interface MobileNavProps {
   profile: Profile | null;
 }
@@ -84,8 +95,13 @@ export function MobileNav({ profile }: MobileNavProps) {
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-          {NAV.map(({ href, label }) => {
-            const active = pathname === href || pathname.startsWith(href + "/");
+          {[...NAV, ...SOCIAL_NAV].map(({ href, label }) => {
+            const active = href.includes("?")
+              ? false
+              : href === "/crm/social"
+                ? pathname === href
+                : (pathname === href || pathname.startsWith(href + "/")) &&
+                  !(href === "/crm/settings" && pathname.startsWith("/crm/settings/social-ai"));
             return (
               <Link
                 key={href}

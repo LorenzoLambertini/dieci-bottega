@@ -40,7 +40,7 @@ export default async function LeadDetailPage({
 
   if (!lead) notFound();
 
-  const [activitiesRes, opportunitiesRes, stagesRes, profilesRes] =
+  const [activitiesRes, opportunitiesRes, stagesRes, profilesRes, socialRes] =
     await Promise.all([
       supabase
         .from("activities")
@@ -54,12 +54,26 @@ export default async function LeadDetailPage({
         .order("created_at", { ascending: false }),
       supabase.from("pipeline_stages").select("*").order("position"),
       supabase.from("profiles").select("id, full_name, email").order("full_name"),
+      // Modulo Social AI: conversazioni social collegate (vuoto se la migration non è applicata)
+      supabase
+        .from("social_conversations")
+        .select("id, platform, status, lead_score, last_message_at, last_message_preview")
+        .eq("contact_id", id)
+        .order("last_message_at", { ascending: false }),
     ]);
 
   const activities = (activitiesRes.data ?? []) as Activity[];
   const opportunities = (opportunitiesRes.data ?? []) as Opportunity[];
   const stages = (stagesRes.data ?? []) as PipelineStage[];
   const profiles = (profilesRes.data ?? []) as Pick<Profile, "id" | "full_name" | "email">[];
+  const socialConversations = (socialRes.data ?? []) as {
+    id: string;
+    platform: string;
+    status: string;
+    lead_score: number;
+    last_message_at: string | null;
+    last_message_preview: string | null;
+  }[];
 
   return (
     <div>
@@ -280,6 +294,24 @@ export default async function LeadDetailPage({
 
         {/* Sidebar — right column */}
         <div className="space-y-4">
+          {socialConversations.length > 0 && (
+            <div className="bg-[#141414] border border-white/[0.06] rounded-xl overflow-hidden">
+              <div className="px-5 py-4 border-b border-white/[0.06]">
+                <h3 className="text-white/50 text-xs font-semibold uppercase tracking-wider">Conversazioni social</h3>
+              </div>
+              <div className="divide-y divide-white/[0.04]">
+                {socialConversations.map((c) => (
+                  <Link key={c.id} href={`/crm/social/inbox?c=${c.id}`} className="block px-5 py-3 hover:bg-white/[0.02]">
+                    <p className="text-white/70 text-sm capitalize">
+                      {c.platform} · score {c.lead_score}
+                      {c.status === "needs_human" && <span className="text-[#E63B2E] text-xs"> · richiede umano</span>}
+                    </p>
+                    <p className="text-white/30 text-xs truncate">{c.last_message_preview ?? "—"}</p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
           <LeadActions
             lead={lead}
             stages={stages}
