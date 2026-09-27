@@ -222,3 +222,17 @@ describe("output validation e prompt", () => {
     expect(ctx).not.toMatch(/ignora le istruzioni <contesto_crm>/);
   });
 });
+
+describe("OAuth Meta", () => {
+  it("usa config_id con Facebook Login for Business, scope altrimenti", async () => {
+    const { metaAuthorizeUrl } = await import("@/lib/social-ai/providers/meta");
+    process.env.META_APP_ID = "123";
+    delete process.env.META_LOGIN_CONFIG_ID;
+    expect(new URL(metaAuthorizeUrl("s", "https://x/cb")).searchParams.get("scope")).toContain("instagram_manage_messages");
+    process.env.META_LOGIN_CONFIG_ID = "999";
+    const u = new URL(metaAuthorizeUrl("s", "https://x/cb"));
+    expect(u.searchParams.get("config_id")).toBe("999");
+    expect(u.searchParams.get("scope")).toBeNull();
+    delete process.env.META_LOGIN_CONFIG_ID;
+  });
+});

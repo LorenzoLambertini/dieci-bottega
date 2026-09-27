@@ -148,7 +148,9 @@ export default function Footer() {
             className="text-ivory/22"
             style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.5625rem", letterSpacing: "0.10em", textTransform: "uppercase" }}
           >
-            © {new Date().getFullYear()} DIECI BOTTEGA® · TUTTI I DIRITTI RISERVATI · P.IVA IN CORSO
+            © {new Date().getFullYear()} DIECI BOTTEGA® · TUTTI I DIRITTI RISERVATI · P.IVA IN CORSO ·{" "}
+            <a href="/privacy" className="hover:text-ivory/60 transition-colors">PRIVACY</a> ·{" "}
+            <a href="/eliminazione-dati" className="hover:text-ivory/60 transition-colors">ELIMINAZIONE DATI</a>
           </p>
           <p
             className="text-ivory/22 flex items-center gap-2"

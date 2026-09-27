@@ -89,7 +89,9 @@ Requisiti: account Instagram **professionale** (Business o Creator) collegato a 
    `https://diecibottega.it/api/social/oauth/meta/callback`
 4. **App settings → Basic**: copia *App ID* → `META_APP_ID`, *App Secret* → `META_APP_SECRET`.
    Aggiungi Privacy Policy URL e dominio `diecibottega.it`.
-5. Scegli una stringa casuale per `META_VERIFY_TOKEN` (es. `openssl rand -hex 16`).
+5. Se l'app usa **Facebook Login for Business**: *Facebook Login for Business → Configurazioni → Crea
+   configurazione* (token di accesso utente, permessi del punto 6, asset Pagina + Instagram) e copia
+   l'ID in `META_LOGIN_CONFIG_ID`. Scegli poi una stringa casuale per `META_VERIFY_TOKEN` (es. `openssl rand -hex 16`).
 6. Permessi richiesti (App Review → **Advanced Access** per l'uso con utenti reali):
    `pages_show_list`, `pages_manage_metadata`, `pages_read_engagement`,
    `pages_manage_engagement`, `pages_messaging`, `instagram_basic`,
