@@ -68,6 +68,16 @@ describe("Webhook Meta", () => {
     expect(h.sent).toHaveLength(2);
   });
 
+  it("accetta anche la firma con la chiave segreta dell'app Instagram", async () => {
+    const h = setup();
+    process.env.INSTAGRAM_APP_SECRET = "ig-secret";
+    const res = await metaReceive(signed(commentPayload("C7"), "ig-secret"), () => h.deps);
+    expect(res.status).toBe(200);
+    delete process.env.INSTAGRAM_APP_SECRET;
+    const ko = await metaReceive(signed(commentPayload("C8"), "ig-secret"), () => h.deps);
+    expect(ko.status).toBe(401);
+  });
+
   it("errore di registrazione su DB → 500 (Meta ritenterà, nessuna perdita)", async () => {
     const res = await metaReceive(signed(commentPayload("C9")), () => {
       throw new Error("SUPABASE_SERVICE_ROLE_KEY mancante");

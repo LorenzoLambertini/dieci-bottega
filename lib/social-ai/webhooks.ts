@@ -64,7 +64,11 @@ export function metaVerify(req: NextRequest): NextResponse {
 export async function metaReceive(req: NextRequest, makeDeps: DepsFactory = createEngineDeps): Promise<NextResponse> {
   if (limited(req, "meta")) return new NextResponse("Too Many Requests", { status: 429 });
   const raw = await req.text();
-  if (!verifyMetaSignature(raw, req.headers.get("x-hub-signature-256"), process.env.META_APP_SECRET)) {
+  // Meta firma con l'App Secret; i webhook del prodotto "API Instagram" possono
+  // usare la chiave segreta dell'app Instagram (INSTAGRAM_APP_SECRET): accettiamo entrambe.
+  const sig = req.headers.get("x-hub-signature-256");
+  const valid = [process.env.META_APP_SECRET, process.env.INSTAGRAM_APP_SECRET].some((secret) => verifyMetaSignature(raw, sig, secret));
+  if (!valid) {
     return new NextResponse("Invalid signature", { status: 401 });
   }
   let body: unknown;
