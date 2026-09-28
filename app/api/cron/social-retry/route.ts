@@ -1,13 +1,15 @@
 /**
  * Retry controllati: eventi webhook falliti (backoff esponenziale, max 5
  * tentativi) e invii falliti per errori temporanei (max 3 retry automatici,
- * poi solo retry manuale dall'inbox). Protetto da CRON_SECRET (Vercel Cron).
+ * poi solo retry manuale dall'inbox). Invia anche l'email del mattino del CRM.
+ * Protetto da CRON_SECRET (Vercel Cron).
  */
 import { NextResponse, type NextRequest } from "next/server";
 import { createEngineDeps } from "@/lib/social-ai/runtime";
 import { retryDueEvents } from "@/lib/social-ai/engine";
 import { retryCommentReply, retryMessage } from "@/lib/social-ai/outbound";
 import { safeEqual } from "@/lib/social-ai/crypto";
+import { sendDigest } from "@/lib/crm/digest";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -40,5 +42,7 @@ export async function GET(req: NextRequest) {
     await retryCommentReply(deps, c.id);
     sends++;
   }
-  return NextResponse.json({ events, sends });
+  // Email del mattino al team (promemoria, nuovi contatti, chat da seguire)
+  const digest = await sendDigest(deps.db).catch((e: Error) => ({ sent: false, reason: e.message }));
+  return NextResponse.json({ events, sends, digest });
 }

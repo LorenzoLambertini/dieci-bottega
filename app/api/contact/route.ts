@@ -1,3 +1,4 @@
+import { notifyTeam } from "@/lib/crm/notify";
 import { NextRequest, NextResponse } from "next/server";
 import { generateSlots, signSlot, type Slot } from "@/lib/scheduling";
 
@@ -342,6 +343,8 @@ export async function POST(req: NextRequest) {
   // 1. Save lead in CRM (Edge Function)
   const captured = await captureLead(body);
   const leadId = captured?.id ?? null;
+  // Notifica push al team (se configurata); non blocca la risposta
+  await notifyTeam({ title: "✨ Nuovo contatto dal sito", body: `${body.name}${body.company ? ` · ${body.company}` : ""}`, url: leadId ? `/crm/leads/${leadId}` : "/crm/leads" }).catch(() => 0);
 
   // 2. Build scheduling slots (only if we have leadId — otherwise email falls back to "rispondi a questa email")
   const slots = leadId

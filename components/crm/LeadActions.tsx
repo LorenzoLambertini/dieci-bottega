@@ -5,6 +5,15 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Lead, PipelineStage, Profile, ActivityType, LeadStatus } from "@/lib/supabase/types";
 
+const STATUS_LABEL: Record<LeadStatus, string> = {
+  new: "Nuovo",
+  contacted: "Contattato",
+  qualified: "Qualificato",
+  proposal: "Proposta inviata",
+  won: "Vinto",
+  lost: "Perso",
+};
+
 interface LeadActionsProps {
   lead: Lead & { stage: PipelineStage | null; assigned_profile: Profile | null };
   stages: PipelineStage[];
@@ -69,7 +78,7 @@ export function LeadActions({ lead, stages, profiles }: LeadActionsProps) {
             {(["new", "contacted", "qualified", "proposal", "won", "lost"] as LeadStatus[]).map(
               (s) => (
                 <option key={s} value={s}>
-                  {s.charAt(0).toUpperCase() + s.slice(1)}
+                  {STATUS_LABEL[s]}
                 </option>
               )
             )}

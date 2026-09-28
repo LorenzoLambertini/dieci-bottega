@@ -1,0 +1,23 @@
+{
+  "name": "Dieci Bottega CRM",
+  "short_name": "10B CRM",
+  "description": "CRM interno di Dieci Bottega",
+  "id": "/crm/",
+  "start_url": "/crm/dashboard",
+  "scope": "/crm/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0c0c0c",
+  "theme_color": "#0c0c0c",
+  "lang": "it",
+  "icons": [
+    { "src": "/crm-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/crm-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/crm-icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Nuovo contatto", "url": "/crm/leads/new" },
+    { "name": "Da ricontattare", "url": "/crm/leads?follow=due" },
+    { "name": "Inbox social", "url": "/crm/social/inbox" }
+  ]
+}

@@ -40,6 +40,35 @@ const NAV = [
     ),
   },
   {
+    href: "/crm/calendar",
+    label: "Calendario",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="1.5" opacity="0.8" />
+        <path d="M2 7h12M5.5 1.5v3M10.5 1.5v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.8" />
+      </svg>
+    ),
+  },
+  {
+    href: "/crm/projects",
+    label: "Progetti",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M2 4.5A1.5 1.5 0 0 1 3.5 3h3l1.5 1.5h4.5A1.5 1.5 0 0 1 14 6v5.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 11.5v-7Z" stroke="currentColor" strokeWidth="1.5" opacity="0.8" />
+      </svg>
+    ),
+  },
+  {
+    href: "/crm/reports",
+    label: "Report",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M2 14h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
+        <path d="M4 11V8M8 11V4M12 11V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+      </svg>
+    ),
+  },
+  {
     href: "/crm/automations",
     label: "Automazioni",
     icon: (

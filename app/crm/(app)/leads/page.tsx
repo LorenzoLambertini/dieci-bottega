@@ -2,6 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { StatusBadge } from "@/components/crm/Badge";
 import type { Lead, PipelineStage, Profile } from "@/lib/supabase/types";
+import { applyLeadFilters, LEAD_STATUSES, STATUS_LABEL_IT, tagFilterSelect } from "@/lib/crm/lead-filters";
+import { TagPill } from "@/components/crm/LeadTools";
+import { getCrmUser } from "@/lib/social-ai/auth";
 
 interface SearchParams {
   q?: string;
@@ -9,6 +12,8 @@ interface SearchParams {
   stage?: string;
   assigned?: string;
   channel?: string;
+  follow?: string;
+  tag?: string;
   page?: string;
 }
 
@@ -31,38 +36,30 @@ export default async function LeadsPage({
     .from("leads")
     .select(
       `
-      id, name, email, company, phone, status, score, created_at, updated_at,
+      id, name, email, company, phone, status, score, source, next_action_at, created_at, updated_at,
       stage:pipeline_stages(id, name, color),
-      assigned_profile:profiles!leads_assigned_to_fkey(id, full_name, avatar_url)
+      assigned_profile:profiles!leads_assigned_to_fkey(id, full_name, avatar_url),
+      taglist:lead_tags(tag:tags(id, name, color))${tagFilterSelect(searchParams)}
     `,
       { count: "exact" }
     )
     .order("created_at", { ascending: false })
     .range(from, to);
 
-  if (searchParams.q) {
-    query = query.or(
-      `name.ilike.%${searchParams.q}%,email.ilike.%${searchParams.q}%,company.ilike.%${searchParams.q}%`
-    );
-  }
-  if (searchParams.status) {
-    query = query.eq("status", searchParams.status);
-  }
-  if (searchParams.stage) {
-    query = query.eq("stage_id", searchParams.stage);
-  }
-  if (searchParams.assigned) {
-    query = query.eq("assigned_to", searchParams.assigned);
-  }
-  // Contatti arrivati dai social (modulo Social AI)
-  if (searchParams.channel === "social") {
-    query = query.in("source", ["instagram", "facebook", "linkedin", "tiktok"]);
-  }
+  // Filtri condivisi con l'export CSV (ricerca ripulita, promemoria, canale social)
+  query = applyLeadFilters(query, searchParams);
 
-  const [leadsRes, stagesRes] = await Promise.all([
+  const [leadsRes, stagesRes, currentUser, tagsRes] = await Promise.all([
     query,
     supabase.from("pipeline_stages").select("*").order("position"),
+    getCrmUser(),
+    supabase.from("tags").select("id, name").order("name"),
   ]);
+  const tagOptions = (tagsRes.data ?? []) as { id: string; name: string }[];
+  const tagsOf = (l: unknown) =>
+    (((l as { taglist?: { tag: { id: string; name: string; color: string } | null }[] }).taglist) ?? [])
+      .map((x) => x.tag)
+      .filter((t): t is { id: string; name: string; color: string } => !!t);
 
   const leads = (leadsRes.data ?? []) as (Lead & {
     stage: PipelineStage | null;
@@ -72,7 +69,11 @@ export default async function LeadsPage({
   const stages = (stagesRes.data ?? []) as PipelineStage[];
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
-  const STATUSES = ["new", "contacted", "qualified", "proposal", "won", "lost"];
+  const STATUSES = LEAD_STATUSES;
+  const now = Date.now();
+  const filterQs = new URLSearchParams(
+    Object.entries(searchParams).filter(([k, v]) => k !== "page" && typeof v === "string" && v) as [string, string][]
+  ).toString();
 
   return (
     <div>
@@ -81,15 +82,30 @@ export default async function LeadsPage({
         <div>
           <h1 className="text-white text-2xl font-bold">Lead</h1>
           <p className="text-white/40 text-sm mt-0.5">
-            {total} {searchParams.channel === "social" ? "contatti dai social" : "lead totali"}
+            {total} {searchParams.channel === "social" ? "contatti dai social" : searchParams.follow === "due" ? "da ricontattare" : "lead totali"}
           </p>
         </div>
+        <div className="flex items-center gap-2">
+        {currentUser?.role === "admin" && (
+          <Link href="/crm/leads/import" className="hidden sm:inline-block text-white/50 hover:text-white text-sm px-3 py-2 border border-white/[0.08] hover:border-white/20 rounded-lg transition-colors">
+            ⬆ Importa
+          </Link>
+        )}
+        {currentUser?.role === "admin" && (
+          <a
+            href={`/api/crm/leads/export${filterQs ? `?${filterQs}` : ""}`}
+            className="text-white/50 hover:text-white text-sm px-3 py-2 border border-white/[0.08] hover:border-white/20 rounded-lg transition-colors"
+          >
+            ⬇ CSV
+          </a>
+        )}
         <Link
           href="/crm/leads/new"
           className="bg-[#E63B2E] hover:bg-[#C44A38] text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
         >
           + Nuovo lead
         </Link>
+        </div>
       </div>
 
       {/* Filters bar */}
@@ -110,7 +126,7 @@ export default async function LeadsPage({
           <option value="">Tutti gli stati</option>
           {STATUSES.map((s) => (
             <option key={s} value={s}>
-              {s.charAt(0).toUpperCase() + s.slice(1)}
+              {STATUS_LABEL_IT[s]}
             </option>
           ))}
         </select>
@@ -126,13 +142,34 @@ export default async function LeadsPage({
             </option>
           ))}
         </select>
+        {tagOptions.length > 0 && (
+          <select
+            name="tag"
+            defaultValue={searchParams.tag ?? ""}
+            className="bg-[#141414] border border-white/[0.08] rounded-lg px-3 py-2 text-white/70 text-sm focus:outline-none focus:border-[#E63B2E]/50 transition-colors"
+          >
+            <option value="">Tutti i tag</option>
+            {tagOptions.map((t) => (
+              <option key={t.id} value={t.id}>#{t.name}</option>
+            ))}
+          </select>
+        )}
+        <select
+          name="follow"
+          defaultValue={searchParams.follow ?? ""}
+          className="bg-[#141414] border border-white/[0.08] rounded-lg px-3 py-2 text-white/70 text-sm focus:outline-none focus:border-[#E63B2E]/50 transition-colors"
+        >
+          <option value="">Tutti i promemoria</option>
+          <option value="due">Da ricontattare oggi</option>
+          <option value="planned">Con promemoria</option>
+        </select>
         <button
           type="submit"
           className="bg-white/[0.06] hover:bg-white/[0.1] text-white/70 text-sm px-4 py-2 rounded-lg transition-colors"
         >
           Filtra
         </button>
-        {(searchParams.q || searchParams.status || searchParams.stage || searchParams.channel) && (
+        {(searchParams.q || searchParams.status || searchParams.stage || searchParams.channel || searchParams.follow || searchParams.tag) && (
           <Link
             href="/crm/leads"
             className="text-white/30 hover:text-white/60 text-sm px-3 py-2 transition-colors"
@@ -158,12 +195,37 @@ export default async function LeadsPage({
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-white/80 text-sm font-medium truncate">{lead.name}</p>
-              <p className="text-white/30 text-xs truncate">{lead.company ?? lead.email}</p>
+              <p className="text-white/30 text-xs truncate">{lead.company ?? lead.email ?? lead.phone ?? lead.source}</p>
+              {tagsOf(lead).length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {tagsOf(lead).slice(0, 3).map((t) => <TagPill key={t.id} tag={t} />)}
+                </div>
+              )}
             </div>
-            <StatusBadge status={lead.status} />
+            <div className="flex flex-col items-end gap-1 shrink-0">
+              <StatusBadge status={lead.status} />
+              {lead.next_action_at && new Date(lead.next_action_at).getTime() <= now && (
+                <span className="text-[10px] font-semibold text-[#E63B2E]">⏰ da ricontattare</span>
+              )}
+            </div>
           </Link>
         ))}
       </div>
+
+      {/* Paginazione mobile */}
+      {totalPages > 1 && (
+        <div className="md:hidden flex items-center justify-between mb-4">
+          <p className="text-white/30 text-xs">{from + 1}–{Math.min(to + 1, total)} di {total}</p>
+          <div className="flex gap-2">
+            {page > 1 && (
+              <Link href={`/crm/leads?${new URLSearchParams({ ...searchParams, page: String(page - 1) })}`} className="text-white/60 text-sm px-3 py-2 bg-white/[0.05] rounded-lg">←</Link>
+            )}
+            {page < totalPages && (
+              <Link href={`/crm/leads?${new URLSearchParams({ ...searchParams, page: String(page + 1) })}`} className="text-white/60 text-sm px-3 py-2 bg-white/[0.05] rounded-lg">→</Link>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Desktop Table */}
       <div className="hidden md:block bg-[#141414] border border-white/[0.06] rounded-xl overflow-hidden">
@@ -218,7 +280,17 @@ export default async function LeadsPage({
                       <p className="text-white/80 text-sm font-medium group-hover:text-white transition-colors">
                         {lead.name}
                       </p>
-                      <p className="text-white/30 text-xs">{lead.email}</p>
+                      <p className="text-white/30 text-xs">
+                        {lead.email ?? lead.phone ?? ""}
+                        {lead.next_action_at && new Date(lead.next_action_at).getTime() <= now && (
+                          <span className="text-[#E63B2E] font-semibold"> · ⏰ da ricontattare</span>
+                        )}
+                      </p>
+                      {tagsOf(lead).length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {tagsOf(lead).slice(0, 4).map((t) => <TagPill key={t.id} tag={t} />)}
+                        </div>
+                      )}
                     </div>
                   </Link>
                 </td>
@@ -270,6 +342,7 @@ export default async function LeadsPage({
                 <td className="px-4 py-3.5 hidden xl:table-cell">
                   <span className="text-white/30 text-xs">
                     {new Date(lead.created_at).toLocaleDateString("it-IT", {
+                    timeZone: "Europe/Rome",
                       day: "numeric",
                       month: "short",
                       year: "numeric",
@@ -281,7 +354,7 @@ export default async function LeadsPage({
           </tbody>
         </table>
 
-        {/* Pagination */}
+        {/* Pagination (desktop) */}
         {totalPages > 1 && (
           <div className="px-5 py-4 border-t border-white/[0.06] flex items-center justify-between">
             <p className="text-white/30 text-xs">

@@ -115,6 +115,8 @@ export interface Database {
           metadata: Json | null;
           created_at: string;
           updated_at: string;
+          next_action_at: string | null;
+          next_action_note: string | null;
           // future: tenant_id: string;
         };
         Insert: {
@@ -151,6 +153,8 @@ export interface Database {
           notes?: string | null;
           metadata?: Json | null;
           updated_at?: string;
+          next_action_at?: string | null;
+          next_action_note?: string | null;
         };
       };
       lead_tags: {

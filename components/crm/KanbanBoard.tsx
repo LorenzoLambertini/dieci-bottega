@@ -4,7 +4,8 @@ import { useState, useCallback } from "react";
 import {
   DndContext,
   DragOverlay,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   closestCorners,
@@ -18,6 +19,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { StatusBadge } from "./Badge";
 import type { Lead, PipelineStage, Profile } from "@/lib/supabase/types";
@@ -34,9 +36,13 @@ interface KanbanBoardProps {
 function LeadCard({
   lead,
   dragging,
+  stages,
+  onMove,
 }: {
   lead: KanbanLead;
   dragging?: boolean;
+  stages?: PipelineStage[];
+  onMove?: (leadId: string, stageId: string) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: lead.id });
@@ -60,9 +66,9 @@ function LeadCard({
       `}
     >
       <div className="flex items-start justify-between gap-2 mb-2">
-        <p className="text-white/80 text-sm font-medium leading-tight">
+        <Link href={`/crm/leads/${lead.id}`} className="text-white/80 hover:text-white text-sm font-medium leading-tight hover:underline underline-offset-2">
           {lead.name}
-        </p>
+        </Link>
         <div className="shrink-0">
           <div
             className="w-6 h-6 rounded-full bg-[#E63B2E]/10 flex items-center justify-center text-[#E63B2E] text-[9px] font-bold"
@@ -77,6 +83,18 @@ function LeadCard({
         <p className="text-white/30 text-xs mb-2">{lead.company}</p>
       )}
 
+      {stages && onMove && (
+        <select
+          value={lead.stage_id ?? ""}
+          onChange={(e) => onMove(lead.id, e.target.value)}
+          onPointerDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+          className="md:hidden w-full mb-2 bg-[#141414] border border-white/[0.08] rounded-md px-2 py-1 text-white/60 text-xs"
+          aria-label="Sposta nello stage"
+        >
+          {stages.map((s) => <option key={s.id} value={s.id}>→ {s.name}</option>)}
+        </select>
+      )}
       <div className="flex items-center justify-between">
         <StatusBadge status={lead.status} />
         {lead.score > 0 && (
@@ -95,7 +113,9 @@ export function KanbanBoard({ stages, leads }: KanbanBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+    useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
+    // da telefono: tieni premuto per trascinare, così lo scorrimento resta libero
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 6 } })
   );
 
   const activeCard = activeId
@@ -123,20 +143,24 @@ export function KanbanBoard({ stages, leads }: KanbanBoardProps) {
 
     if (!targetStage) return;
 
+    await moveLead(leadId, targetStage.id);
+  }
+
+  async function moveLead(leadId: string, stageId: string) {
     const draggedLead = localLeads.find((l) => l.id === leadId);
-    if (!draggedLead || draggedLead.stage_id === targetStage.id) return;
+    if (!draggedLead || draggedLead.stage_id === stageId) return;
 
     // Optimistic update
     setLocalLeads((prev) =>
       prev.map((l) =>
-        l.id === leadId ? { ...l, stage_id: targetStage.id } : l
+        l.id === leadId ? { ...l, stage_id: stageId } : l
       )
     );
 
     const supabase = createClient();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (supabase.from("leads") as any)
-      .update({ stage_id: targetStage.id, updated_at: new Date().toISOString() })
+      .update({ stage_id: stageId, updated_at: new Date().toISOString() })
       .eq("id", leadId);
 
     router.refresh();
@@ -184,7 +208,7 @@ export function KanbanBoard({ stages, leads }: KanbanBoardProps) {
                   strategy={verticalListSortingStrategy}
                 >
                   {stageLeads.map((lead) => (
-                    <LeadCard key={lead.id} lead={lead} />
+                    <LeadCard key={lead.id} lead={lead} stages={stages} onMove={moveLead} />
                   ))}
                 </SortableContext>
 
