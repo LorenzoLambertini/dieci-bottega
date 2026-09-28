@@ -124,8 +124,8 @@ h2, .h2 { font-size: clamp(2rem,   4vw,   2.5rem); line-height: 1.05; letter-spa
 h3, .h3 { font-size: clamp(1.375rem, 2vw, 1.625rem); line-height: 1.15; letter-spacing: -0.02em; }
 h4, .h4 { font-size: clamp(1.125rem, 1.5vw, 1.25rem); line-height: 1.25; letter-spacing: -0.01em; }
 
-/* Nel CRM i titoli usano le classi Tailwind del componente, non le taglie del sito */
-.crm-app :is(h1, h2, h3, h4) { font-size: revert-layer; line-height: revert-layer; letter-spacing: revert-layer; }
+/* Nel CRM e nel corpo delle pagine legali/guide i titoli usano le classi Tailwind, non le taglie del sito */
+.crm-app :is(h1, h2, h3, h4), .legal-body h2 { font-size: revert-layer; line-height: revert-layer; letter-spacing: revert-layer; }
 
 section[id] {
   scroll-margin-top: 5rem;

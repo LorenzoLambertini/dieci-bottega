@@ -93,7 +93,7 @@ export async function processRecordedEvent(deps: EngineDeps, eventId: string): P
     const outcome = await processInbound(deps, row.payload as InboundEvent);
     await deps.db
       .from("social_webhook_events")
-      .update({ status: outcome.status === "ignored" ? "ignored" : "processed", processed_at: (deps.now?.() ?? new Date()).toISOString(), last_error: null })
+      .update({ status: outcome.status === "ignored" ? "ignored" : "processed", processed_at: (deps.now?.() ?? new Date()).toISOString(), last_error: outcome.status === "ignored" ? outcome.reason : null })
       .eq("id", eventId);
     return outcome;
   } catch (e) {
@@ -154,6 +154,9 @@ export async function processInbound(deps: EngineDeps, ev: InboundEvent): Promis
 
   // 1. Account / identità / contatto / conversazione
   const account = await findAccountByExternalId(db, ev.platform, ev.accountExternalId);
+  // Evento per un account non collegato (es. il pulsante "Test" di Meta): registrato ma non processato.
+  // Il simulatore (sandbox) lavora senza account e resta ammesso.
+  if (!account && !deps.sandbox) return { status: "ignored", reason: `account ${ev.accountExternalId} non collegato` };
   let profile = null;
   const { data: knownIdentity } = await db.from("social_identities").select("id").eq("platform", ev.platform).eq("platform_user_id", ev.senderId).maybeSingle();
   if (!knownIdentity && account) {

@@ -77,7 +77,11 @@ export async function metaReceive(req: NextRequest, makeDeps: DepsFactory = crea
   } catch {
     return new NextResponse("Invalid JSON", { status: 400 });
   }
-  return ingest(parseMetaWebhook(body), makeDeps);
+  const events = parseMetaWebhook(body);
+  const b = (body ?? {}) as { object?: string; entry?: { messaging?: unknown[]; changes?: { field?: string }[] }[] };
+  const fields = (b.entry ?? []).flatMap((e) => [...(e.messaging?.length ? ["messaging"] : []), ...(e.changes ?? []).map((c) => c.field ?? "?")]);
+  console.info(`[webhook meta] object=${b.object ?? "?"} fields=${[...new Set(fields)].join(",") || "-"} events=${events.length}`);
+  return ingest(events, makeDeps);
 }
 
 /* ─── LinkedIn ─────────────────────────────────────────────── */

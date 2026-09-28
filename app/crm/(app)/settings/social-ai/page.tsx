@@ -30,11 +30,13 @@ export default async function SocialAiSettingsPage({ searchParams }: { searchPar
   const sp = await searchParams;
   const supabase = await createSocialClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const [{ data: profile }, settingsRes, accountsRes] = await Promise.all([
+  const [{ data: profile }, settingsRes, accountsRes, eventsRes] = await Promise.all([
     supabase.from("profiles").select("role").eq("id", user?.id ?? "").maybeSingle(),
     supabase.from("social_ai_settings").select("*").eq("id", 1).maybeSingle(),
     supabase.from("social_accounts").select("*").order("platform"),
+    supabase.from("social_webhook_events").select("id, platform, event_type, status, last_error, received_at").order("received_at", { ascending: false }).limit(8),
   ]);
+  const events = (eventsRes.data ?? []) as { id: string; platform: string; event_type: string; status: string; last_error: string | null; received_at: string }[];
   const isAdmin = (profile as { role?: string } | null)?.role === "admin";
   const value = { ...DEFAULT_SETTINGS, ...((settingsRes.data as Partial<SettingsValue> | null) ?? {}) } as SettingsValue;
   const accounts = (accountsRes.data ?? []) as { id: string; platform: string; account_name: string | null; username: string | null; status: string; scopes: string[]; webhook_status: string; last_sync_at: string | null; last_error: string | null; token_expires_at: string | null }[];
@@ -79,6 +81,24 @@ export default async function SocialAiSettingsPage({ searchParams }: { searchPar
           </div>
         </Card>
       </div>
+
+      <Card title="Ultimi eventi ricevuti dai social" className="mb-6">
+        {events.length ? (
+          <div className="divide-y divide-white/[0.04]">
+            {events.map((e) => (
+              <div key={e.id} className="px-5 py-2.5 text-xs flex items-center gap-3">
+                <PlatformBadge platform={e.platform} />
+                <span className="text-white/60 shrink-0">{e.event_type}</span>
+                <Pill tone={e.status === "processed" ? "green" : e.status === "ignored" ? "gray" : e.status === "failed" || e.status === "dead" ? "red" : "yellow"}>{e.status}</Pill>
+                <span className="text-white/30 truncate min-w-0 flex-1">{e.last_error ?? ""}</span>
+                <span className="text-white/30 shrink-0">{fmtDate(e.received_at)}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="px-5 py-4 text-white/35 text-xs">Nessun evento ancora ricevuto. Se hai scritto un DM e qui non compare nulla, Meta non lo sta inoltrando: controlla webhook e ruoli dell&apos;app.</p>
+        )}
+      </Card>
 
       <h2 className="text-white font-semibold text-sm mb-3">Social</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">

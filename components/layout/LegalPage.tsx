@@ -11,7 +11,7 @@ export function LegalPage({ eyebrow, title, updated, children }: { eyebrow: stri
         </div>
         <h1 className="font-archivo font-black uppercase tracking-tight text-4xl lg:text-6xl leading-[0.95]">{title}</h1>
         <p className="font-mono text-xs text-obsidian/45 mt-4">Ultimo aggiornamento: {updated}</p>
-        <div className="mt-12 space-y-8 text-obsidian/75 leading-relaxed [&_h2]:font-archivo [&_h2]:font-bold [&_h2]:text-obsidian [&_h2]:text-xl [&_h2]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5 [&_a]:text-rosewood [&_a]:underline">
+        <div className="legal-body mt-12 space-y-8 text-obsidian/75 leading-relaxed [&_h2]:font-archivo [&_h2]:font-bold [&_h2]:text-obsidian [&_h2]:text-xl [&_h2]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5 [&_a]:text-rosewood [&_a]:underline">
           {children}
         </div>
       </article>
