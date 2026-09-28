@@ -204,3 +204,37 @@ export async function sendDigestNow(): Promise<FormState & { info?: string }> {
     ? { ok: true, info: `Inviata: ${r.counts?.due ?? 0} promemoria, ${r.counts?.fresh ?? 0} nuovi contatti, ${r.counts?.needsHuman ?? 0} chat` }
     : { ok: false, error: r.reason === "niente da segnalare" ? "Oggi non c'è niente da segnalare: nessuna email inviata" : r.reason };
 }
+
+/* ─── Appuntamento (call fissata) ────────────────────────── */
+
+export async function setAppointment(leadId: string, iso: string | null): Promise<FormState> {
+  const user = await requireCrmUser();
+  const db = await createSocialClient();
+  const { data } = await db.from("leads").select("metadata, stage_id").eq("id", leadId).maybeSingle();
+  const lead = data as { metadata: Record<string, unknown> | null; stage_id: string | null } | null;
+  if (!lead) return { ok: false, error: "Contatto non trovato" };
+  const when = iso ? new Date(iso) : null;
+  if (when && Number.isNaN(when.getTime())) return { ok: false, error: "Data non valida" };
+  const meta = { ...(lead.metadata ?? {}) };
+  if (when) meta.scheduled_slot = when.toISOString();
+  else delete meta.scheduled_slot;
+  const patch: Record<string, unknown> = { metadata: meta, updated_at: new Date().toISOString() };
+  if (when) {
+    const { data: stages } = await db.from("pipeline_stages").select("id, name, position").order("position");
+    const list = (stages ?? []) as { id: string; name: string; position: number }[];
+    const appt = list.find((s) => s.name === "Appuntamento fissato");
+    const current = list.find((s) => s.id === lead.stage_id);
+    if (appt && (!current || current.position < appt.position)) patch.stage_id = appt.id;
+  }
+  const { error } = await db.from("leads").update(patch).eq("id", leadId);
+  if (error) return { ok: false, error: error.message };
+  await db.from("activities").insert({
+    lead_id: leadId,
+    user_id: user.id,
+    type: "meeting",
+    subject: when ? `Call fissata: ${when.toLocaleString("it-IT", { timeZone: "Europe/Rome", weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}` : "Call annullata",
+  });
+  revalidatePath(`/crm/leads/${leadId}`);
+  revalidatePath("/crm/calendar");
+  return { ok: true };
+}

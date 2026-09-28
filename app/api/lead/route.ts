@@ -8,6 +8,7 @@
  * 3. Email conferma al cliente con 6 slot orari cliccabili
  */
 
+import { notifyTeam } from "@/lib/crm/notify";
 import { NextRequest, NextResponse } from "next/server";
 import { generateSlots, signSlot, type Slot } from "@/lib/scheduling";
 
@@ -281,6 +282,7 @@ export async function POST(req: NextRequest) {
   // 1. Save lead in CRM
   const captured = await captureLead(payload);
   const leadId = captured?.id ?? null;
+  await notifyTeam({ title: "💬 Nuovo contatto dal chatbot", body: payload.name + (payload.business ? ` · ${payload.business}` : ""), url: leadId ? `/crm/leads/${leadId}` : "/crm/leads" }).catch(() => 0);
 
   // 2. Build clickable slots
   const slots = leadId

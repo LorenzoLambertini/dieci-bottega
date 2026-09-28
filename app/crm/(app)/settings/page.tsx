@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/supabase/types";
 import { DeleteTagButton, SendDigestButton, TagPill } from "@/components/crm/LeadTools";
+import { InviteUserForm, RoleSelect } from "@/components/crm/CrmTools";
+import { PushSetup } from "@/components/crm/PushSetup";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -44,11 +46,7 @@ export default async function SettingsPage() {
           <h2 className="text-white font-semibold text-sm">
             Team ({profiles.length})
           </h2>
-          {isAdmin && (
-            <span className="text-white/25 text-xs">
-              Aggiungi utenti da Supabase Auth
-            </span>
-          )}
+
         </div>
         <div className="divide-y divide-white/[0.04]">
           {profiles.map((profile) => (
@@ -67,16 +65,34 @@ export default async function SettingsPage() {
                 </p>
                 <p className="text-white/30 text-xs truncate">{profile.email}</p>
               </div>
-              <span
-                className={`text-xs px-2.5 py-1 rounded-full font-medium shrink-0 ${
-                  ROLE_COLOR[profile.role] ?? "bg-white/[0.06] text-white/40"
-                }`}
-              >
-                {ROLE_LABEL[profile.role] ?? profile.role}
-              </span>
+              {isAdmin && profile.id !== user?.id ? (
+                <RoleSelect userId={profile.id} role={profile.role} />
+              ) : (
+                <span
+                  className={`text-xs px-2.5 py-1 rounded-full font-medium shrink-0 ${
+                    ROLE_COLOR[profile.role] ?? "bg-white/[0.06] text-white/40"
+                  }`}
+                >
+                  {ROLE_LABEL[profile.role] ?? profile.role}
+                </span>
+              )}
             </div>
           ))}
         </div>
+      </div>
+
+      {isAdmin && (
+        <div className="bg-[#141414] border border-white/[0.06] rounded-xl p-5 mb-6 -mt-3">
+          <h2 className="text-white font-semibold text-sm mb-3">Invita nel team</h2>
+          <InviteUserForm />
+        </div>
+      )}
+
+      {/* Notifiche push */}
+      <div className="bg-[#141414] border border-white/[0.06] rounded-xl p-5 mb-6">
+        <h2 className="text-white font-semibold text-sm">🔔 Notifiche sul telefono</h2>
+        <p className="text-white/40 text-sm mt-1 mb-3">Ti avviso subito quando arriva un contatto dal sito o dal chatbot, quando una chat social richiede una persona e quando un cliente accetta un preventivo.</p>
+        <PushSetup />
       </div>
 
       {/* App sul telefono */}

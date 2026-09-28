@@ -6,7 +6,11 @@ import { LeadActions } from "@/components/crm/LeadActions";
 import { DeleteLeadButton } from "@/components/crm/DeleteLeadButton";
 import { getCrmUser } from "@/lib/social-ai/auth";
 import { ContactButtons } from "@/components/crm/ContactButtons";
-import { AddOpportunityForm, DeleteOpportunityButton, EditContactButton, FollowUpCard, TagEditor, type TagChip } from "@/components/crm/LeadTools";
+import { LeadAiCard, type EmailTemplate } from "@/components/crm/LeadAi";
+import { QuotesCard, type QuoteRow } from "@/components/crm/Quotes";
+import { createSocialClient } from "@/lib/social-ai/db";
+import { ActivityActions, MergeButton } from "@/components/crm/CrmTools";
+import { AddOpportunityForm, AppointmentCard, DeleteOpportunityButton, EditContactButton, FollowUpCard, TagEditor, type TagChip } from "@/components/crm/LeadTools";
 import type { Lead, Activity, PipelineStage, Profile, Opportunity } from "@/lib/supabase/types";
 
 const ACTIVITY_ICON: Record<string, string> = {
@@ -47,6 +51,39 @@ export default async function LeadDetailPage({
 
   if (!lead) notFound();
   const currentUser = await getCrmUser();
+  const sdb = await createSocialClient();
+  const [templatesRes, quotesRes, meRes, projectsRes] = await Promise.all([
+    sdb.from("email_templates").select("id, name, subject, body").order("position"),
+    sdb.from("quotes").select("id, number, title, total, status, public_token, sent_at, viewed_at, accepted_at, created_at, items, discount, notes, valid_until").eq("lead_id", id).order("created_at", { ascending: false }),
+    sdb.from("profiles").select("full_name").eq("id", currentUser?.id ?? "").maybeSingle(),
+    sdb.from("projects").select("id, name, phase").eq("lead_id", id),
+  ]);
+  const templates = (templatesRes.data ?? []) as EmailTemplate[];
+  // Possibili doppioni: stesso nome oppure stesso telefono (confronto sulle ultime 8 cifre)
+  const phoneTail = (lead.phone ?? "").replace(/\D/g, "").slice(-8);
+  const dupName = lead.name.replace(/[,()*%\\:"']/g, " ").trim();
+  const [byName, byPhone] = await Promise.all([
+    sdb.from("leads").select("id, name, company").ilike("name", dupName).neq("id", id).limit(3),
+    phoneTail.length === 8
+      ? sdb.from("leads").select("id, name, company, phone").ilike("phone", `%${phoneTail.slice(-4)}%`).neq("id", id).limit(20)
+      : Promise.resolve({ data: [] }),
+  ]);
+  const dupMap = new Map<string, { id: string; name: string; company: string | null }>();
+  for (const d of (byName.data ?? []) as { id: string; name: string; company: string | null }[]) dupMap.set(d.id, d);
+  for (const d of (byPhone.data ?? []) as { id: string; name: string; company: string | null; phone: string | null }[]) {
+    if ((d.phone ?? "").replace(/\D/g, "").slice(-8) === phoneTail) dupMap.set(d.id, d);
+  }
+  const duplicates = [...dupMap.values()].slice(0, 3);
+  const quotes = (quotesRes.data ?? []) as QuoteRow[];
+  const projects = (projectsRes.data ?? []) as { id: string; name: string; phase: string }[];
+  const siteBase = (process.env.NEXT_PUBLIC_SITE_URL || "https://diecibottega.it").replace(/\/$/, "");
+  const lastSentQuote = quotes.find((q) => q.status !== "draft") ?? quotes[0];
+  const templateVars = {
+    nome: lead.name.split(" ")[0],
+    azienda: lead.company ?? lead.name,
+    mittente: ((meRes.data as { full_name: string | null } | null)?.full_name ?? currentUser?.email ?? "").split(" ")[0],
+    link_preventivo: lastSentQuote ? `${siteBase}/preventivo/${lastSentQuote.public_token}` : "{{link_preventivo}}",
+  };
 
   const [activitiesRes, opportunitiesRes, stagesRes, profilesRes, socialRes, leadTagsRes, allTagsRes] =
     await Promise.all([
@@ -97,6 +134,17 @@ export default async function LeadDetailPage({
         <span>/</span>
         <span className="text-white/60">{lead.name}</span>
       </div>
+      {duplicates.length > 0 && (
+        <div className="bg-yellow-500/10 border border-yellow-500/20 text-yellow-200 rounded-xl px-5 py-3 mb-4 text-sm space-y-1">
+          <p>Possibil{duplicates.length === 1 ? "e doppione" : "i doppioni"}:</p>
+          {duplicates.map((d) => (
+            <p key={d.id} className="flex flex-wrap gap-x-3">
+              <Link href={`/crm/leads/${d.id}`} className="underline underline-offset-2">{d.name}{d.company ? ` · ${d.company}` : ""}</Link>
+              {currentUser?.role === "admin" && <MergeButton keepId={lead.id} keepName={lead.name} suggested={{ id: d.id, name: d.name }} />}
+            </p>
+          ))}
+        </div>
+      )}
       {duplicate && (
         <div className="bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 rounded-xl px-5 py-3 mb-4 text-sm">
           Questa email era già nel CRM: ti ho aperto il contatto esistente invece di crearne un doppione.
@@ -274,6 +322,25 @@ export default async function LeadDetailPage({
             </div>
           )}
 
+          <QuotesCard leadId={lead.id} quotes={quotes} siteBase={siteBase} />
+
+          {projects.length > 0 && (
+            <div className="bg-[#141414] border border-white/[0.06] rounded-xl overflow-hidden">
+              <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
+                <h2 className="text-white font-semibold text-sm">Progetti ({projects.length})</h2>
+                <Link href="/crm/projects" className="text-white/30 hover:text-white/60 text-xs">Tutti →</Link>
+              </div>
+              <div className="divide-y divide-white/[0.04]">
+                {projects.map((p) => (
+                  <Link key={p.id} href={`/crm/projects#${p.id}`} className="flex items-center justify-between px-5 py-3 hover:bg-white/[0.02]">
+                    <span className="text-white/80 text-sm">{p.name}</span>
+                    <span className="text-white/40 text-xs capitalize">{p.phase}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Activity feed */}
           <div className="bg-[#141414] border border-white/[0.06] rounded-xl overflow-hidden">
             <div className="px-5 py-4 border-b border-white/[0.06]">
@@ -288,7 +355,7 @@ export default async function LeadDetailPage({
             )}
             <div className="divide-y divide-white/[0.04]">
               {activities.map((act) => (
-                <div key={act.id} className="flex items-start gap-3 px-5 py-3.5">
+                <div key={act.id} className="group flex items-start gap-3 px-5 py-3.5">
                   <span className="text-base mt-0.5 shrink-0">
                     {ACTIVITY_ICON[act.type] ?? "•"}
                   </span>
@@ -313,6 +380,9 @@ export default async function LeadDetailPage({
                         minute: "2-digit",
                       })}
                     </p>
+                    {act.type !== "system" && (currentUser?.role === "admin" || act.user_id === currentUser?.id) && (
+                      <ActivityActions id={act.id} body={act.body} />
+                    )}
                   </div>
                 </div>
               ))}
@@ -323,6 +393,8 @@ export default async function LeadDetailPage({
         {/* Sidebar — right column */}
         <div className="space-y-4">
           <FollowUpCard leadId={lead.id} at={lead.next_action_at} note={lead.next_action_note} />
+          <AppointmentCard leadId={lead.id} slot={((lead.metadata as Record<string, unknown> | null)?.scheduled_slot as string | undefined) ?? null} />
+          <LeadAiCard leadId={lead.id} phone={lead.phone} email={lead.email} templates={templates} vars={templateVars} />
           <TagEditor leadId={lead.id} tags={leadTags} allTags={allTags} canEdit={currentUser?.role === "admin" || currentUser?.role === "marketing"} />
           {socialConversations.length > 0 && (
             <div className="bg-[#141414] border border-white/[0.06] rounded-xl overflow-hidden">
@@ -347,6 +419,7 @@ export default async function LeadDetailPage({
             stages={stages}
             profiles={profiles}
           />
+          {currentUser?.role === "admin" && <MergeButton keepId={lead.id} keepName={lead.name} />}
           {currentUser?.role === "admin" && <DeleteLeadButton leadId={lead.id} name={lead.name ?? lead.email ?? "questo contatto"} />}
         </div>
       </div>

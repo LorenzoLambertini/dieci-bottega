@@ -87,6 +87,11 @@ export default async function LeadsPage({
         </div>
         <div className="flex items-center gap-2">
         {currentUser?.role === "admin" && (
+          <Link href="/crm/leads/import" className="hidden sm:inline-block text-white/50 hover:text-white text-sm px-3 py-2 border border-white/[0.08] hover:border-white/20 rounded-lg transition-colors">
+            ⬆ Importa
+          </Link>
+        )}
+        {currentUser?.role === "admin" && (
           <a
             href={`/api/crm/leads/export${filterQs ? `?${filterQs}` : ""}`}
             className="text-white/50 hover:text-white text-sm px-3 py-2 border border-white/[0.08] hover:border-white/20 rounded-lg transition-colors"

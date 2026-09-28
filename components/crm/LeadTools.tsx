@@ -6,7 +6,7 @@
  */
 import { useActionState, useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { addLeadTag, addOpportunity, createLead, deleteOpportunity, deleteTag, removeLeadTag, sendDigestNow, setFollowUp, updateLeadContact, type FormState } from "@/app/crm/(app)/leads/actions";
+import { setAppointment, addLeadTag, addOpportunity, createLead, deleteOpportunity, deleteTag, removeLeadTag, sendDigestNow, setFollowUp, updateLeadContact, type FormState } from "@/app/crm/(app)/leads/actions";
 
 export const inputCls =
   "w-full bg-[#1a1a1a] border border-white/[0.08] rounded-lg px-3 py-2 text-white/85 text-sm placeholder:text-white/20 focus:outline-none focus:border-[#E63B2E]/50 transition-colors";
@@ -404,6 +404,47 @@ export function SendDigestButton() {
         {pending ? "Invio…" : "Invia ora una prova"}
       </button>
       {msg && <p className={`text-xs ${msg.ok ? "text-green-400" : "text-white/45"}`}>{msg.text}</p>}
+    </div>
+  );
+}
+
+/* ─── Call fissata ───────────────────────────────────────── */
+
+export function AppointmentCard({ leadId, slot }: { leadId: string; slot: string | null }) {
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  const [value, setValue] = useState(slot ? toLocalInput(new Date(slot)) : "");
+  const [error, setError] = useState<string | null>(null);
+  const when = slot ? new Date(slot) : null;
+  const past = when ? when.getTime() < Date.now() : false;
+  const save = (iso: string | null) =>
+    start(async () => {
+      setError(null);
+      const r = await setAppointment(leadId, iso);
+      if (r && !r.ok) setError(r.error ?? "Errore");
+      else router.refresh();
+    });
+  return (
+    <div className="bg-[#141414] border border-white/[0.06] rounded-xl p-5 space-y-3">
+      <h3 className="text-white/50 text-xs font-semibold uppercase tracking-wider">📞 Call</h3>
+      {when ? (
+        <p className={`text-sm font-semibold ${past ? "text-white/40" : "text-white/85"}`}>
+          {past ? "Fatta · " : ""}
+          {when.toLocaleString("it-IT", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}
+        </p>
+      ) : (
+        <p className="text-white/30 text-xs">Nessuna call fissata.</p>
+      )}
+      <div className="flex gap-2">
+        <input type="datetime-local" value={value} onChange={(e) => setValue(e.target.value)} className={`${inputCls} flex-1 [color-scheme:dark]`} />
+        <button type="button" disabled={pending || !value} onClick={() => save(new Date(value).toISOString())} className="bg-white/[0.08] hover:bg-white/[0.14] text-white/80 text-xs font-semibold rounded-lg px-3 disabled:opacity-40">
+          {when ? "Sposta" : "Fissa"}
+        </button>
+      </div>
+      {when && !past && (
+        <button type="button" disabled={pending} onClick={() => save(null)} className="text-xs text-white/35 hover:text-[#E63B2E]">Annulla la call</button>
+      )}
+      {error && <p className="text-[#E63B2E] text-xs">{error}</p>}
     </div>
   );
 }

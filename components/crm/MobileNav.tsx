@@ -10,6 +10,9 @@ const NAV = [
   { href: "/crm/dashboard",    label: "Dashboard",    emoji: "▦" },
   { href: "/crm/leads",        label: "Lead",         emoji: "◎" },
   { href: "/crm/pipeline",     label: "Pipeline",     emoji: "▤" },
+  { href: "/crm/calendar",     label: "Calendario",   emoji: "▣" },
+  { href: "/crm/projects",     label: "Progetti",     emoji: "▭" },
+  { href: "/crm/reports",      label: "Report",       emoji: "▥" },
   { href: "/crm/automations",  label: "Automazioni",  emoji: "◷" },
   { href: "/crm/settings",     label: "Impostazioni", emoji: "◈" },
 ];

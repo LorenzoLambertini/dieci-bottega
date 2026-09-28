@@ -279,6 +279,11 @@ export async function createNotification(
     body: n.body ?? null,
     link: n.link ?? null,
   });
+  // push sul telefono per lead social e conversazioni che richiedono una persona
+  if (!n.userId && ["social_lead", "social_ai"].includes(n.type)) {
+    const { notifyTeam } = await import("@/lib/crm/notify");
+    await notifyTeam({ title: n.title.slice(0, 100), body: n.body ?? "", url: n.link ?? "/crm/social/inbox" }, db).catch(() => 0);
+  }
 }
 
 /* ─── Lead ─────────────────────────────────────────────────── */
