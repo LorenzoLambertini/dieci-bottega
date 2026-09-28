@@ -144,3 +144,32 @@ describe("Sincronizzazione via Graph API (senza webhook)", () => {
     expect(conv.last_message_preview).toBe("💬 nuovo");
   });
 });
+
+describe("Educare l'AI con le valutazioni", () => {
+  it("lezioni ed esempi approvati finiscono nel prompt (blocco in cache)", async () => {
+    const { buildLearning } = await import("@/lib/social-ai/prompt");
+    const text = buildLearning([
+      { rating: 2, customer_text: "Quanto costa un sito?", ai_reply: "800€", better_reply: "Dipende! Che attività hai?", lesson: "Non dare prezzi nel primo messaggio" },
+      { rating: 5, customer_text: "Fate e-commerce?", ai_reply: "Sì, con Shopify.", better_reply: null, lesson: null },
+      { rating: 1, customer_text: "Ciao", ai_reply: "Buongiorno gentile cliente", better_reply: null, lesson: null },
+    ]);
+    expect(text).toContain("- Non dare prezzi nel primo messaggio");
+    expect(text).toContain("Cliente: Quanto costa un sito?\nRisposta: Dipende! Che attività hai?");
+    expect(text).toContain("Risposta: Sì, con Shopify.");
+    expect(text).toContain("Buongiorno gentile cliente"); // tra quelle da evitare
+    expect(buildLearning([])).toBe("");
+  });
+
+  it("il motore passa le lezioni a Claude", async () => {
+    const { processInbound } = await import("@/lib/social-ai/engine");
+    const { decision, igEvent } = await import("./harness");
+    const h = syncSetup({});
+    h.db.seed("ai_reply_feedback", { rating: 2, customer_text: "x", ai_reply: "y", better_reply: null, lesson: "Chiedi sempre il nome dell'attività", use_for_training: true, updated_at: "2026-09-26T00:00:00Z" });
+    h.db.seed("ai_reply_feedback", { rating: 2, customer_text: "x", ai_reply: "y", better_reply: null, lesson: "Lezione sospesa", use_for_training: false, updated_at: "2026-09-26T00:00:00Z" });
+    h.llm.push(decision({ response: "Ciao! Che attività hai?" }));
+    await processInbound(h.deps, igEvent("message", "Info sui siti"));
+    const system = h.llm.calls[0].system as { text: string }[];
+    expect(system[1].text).toContain("Chiedi sempre il nome dell'attività");
+    expect(system[1].text).not.toContain("Lezione sospesa");
+  });
+});

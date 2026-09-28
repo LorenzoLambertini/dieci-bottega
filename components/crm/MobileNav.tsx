@@ -29,6 +29,7 @@ const TABS = [
 const SOCIAL_NAV = [
   { href: "/crm/social",               label: "Social AI · Dashboard" },
   { href: "/crm/social/inbox",         label: "Social AI · Inbox" },
+  { href: "/crm/social/replies",       label: "Social AI · Risposte AI" },
   { href: "/crm/leads?channel=social", label: "Social AI · Contatti" },
   { href: "/crm/social/guides",        label: "Social AI · Guide" },
   { href: "/crm/social/automations",   label: "Social AI · Automazioni" },

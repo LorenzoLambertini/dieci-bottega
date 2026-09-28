@@ -29,7 +29,7 @@ import {
 import { findAccountByExternalId, loadAccount, replyToComment, sendDirectMessage, type OutboundDeps } from "./outbound";
 import { isLowValueComment, matchContentRules, matchGuideDeterministic, matchPostDecisionRules } from "./rules";
 import { becameHot, computeScore, mergeSignals, resolveScoringConfig, scoreBand, temperatureFor } from "./scoring";
-import { buildContextMessage, buildKnowledge, buildSystemText, type KnowledgeRow } from "./prompt";
+import { buildContextMessage, buildKnowledge, buildLearning, buildSystemText, type FeedbackRow, type KnowledgeRow } from "./prompt";
 import { recordRun, runDecision, summarize, type LlmClient } from "./claude";
 import type { ToolRuntime } from "./tools";
 
@@ -581,8 +581,10 @@ async function decide(ctx: Ctx, ruleHints: string[]): Promise<AiDecision | null>
   const model = resolveModel(settings);
   await maybeSummarize(ctx, model);
 
-  const [{ data: kn }, tags, { data: deliveries }, history] = await Promise.all([
+  const [{ data: kn }, { data: fb }, tags, { data: deliveries }, history] = await Promise.all([
     deps.db.from("ai_knowledge").select("category, title, content, position").eq("active", true),
+    // Valutazioni e correzioni del team (tabella opzionale: se manca, nessun effetto)
+    deps.db.from("ai_reply_feedback").select("rating, customer_text, ai_reply, better_reply, lesson").eq("use_for_training", true).order("updated_at", { ascending: false }).limit(60),
     getTags(deps.db, lead.id),
     deps.db.from("guide_deliveries").select("guide_id").eq("contact_id", lead.id).eq("status", "sent"),
     loadHistory(ctx),
@@ -633,7 +635,7 @@ async function decide(ctx: Ctx, ruleHints: string[]): Promise<AiDecision | null>
     model,
     settings,
     systemText: buildSystemText(settings),
-    knowledge: buildKnowledge((kn ?? []) as KnowledgeRow[]),
+    knowledge: [buildKnowledge((kn ?? []) as KnowledgeRow[]), buildLearning((fb ?? []) as FeedbackRow[])].filter(Boolean).join("\n\n"),
     context,
     runtime,
   });

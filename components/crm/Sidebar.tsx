@@ -93,6 +93,7 @@ const NAV = [
 const SOCIAL_NAV = [
   { href: "/crm/social", label: "Dashboard", exact: true },
   { href: "/crm/social/inbox", label: "Inbox" },
+  { href: "/crm/social/replies", label: "Risposte AI" },
   { href: "/crm/leads?channel=social", label: "Contatti" },
   { href: "/crm/social/guides", label: "Guide" },
   { href: "/crm/social/automations", label: "Automazioni" },
