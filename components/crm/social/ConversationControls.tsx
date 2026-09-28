@@ -88,7 +88,7 @@ export function RetryButton({ kind, id }: { kind: "message" | "comment"; id: str
 
 export function MarkReadOnOpen({ id, unread }: { id: string; unread: number }) {
   useEffect(() => {
-    if (unread > 0) void markConversationRead(id);
+    if (unread > 0) void markConversationRead(id).then(() => window.dispatchEvent(new Event("crm:unread")));
   }, [id, unread]);
   return null;
 }

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/supabase/types";
+import { badgeText, useUnreadCount } from "./useUnread";
 
 const NAV = [
   { href: "/crm/dashboard",    label: "Dashboard",    emoji: "▦" },
@@ -46,6 +47,7 @@ export function MobileNav({ profile }: MobileNavProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const unread = useUnreadCount();
 
   async function handleLogout() {
     const supabase = createClient();
@@ -125,7 +127,10 @@ export function MobileNav({ profile }: MobileNavProps) {
                     : "text-white/40 hover:text-white/70 hover:bg-white/[0.04]"
                 }`}
               >
-                {label}
+                <span className="flex-1">{label}</span>
+                {href === "/crm/social/inbox" && unread > 0 && (
+                  <span className="min-w-5 h-5 px-1.5 rounded-full bg-[#E63B2E] text-white text-[10px] font-bold flex items-center justify-center">{badgeText(unread)}</span>
+                )}
               </Link>
             );
           })}
@@ -170,10 +175,13 @@ export function MobileNav({ profile }: MobileNavProps) {
                 active ? "text-[#E63B2E]" : "text-white/30"
               }`}
             >
-              <span className="text-base leading-none">
+              <span className="relative text-base leading-none">
                 {href.includes("dashboard") ? "▦" :
                  href.includes("leads") ? "◎" :
                  href.includes("pipeline") ? "▤" : "✉"}
+                {href === "/crm/social/inbox" && unread > 0 && (
+                  <span className="absolute -top-1.5 -right-3 min-w-4 h-4 px-1 rounded-full bg-[#E63B2E] text-white text-[9px] font-bold flex items-center justify-center">{badgeText(unread)}</span>
+                )}
               </span>
               {label}
             </Link>

@@ -270,7 +270,7 @@ export async function createSystemActivity(db: SupabaseClient, leadId: string, s
 
 export async function createNotification(
   db: SupabaseClient,
-  n: { type: string; title: string; body?: string | null; link?: string | null; userId?: string | null }
+  n: { type: string; title: string; body?: string | null; link?: string | null; userId?: string | null; tag?: string }
 ) {
   await db.from("notifications").insert({
     user_id: n.userId ?? null,
@@ -279,10 +279,12 @@ export async function createNotification(
     body: n.body ?? null,
     link: n.link ?? null,
   });
-  // push sul telefono per lead social e conversazioni che richiedono una persona
-  if (!n.userId && ["social_lead", "social_ai"].includes(n.type)) {
+  // push sul telefono: nuovi messaggi, lead social e conversazioni che richiedono una persona
+  if (!n.userId && ["social_message", "social_lead", "social_ai"].includes(n.type)) {
     const { notifyTeam } = await import("@/lib/crm/notify");
-    await notifyTeam({ title: n.title.slice(0, 100), body: n.body ?? "", url: n.link ?? "/crm/social/inbox" }, db).catch(() => 0);
+    // numero di chat non lette per il pallino sull'icona dell'app
+    const { count } = await db.from("social_conversations").select("id", { count: "exact", head: true }).gt("unread_count", 0);
+    await notifyTeam({ title: n.title.slice(0, 100), body: n.body ?? "", url: n.link ?? "/crm/social/inbox", tag: n.tag, unread: count ?? undefined }, db).catch(() => 0);
   }
 }
 
