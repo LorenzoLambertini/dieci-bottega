@@ -40,7 +40,7 @@ export default async function SocialAiSettingsPage({ searchParams }: { searchPar
   const isAdmin = (profile as { role?: string } | null)?.role === "admin";
   const value = { ...DEFAULT_SETTINGS, ...((settingsRes.data as Partial<SettingsValue> | null) ?? {}) } as SettingsValue;
   const accounts = (accountsRes.data ?? []) as { id: string; platform: string; account_name: string | null; username: string | null; status: string; scopes: string[]; webhook_status: string; last_sync_at: string | null; last_error: string | null; token_expires_at: string | null }[];
-  const envModel = process.env.ANTHROPIC_MODEL || "claude-opus-5";
+  const envModel = process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5";
   const base = siteUrl();
 
   return (

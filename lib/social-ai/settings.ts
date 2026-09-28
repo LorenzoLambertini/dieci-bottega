@@ -24,7 +24,7 @@ export const DEFAULT_SETTINGS: SocialAiSettings = {
 
 /** Modello: impostazione CRM → ANTHROPIC_MODEL → default. */
 export function resolveModel(settings: Pick<SocialAiSettings, "model">): string {
-  return settings.model?.trim() || process.env.ANTHROPIC_MODEL?.trim() || "claude-opus-5";
+  return settings.model?.trim() || process.env.ANTHROPIC_MODEL?.trim() || "claude-sonnet-5-5";
 }
 
 export async function loadSettings(db: SupabaseClient): Promise<SocialAiSettings> {
