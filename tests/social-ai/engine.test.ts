@@ -80,7 +80,8 @@ describe("Casi conversazionali", () => {
     expect(out.status).toBe("handoff");
     const conv = h.db.rows("social_conversations")[0];
     expect(conv).toMatchObject({ ai_enabled: false, human_takeover: true, status: "needs_human", handoff_reason: "Richiesta esplicita di una persona" });
-    expect(h.db.rows("notifications")).toHaveLength(1);
+    // una notifica per il nuovo DM + una per la richiesta di intervento umano
+    expect(h.db.rows("notifications").map((n) => n.type).sort()).toEqual(["social_ai", "social_message"]);
     expect(h.emails[0].subject).toContain("Richiede intervento umano");
     expect(h.db.rows("activities").some((a) => a.subject === "Richiede intervento umano")).toBe(true);
     // messaggio di cortesia configurato (non testo AI)

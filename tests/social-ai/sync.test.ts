@@ -173,3 +173,19 @@ describe("Educare l'AI con le valutazioni", () => {
     expect(system[1].text).not.toContain("Lezione sospesa");
   });
 });
+
+describe("Notifiche dei nuovi messaggi", () => {
+  it("ogni DM nuovo crea una notifica con link alla chat; gli import vecchi no", async () => {
+    const { processInbound } = await import("@/lib/social-ai/engine");
+    const { decision, igEvent } = await import("./harness");
+    const h = syncSetup({});
+    h.llm.push(decision({ response: "Ciao!" }));
+    await processInbound(h.deps, igEvent("message", "Ciao, info?"));
+    const n = h.db.rows("notifications").filter((x) => x.type === "social_message");
+    expect(n).toHaveLength(1);
+    expect(n[0].title).toContain("DM da @marco.rossi");
+    expect(n[0].link).toMatch(/^\/crm\/social\/inbox\?c=/);
+    await processInbound(h.deps, { ...igEvent("message", "vecchio"), importOnly: true });
+    expect(h.db.rows("notifications").filter((x) => x.type === "social_message")).toHaveLength(1);
+  });
+});

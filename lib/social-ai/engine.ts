@@ -230,6 +230,19 @@ export async function processInbound(deps: EngineDeps, ev: InboundEvent): Promis
   await updateConversation(db, conv.id, convPatch);
   conv = { ...conv, ...(convPatch as Partial<ConversationRow>) };
 
+  // Notifica al team (campanella + push sul telefono), come un messaggio WhatsApp
+  if (!ev.importOnly && !deps.sandbox) {
+    const who = identity.username ? `@${identity.username}` : lead.name;
+    const where = ev.platform === "instagram" ? "Instagram" : ev.platform === "facebook" ? "Facebook" : ev.platform;
+    await createNotification(db, {
+      type: "social_message",
+      title: `${ev.kind === "comment" ? "💬 Commento" : "✉️ DM"} da ${who} · ${where}`,
+      body: ev.text.slice(0, 180),
+      link: `/crm/social/inbox?c=${conv.id}`,
+      tag: `conv-${conv.id}`,
+    }).catch(() => undefined);
+  }
+
   const ctx: Ctx = {
     deps,
     settings,

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/supabase/types";
+import { badgeText, useUnreadCount } from "./useUnread";
 
 const NAV = [
   {
@@ -113,6 +114,7 @@ interface SidebarProps {
 
 export function Sidebar({ profile }: SidebarProps) {
   const pathname = usePathname();
+  const unread = useUnreadCount();
   const router = useRouter();
 
   async function handleLogout() {
@@ -176,6 +178,7 @@ export function Sidebar({ profile }: SidebarProps) {
         </p>
         {SOCIAL_NAV.map(({ href, label, exact }) => {
           const active = isSocialActive(pathname, href, exact);
+          const badge = href === "/crm/social/inbox" && unread > 0;
           return (
             <Link
               key={href}
@@ -189,7 +192,8 @@ export function Sidebar({ profile }: SidebarProps) {
               `}
             >
               <span className={`w-1.5 h-1.5 rounded-full ml-[5px] mr-[5px] ${active ? "bg-[#E63B2E]" : "bg-white/20"}`} />
-              {label}
+              <span className="flex-1">{label}</span>
+              {badge && <span className="min-w-5 h-5 px-1.5 rounded-full bg-[#E63B2E] text-white text-[10px] font-bold flex items-center justify-center">{badgeText(unread)}</span>}
             </Link>
           );
         })}

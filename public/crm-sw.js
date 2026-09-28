@@ -6,15 +6,23 @@ self.addEventListener("push", (event) => {
   let data = {};
   try { data = event.data ? event.data.json() : {}; } catch { data = { title: "Dieci Bottega CRM", body: event.data && event.data.text() }; }
   const title = data.title || "Dieci Bottega CRM";
-  event.waitUntil(
+  const tasks = [
     self.registration.showNotification(title, {
       body: data.body || "",
       icon: "/crm-icon-192.png",
       badge: "/crm-icon-192.png",
       tag: data.tag || undefined,
+      renotify: !!data.tag,
       data: { url: data.url || "/crm/dashboard" },
-    })
-  );
+    }),
+    // CRM aperto: aggiorna subito il pallino dell'Inbox
+    self.clients.matchAll({ type: "window" }).then((list) => list.forEach((c) => c.postMessage({ type: "crm:push" }))),
+  ];
+  // Pallino con il numero sull'icona dell'app (come WhatsApp)
+  if (typeof data.unread === "number" && self.navigator.setAppBadge) {
+    tasks.push((data.unread > 0 ? self.navigator.setAppBadge(data.unread) : self.navigator.clearAppBadge()).catch(() => {}));
+  }
+  event.waitUntil(Promise.all(tasks));
 });
 
 self.addEventListener("notificationclick", (event) => {

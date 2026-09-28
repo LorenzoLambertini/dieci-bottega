@@ -12,6 +12,8 @@ export interface PushPayload {
   body: string;
   url?: string;
   tag?: string;
+  /** Chat non lette: numero sul pallino dell'icona dell'app. */
+  unread?: number;
 }
 
 export function pushConfigured(): boolean {
