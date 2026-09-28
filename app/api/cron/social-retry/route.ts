@@ -1,7 +1,8 @@
 /**
  * Retry controllati: eventi webhook falliti (backoff esponenziale, max 5
  * tentativi) e invii falliti per errori temporanei (max 3 retry automatici,
- * poi solo retry manuale dall'inbox). Invia anche l'email del mattino del CRM.
+ * poi solo retry manuale dall'inbox). Legge commenti/DM via API (sync) e
+ * invia l'email del mattino del CRM.
  * Protetto da CRON_SECRET (Vercel Cron).
  */
 import { NextResponse, type NextRequest } from "next/server";
@@ -10,6 +11,7 @@ import { retryDueEvents } from "@/lib/social-ai/engine";
 import { retryCommentReply, retryMessage } from "@/lib/social-ai/outbound";
 import { safeEqual } from "@/lib/social-ai/crypto";
 import { sendDigest } from "@/lib/crm/digest";
+import { processSyncedEvents, syncMetaAccounts } from "@/lib/social-ai/sync";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,6 +26,10 @@ export async function GET(req: NextRequest) {
   if (!secret || !safeEqual(auth, `Bearer ${secret}`)) return new NextResponse("Unauthorized", { status: 401 });
 
   const deps = createEngineDeps();
+  // Lettura di commenti e DM via API (funziona anche senza webhook)
+  const sync = await syncMetaAccounts(deps)
+    .then(async (r) => ({ queued: r.eventIds.length, processed: (await processSyncedEvents(deps, r.eventIds, 25_000)).processed, errors: r.accounts.flatMap((a) => a.errors) }))
+    .catch((e: Error) => ({ error: e.message }));
   const events = await retryDueEvents(deps, 25);
 
   const since = new Date(Date.now() - 6 * 3600_000).toISOString();
@@ -44,5 +50,5 @@ export async function GET(req: NextRequest) {
   }
   // Email del mattino al team (promemoria, nuovi contatti, chat da seguire)
   const digest = await sendDigest(deps.db).catch((e: Error) => ({ sent: false, reason: e.message }));
-  return NextResponse.json({ events, sends, digest });
+  return NextResponse.json({ sync, events, sends, digest });
 }

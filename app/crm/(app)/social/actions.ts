@@ -6,12 +6,15 @@
  * riservate agli admin. Tutte le azioni umane finiscono nell'audit log.
  */
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { requireCrmUser } from "@/lib/social-ai/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAction } from "@/lib/social-ai/crm";
 import { createEngineDeps } from "@/lib/social-ai/runtime";
 import { replyToComment, retryCommentReply, retryMessage, sendDirectMessage } from "@/lib/social-ai/outbound";
 import { parseKeywords } from "@/lib/social-ai/rules";
+import { rateLimit } from "@/lib/social-ai/rate-limit";
+import { processSyncedEvents, syncMetaAccounts, type AccountSyncResult } from "@/lib/social-ai/sync";
 import { resolveScoringConfig } from "@/lib/social-ai/scoring";
 import type { ConversationRow } from "@/lib/social-ai/types";
 
@@ -372,6 +375,45 @@ export async function disconnectAccount(id: string): Promise<ActionResult> {
     await logAction(db, { action_type: "disconnect_account", actor: "human", actor_user_id: user.id, platform: acct?.platform ?? null, summary: `Account scollegato: ${acct?.account_name ?? id}` });
     revalidatePath("/crm/settings/social-ai");
     return ok();
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+/* ─── Sincronizzazione via API (senza webhook) ─────────────── */
+
+export type SyncActionResult = {
+  ok: boolean;
+  error?: string;
+  skipped?: string;
+  accounts?: AccountSyncResult[];
+  queued?: number;
+  processed?: number;
+  at?: string;
+};
+
+/**
+ * Legge commenti e DM da Instagram/Facebook tramite Graph API e li porta nell'Inbox.
+ * `auto`: chiamata automatica mentre il CRM è aperto (al massimo ogni 2 minuti).
+ */
+export async function syncSocialNow(auto = false): Promise<SyncActionResult> {
+  try {
+    const user = await requireCrmUser();
+    if (!rateLimit(`social-sync:${auto ? "auto" : user.id}`, auto ? 30 : 20, 3600_000)) {
+      return { ok: false, error: "Troppe sincronizzazioni nell'ultima ora, riprova tra poco" };
+    }
+    const deps = createEngineDeps();
+    const r = await syncMetaAccounts(deps, { minIntervalMs: auto ? 120_000 : 15_000 });
+    if (r.skipped) return { ok: true, skipped: r.skipped, at: new Date().toISOString() };
+    const { processed, rest } = await processSyncedEvents(deps, r.eventIds, 30_000);
+    // Quello che non entra nel tempo disponibile si completa dopo la risposta
+    // (se la funzione viene interrotta, li riprende retryDueEvents)
+    if (rest.length) after(() => processSyncedEvents(deps, rest, 20_000).then(() => undefined));
+    if (r.eventIds.length) {
+      revalidatePath("/crm/social/inbox");
+      revalidatePath("/crm/social");
+    }
+    return { ok: true, accounts: r.accounts, queued: r.eventIds.length, processed, at: new Date().toISOString() };
   } catch (e) {
     return fail(e);
   }
