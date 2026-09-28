@@ -11,6 +11,7 @@ export interface LeadFilterParams {
   channel?: string;
   follow?: string;
   tag?: string;
+  view?: string;
 }
 
 export const LEAD_STATUSES = ["new", "contacted", "qualified", "proposal", "won", "lost"] as const;
@@ -46,6 +47,11 @@ export function applyLeadFilters<T>(query: T, p: LeadFilterParams): T {
   if (p.channel === "social") q = q.in("source", SOCIAL_SOURCES);
   if (p.follow === "due") q = q.lte("next_action_at", endOfToday());
   if (p.follow === "planned") q = q.not("next_action_at", "is", null);
+  if (p.follow === "none") q = q.is("next_action_at", null).not("status", "in", "(won,lost)");
+  // viste rapide
+  if (p.view === "hot") q = q.or("temperature.eq.hot,score.gte.60");
+  if (p.view === "idle") q = q.lt("updated_at", new Date(Date.now() - 30 * 86_400_000).toISOString()).not("status", "in", "(won,lost)");
+  if (p.view === "clients") q = q.eq("status", "won");
   // richiede nella select l'embed `lead_tags!inner(tag_id)` (vedi tagFilterSelect)
   if (p.tag && /^[0-9a-f-]{36}$/i.test(p.tag)) q = q.eq("lead_tags.tag_id", p.tag);
   return q as T;
@@ -55,3 +61,14 @@ export function applyLeadFilters<T>(query: T, p: LeadFilterParams): T {
 export function tagFilterSelect(p: LeadFilterParams): string {
   return p.tag && /^[0-9a-f-]{36}$/i.test(p.tag) ? ", lead_tags!inner(tag_id)" : "";
 }
+
+/** Viste rapide mostrate come "chip" sopra la lista. */
+export const SAVED_VIEWS: { label: string; params: Record<string, string> }[] = [
+  { label: "⏰ Da richiamare oggi", params: { follow: "due" } },
+  { label: "🧭 Senza prossima azione", params: { follow: "none" } },
+  { label: "🔥 Caldi", params: { view: "hot" } },
+  { label: "📄 Preventivo inviato", params: { status: "proposal" } },
+  { label: "💤 Fermi da 30 giorni", params: { view: "idle" } },
+  { label: "🤝 Clienti", params: { view: "clients" } },
+  { label: "📱 Dai social", params: { channel: "social" } },
+];

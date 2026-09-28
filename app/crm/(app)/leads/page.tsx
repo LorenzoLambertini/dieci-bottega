@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { StatusBadge } from "@/components/crm/Badge";
 import type { Lead, PipelineStage, Profile } from "@/lib/supabase/types";
-import { applyLeadFilters, LEAD_STATUSES, STATUS_LABEL_IT, tagFilterSelect } from "@/lib/crm/lead-filters";
+import { applyLeadFilters, LEAD_STATUSES, SAVED_VIEWS, STATUS_LABEL_IT, tagFilterSelect } from "@/lib/crm/lead-filters";
 import { TagPill } from "@/components/crm/LeadTools";
 import { getCrmUser } from "@/lib/social-ai/auth";
 
@@ -14,6 +14,7 @@ interface SearchParams {
   channel?: string;
   follow?: string;
   tag?: string;
+  view?: string;
   page?: string;
 }
 
@@ -108,9 +109,26 @@ export default async function LeadsPage({
         </div>
       </div>
 
+      {/* Viste rapide */}
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-3 -mx-1 px-1">
+        {SAVED_VIEWS.map((v) => {
+          const active = Object.entries(v.params).every(([k, val]) => (searchParams as Record<string, string | undefined>)[k] === val);
+          return (
+            <Link
+              key={v.label}
+              href={active ? "/crm/leads" : `/crm/leads?${new URLSearchParams(v.params)}`}
+              className={`shrink-0 text-xs px-3 py-1.5 rounded-full border transition-colors whitespace-nowrap ${active ? "bg-[#E63B2E]/15 border-[#E63B2E]/40 text-white" : "bg-[#141414] border-white/[0.08] text-white/55 hover:text-white"}`}
+            >
+              {v.label}
+            </Link>
+          );
+        })}
+      </div>
+
       {/* Filters bar */}
       <form method="GET" className="flex flex-wrap gap-3 mb-6">
         {searchParams.channel && <input type="hidden" name="channel" value={searchParams.channel} />}
+        {searchParams.view && <input type="hidden" name="view" value={searchParams.view} />}
         <input
           name="q"
           type="search"
@@ -162,6 +180,7 @@ export default async function LeadsPage({
           <option value="">Tutti i promemoria</option>
           <option value="due">Da ricontattare oggi</option>
           <option value="planned">Con promemoria</option>
+          <option value="none">Senza prossima azione</option>
         </select>
         <button
           type="submit"
@@ -169,7 +188,7 @@ export default async function LeadsPage({
         >
           Filtra
         </button>
-        {(searchParams.q || searchParams.status || searchParams.stage || searchParams.channel || searchParams.follow || searchParams.tag) && (
+        {(searchParams.q || searchParams.status || searchParams.stage || searchParams.channel || searchParams.follow || searchParams.tag || searchParams.view) && (
           <Link
             href="/crm/leads"
             className="text-white/30 hover:text-white/60 text-sm px-3 py-2 transition-colors"

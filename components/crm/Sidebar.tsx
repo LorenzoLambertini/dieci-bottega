@@ -133,6 +133,18 @@ export function Sidebar({ profile }: SidebarProps) {
         </div>
       </div>
 
+      <div className="px-3 pt-3">
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new Event("crm:search"))}
+          className="w-full flex items-center gap-2 text-left text-white/35 hover:text-white/70 text-xs bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-2 transition-colors"
+        >
+          <span aria-hidden>🔍</span>
+          <span className="flex-1">Cerca…</span>
+          <kbd className="text-[10px] text-white/25">⌘K</kbd>
+        </button>
+      </div>
+
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
         {NAV.map(({ href, label, icon }) => {

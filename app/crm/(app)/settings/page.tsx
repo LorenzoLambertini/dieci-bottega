@@ -143,6 +143,13 @@ export default async function SettingsPage() {
         )}
       </div>
 
+      {isAdmin && (
+        <a href="/crm/health" className="block bg-[#141414] border border-white/[0.06] rounded-xl p-5 mb-6 hover:border-[#E63B2E]/30 transition-colors">
+          <h2 className="text-white font-semibold text-sm">🩺 Salute del sistema →</h2>
+          <p className="text-white/40 text-sm mt-1">Collegamenti configurati, errori di email, AI e webhook degli ultimi 7 giorni.</p>
+        </a>
+      )}
+
       {/* Social AI */}
       <a
         href="/crm/settings/social-ai"

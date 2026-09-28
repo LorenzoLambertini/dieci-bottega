@@ -14,6 +14,8 @@ const STATUS_LABEL: Record<LeadStatus, string> = {
   lost: "Perso",
 };
 
+const LOST_REASONS = ["Prezzo", "Ha scelto un altro", "Non risponde più", "Tempi", "Non in target", "Rimandato", "Altro"];
+
 interface LeadActionsProps {
   lead: Lead & { stage: PipelineStage | null; assigned_profile: Profile | null };
   stages: PipelineStage[];
@@ -26,6 +28,8 @@ export function LeadActions({ lead, stages, profiles }: LeadActionsProps) {
   const [noteText, setNoteText] = useState("");
   const [noteType, setNoteType] = useState<ActivityType>("note");
   const [saving, setSaving] = useState(false);
+  const [lostOpen, setLostOpen] = useState(false);
+  const [lostReason, setLostReason] = useState("");
 
   async function updateField(field: keyof Lead, value: string | null) {
     startTransition(async () => {
@@ -70,8 +74,13 @@ export function LeadActions({ lead, stages, profiles }: LeadActionsProps) {
             Stato
           </label>
           <select
+            key={lead.status}
             defaultValue={lead.status}
-            onChange={(e) => updateField("status", e.target.value)}
+            onChange={(e) => {
+              // "Perso": prima chiediamo il motivo, serve per capire dove si perdono i clienti
+              if (e.target.value === "lost") setLostOpen(true);
+              else updateField("status", e.target.value);
+            }}
             disabled={isPending}
             className="w-full bg-[#1a1a1a] border border-white/[0.08] rounded-lg px-3 py-2 text-white/80 text-sm focus:outline-none focus:border-[#E63B2E]/50 transition-colors disabled:opacity-50"
           >
@@ -84,6 +93,38 @@ export function LeadActions({ lead, stages, profiles }: LeadActionsProps) {
             )}
           </select>
         </div>
+
+        {lostOpen && (
+          <div className="bg-[#E63B2E]/[0.06] border border-[#E63B2E]/25 rounded-lg p-3 space-y-2">
+            <p className="text-white/75 text-xs font-semibold">Perché è perso?</p>
+            <div className="flex flex-wrap gap-1.5">
+              {LOST_REASONS.map((r) => (
+                <button key={r} type="button" onClick={() => setLostReason(r)} className={`text-[11px] rounded-full px-2.5 py-1 border ${lostReason === r ? "bg-[#E63B2E] border-[#E63B2E] text-white" : "border-white/15 text-white/60"}`}>{r}</button>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                disabled={!lostReason || isPending}
+                onClick={() =>
+                  startTransition(async () => {
+                    const supabase = createClient();
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    await (supabase.from("leads") as any)
+                      .update({ status: "lost", lost_reason: lostReason, next_action_at: null, next_action_note: null, updated_at: new Date().toISOString() })
+                      .eq("id", lead.id);
+                    setLostOpen(false);
+                    router.refresh();
+                  })
+                }
+                className="flex-1 bg-[#E63B2E] hover:bg-[#C44A38] disabled:opacity-40 text-white text-xs font-semibold rounded-lg py-1.5"
+              >
+                Segna come perso
+              </button>
+              <button type="button" onClick={() => { setLostOpen(false); setLostReason(""); router.refresh(); }} className="text-white/40 text-xs px-2">Annulla</button>
+            </div>
+          </div>
+        )}
 
         {/* Stage */}
         <div>

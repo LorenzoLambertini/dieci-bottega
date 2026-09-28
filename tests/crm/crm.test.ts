@@ -37,9 +37,10 @@ function fakeDb(tables: Record<string, { data?: unknown[]; count?: number }>) {
   return {
     from(t: string) {
       const res = { data: tables[t]?.data ?? [], count: tables[t]?.count ?? 0, error: null };
-      const b: Record<string, unknown> = {};
-      for (const m of ["select", "lte", "gte", "eq", "order", "limit"]) b[m] = () => b;
-      b.then = (ok: (v: unknown) => unknown) => Promise.resolve(res).then(ok);
+      const b: unknown = new Proxy(
+        {},
+        { get: (_o, k) => (k === "then" ? (ok: (v: unknown) => unknown) => Promise.resolve(res).then(ok) : () => b) }
+      );
       return b;
     },
   } as never;
@@ -50,21 +51,21 @@ describe("Email del mattino", () => {
     expect(await buildDigest(fakeDb({}))).toBeNull();
   });
 
-  it("promemoria, nuovi contatti e chat nel riepilogo, con escape HTML", async () => {
+  it("azioni di oggi, nuovi contatti e chat nel riepilogo, con escape HTML", async () => {
     const now = new Date("2026-09-29T07:00:00Z");
     const d = await buildDigest(
       fakeDb({
-        leads: { data: [{ id: "L1", name: "Mario <b>", company: "Bar", next_action_at: "2026-09-28T10:00:00Z", next_action_note: "Preventivo", source: "instagram" }] },
+        leads: { data: [{ id: "L1", name: "Mario <b>", company: "Bar", next_action_at: "2026-09-28T10:00:00Z", next_action_note: "Preventivo", source: "instagram", created_at: "2026-09-28T20:00:00Z", updated_at: "2026-09-28T20:00:00Z" }] },
         social_conversations: { count: 2 },
       }),
       now
     );
     expect(d).not.toBeNull();
-    expect(d!.subject).toContain("1 da ricontattare");
     expect(d!.subject).toContain("2 chat da seguire");
     expect(d!.html).toContain("Mario &lt;b&gt;");
-    expect(d!.html).toContain("Scaduto");
+    expect(d!.html).toContain("scaduto");
     expect(d!.text).toContain("/crm/leads/L1");
+    expect(d!.text).toContain("DA FARE OGGI");
   });
 });
 

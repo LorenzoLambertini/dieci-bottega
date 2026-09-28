@@ -117,6 +117,12 @@ export interface Database {
           updated_at: string;
           next_action_at: string | null;
           next_action_note: string | null;
+          stage_entered_at: string;
+          lost_reason: string | null;
+          referred_by: string | null;
+          do_not_contact: boolean;
+          marketing_consent: boolean | null;
+          consent_at: string | null;
           // future: tenant_id: string;
         };
         Insert: {
@@ -155,6 +161,11 @@ export interface Database {
           updated_at?: string;
           next_action_at?: string | null;
           next_action_note?: string | null;
+          lost_reason?: string | null;
+          referred_by?: string | null;
+          do_not_contact?: boolean;
+          marketing_consent?: boolean | null;
+          consent_at?: string | null;
         };
       };
       lead_tags: {

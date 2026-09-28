@@ -95,6 +95,16 @@ function LeadCard({
           {stages.map((s) => <option key={s.id} value={s.id}>→ {s.name}</option>)}
         </select>
       )}
+      {(() => {
+        const days = Math.floor((Date.now() - new Date(lead.stage_entered_at ?? lead.created_at).getTime()) / 86_400_000);
+        const noNext = !lead.next_action_at;
+        return (
+          <p className={`text-[10px] mb-2 ${days > 14 ? "text-[#E63B2E]" : "text-white/30"}`}>
+            {days <= 0 ? "Entrato oggi" : `Qui da ${days} giorn${days === 1 ? "o" : "i"}`}
+            {noNext && <span className="text-yellow-400/80"> · nessuna prossima azione</span>}
+          </p>
+        );
+      })()}
       <div className="flex items-center justify-between">
         <StatusBadge status={lead.status} />
         {lead.score > 0 && (

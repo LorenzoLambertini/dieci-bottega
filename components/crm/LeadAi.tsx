@@ -3,7 +3,7 @@
 /** Assistente AI e composizione email nella scheda contatto. */
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { aiAssist, sendEmailToLead } from "@/app/crm/(app)/leads/ai-actions";
+import { aiAssist, sendEmailToLead, updateFromMessage } from "@/app/crm/(app)/leads/ai-actions";
 import { fillTemplate, type TemplateVars } from "@/lib/crm/email";
 import { whatsappNumber } from "./ContactButtons";
 
@@ -39,7 +39,23 @@ export function LeadAiCard({
   const [composer, setComposer] = useState<{ subject: string; body: string; v: number } | null>(null);
   const wa = phone ? whatsappNumber(phone) : null;
 
-  function run(task: "whatsapp" | "email" | "summary" | "score") {
+  const [paste, setPaste] = useState<string | null>(null);
+
+  function analyze() {
+    if (!paste) return;
+    setBusy("extract");
+    setError(null);
+    start(async () => {
+      const r = await updateFromMessage(leadId, paste);
+      setBusy(null);
+      if (!r.ok) return setError(r.error ?? "Errore");
+      setPaste(null);
+      setOut({ kind: "extract", text: r.text ?? "" });
+      router.refresh();
+    });
+  }
+
+  function run(task: "whatsapp" | "email" | "summary" | "score" | "next" | "objection" | "dm" | "call") {
     setBusy(task);
     setError(null);
     start(async () => {
@@ -65,7 +81,26 @@ export function LeadAiCard({
         {email && <button type="button" disabled={pending} onClick={() => run("email")} className={chip}>{busy === "email" ? "Scrivo…" : "✉️ Bozza email"}</button>}
         <button type="button" disabled={pending} onClick={() => run("summary")} className={chip}>{busy === "summary" ? "Leggo…" : "📋 Riassunto"}</button>
         <button type="button" disabled={pending} onClick={() => run("score")} className={chip}>{busy === "score" ? "Valuto…" : "🎯 Valuta"}</button>
+        <button type="button" disabled={pending} onClick={() => run("dm")} className={chip}>{busy === "dm" ? "Scrivo…" : "📸 DM Instagram"}</button>
+        <button type="button" disabled={pending} onClick={() => run("call")} className={chip}>{busy === "call" ? "Scrivo…" : "📞 Proponi call"}</button>
+        <button type="button" disabled={pending} onClick={() => run("objection")} className={chip}>{busy === "objection" ? "Scrivo…" : "💶 Obiezione prezzo"}</button>
       </div>
+      <button type="button" disabled={pending} onClick={() => run("next")} className="w-full bg-white/[0.08] hover:bg-white/[0.14] text-white text-xs font-semibold rounded-lg py-2 transition-colors disabled:opacity-40">
+        {busy === "next" ? "Ci penso…" : "🧭 Cosa devo fare adesso?"}
+      </button>
+      {paste === null ? (
+        <button type="button" onClick={() => setPaste("")} className="w-full text-xs text-white/45 hover:text-white border border-dashed border-white/15 rounded-lg py-2">
+          📥 Incolla un messaggio del cliente e aggiorna la scheda
+        </button>
+      ) : (
+        <div className="space-y-2">
+          <textarea value={paste} onChange={(e) => setPaste(e.target.value)} rows={4} autoFocus placeholder="Es. «Ci servirebbe il sito entro Natale, budget circa 3.000€. Mi scrivi la prossima settimana?»" className="w-full bg-[#1a1a1a] border border-white/[0.08] rounded-lg px-3 py-2 text-white/85 text-sm placeholder:text-white/20 focus:outline-none focus:border-[#E63B2E]/50 resize-y" />
+          <div className="flex gap-2">
+            <button type="button" disabled={pending || paste.trim().length < 5} onClick={analyze} className="flex-1 bg-[#E63B2E] hover:bg-[#C44A38] text-white text-xs font-semibold rounded-lg py-2 disabled:opacity-40">{busy === "extract" ? "Analizzo…" : "Analizza e aggiorna"}</button>
+            <button type="button" onClick={() => setPaste(null)} className="text-white/40 text-xs px-3">Annulla</button>
+          </div>
+        </div>
+      )}
       {email && (
         <button type="button" onClick={() => setComposer({ subject: "", body: "", v: 0 })} className="w-full bg-[#E63B2E] hover:bg-[#C44A38] text-white text-xs font-semibold rounded-lg py-2 transition-colors">
           Scrivi email
@@ -75,6 +110,14 @@ export function LeadAiCard({
       {out && (
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-lg p-3 space-y-2">
           <p className="text-white/75 text-sm whitespace-pre-wrap leading-relaxed">{out.text}</p>
+          {["objection", "call", "dm"].includes(out.kind) && (
+            <div className="flex gap-2">
+              {wa && out.kind !== "dm" && (
+                <a href={`https://wa.me/${wa}?text=${encodeURIComponent(out.text)}`} target="_blank" rel="noopener noreferrer" className="flex-1 text-center bg-[#25D366]/15 hover:bg-[#25D366]/25 text-[#4be283] text-xs font-semibold rounded-lg py-2">Apri in WhatsApp</a>
+              )}
+              <button type="button" onClick={() => navigator.clipboard?.writeText(out.text)} className="flex-1 bg-white/[0.06] hover:bg-white/[0.1] text-white/70 text-xs rounded-lg py-2">Copia</button>
+            </div>
+          )}
           {out.kind === "whatsapp" && wa && (
             <div className="flex gap-2">
               <a href={`https://wa.me/${wa}?text=${encodeURIComponent(out.text)}`} target="_blank" rel="noopener noreferrer" className="flex-1 text-center bg-[#25D366]/15 hover:bg-[#25D366]/25 text-[#4be283] text-xs font-semibold rounded-lg py-2">
@@ -83,7 +126,7 @@ export function LeadAiCard({
               <button type="button" onClick={() => navigator.clipboard?.writeText(out.text)} className="bg-white/[0.06] hover:bg-white/[0.1] text-white/70 text-xs rounded-lg px-3">Copia</button>
             </div>
           )}
-          {(out.kind === "summary" || out.kind === "score") && <p className="text-white/30 text-[11px]">Salvato nello storico attività.</p>}
+          {(out.kind === "summary" || out.kind === "score") && <p className="text-white/30 text-[11px]">Salvato nello storico{out.kind === "summary" ? " e nella memoria del cliente" : ""}.</p>}
         </div>
       )}
       {composer && (

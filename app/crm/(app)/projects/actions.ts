@@ -4,6 +4,7 @@
 import { revalidatePath } from "next/cache";
 import { requireCrmUser } from "@/lib/social-ai/auth";
 import { createSocialClient } from "@/lib/social-ai/db";
+import { sanitizeChecklist } from "@/lib/crm/checklists";
 
 const PHASES = ["brief", "design", "revisioni", "sviluppo", "online", "manutenzione", "chiuso"];
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -44,6 +45,15 @@ export async function deleteProject(id: string): Promise<{ ok: boolean }> {
   await requireCrmUser(["admin"]);
   const db = await createSocialClient();
   await db.from("projects").delete().eq("id", id);
+  revalidatePath("/crm/projects");
+  return { ok: true };
+}
+
+export async function saveChecklist(id: string, items: unknown): Promise<{ ok: boolean; error?: string }> {
+  await requireCrmUser();
+  const db = await createSocialClient();
+  const { error } = await db.from("projects").update({ checklist: sanitizeChecklist(items), updated_at: new Date().toISOString() }).eq("id", id);
+  if (error) return { ok: false, error: error.message };
   revalidatePath("/crm/projects");
   return { ok: true };
 }

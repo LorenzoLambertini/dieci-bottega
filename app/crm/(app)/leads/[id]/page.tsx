@@ -51,6 +51,7 @@ export default async function LeadDetailPage({
 
   if (!lead) notFound();
   const currentUser = await getCrmUser();
+  const aiMemory = ((lead.metadata ?? {}) as { ai_memory?: { text?: string; at?: string } }).ai_memory;
   const sdb = await createSocialClient();
   const [templatesRes, quotesRes, meRes, projectsRes] = await Promise.all([
     sdb.from("email_templates").select("id, name, subject, body").order("position"),
@@ -171,10 +172,28 @@ export default async function LeadDetailPage({
               </div>
               <div className="flex flex-col items-end gap-2 shrink-0">
                 <StatusBadge status={lead.status} />
-                <EditContactButton lead={{ id: lead.id, name: lead.name, email: lead.email, phone: lead.phone, company: lead.company, website: lead.website, notes: lead.notes }} />
+                <EditContactButton lead={{ id: lead.id, name: lead.name, email: lead.email, phone: lead.phone, company: lead.company, website: lead.website, notes: lead.notes, referred_by: lead.referred_by, marketing_consent: lead.marketing_consent, do_not_contact: lead.do_not_contact }} />
               </div>
             </div>
-            <ContactButtons phone={lead.phone} email={lead.email} name={lead.name} />
+            {(lead.do_not_contact || lead.status === "lost" || lead.referred_by || lead.marketing_consent != null) && (
+              <div className="flex flex-wrap gap-1.5 mt-3">
+                {lead.do_not_contact && <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#E63B2E]/15 text-[#E63B2E]">⛔ Non contattare</span>}
+                {lead.status === "lost" && lead.lost_reason && <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/[0.06] text-white/60">Perso: {lead.lost_reason}</span>}
+                {lead.referred_by && <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/[0.06] text-white/60">Segnalato da {lead.referred_by}</span>}
+                {lead.marketing_consent != null && (
+                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/[0.06] text-white/60">
+                    Marketing: {lead.marketing_consent ? `sì${lead.consent_at ? ` (${new Date(lead.consent_at).toLocaleDateString("it-IT", { timeZone: "Europe/Rome" })})` : ""}` : "no"}
+                  </span>
+                )}
+              </div>
+            )}
+            <ContactButtons phone={lead.do_not_contact ? null : lead.phone} email={lead.do_not_contact ? null : lead.email} name={lead.name} />
+            {aiMemory?.text && (
+              <div className="mt-4 bg-white/[0.03] border border-white/[0.06] rounded-lg px-4 py-3">
+                <p className="text-white/35 text-[10px] uppercase tracking-wider mb-1">🧠 Memoria AI · {new Date(aiMemory.at ?? Date.now()).toLocaleDateString("it-IT", { timeZone: "Europe/Rome" })}</p>
+                <p className="text-white/65 text-sm whitespace-pre-wrap leading-relaxed">{aiMemory.text}</p>
+              </div>
+            )}
 
             {/* Info grid */}
             <div className="mt-5 pt-5 border-t border-white/[0.06] grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -420,6 +439,11 @@ export default async function LeadDetailPage({
             profiles={profiles}
           />
           {currentUser?.role === "admin" && <MergeButton keepId={lead.id} keepName={lead.name} />}
+          {currentUser?.role === "admin" && (
+            <a href={`/api/crm/leads/${lead.id}/export`} className="block w-full text-center text-xs text-white/40 hover:text-white border border-white/[0.08] rounded-lg px-3 py-2">
+              Esporta i dati del contatto (privacy)
+            </a>
+          )}
           {currentUser?.role === "admin" && <DeleteLeadButton leadId={lead.id} name={lead.name ?? lead.email ?? "questo contatto"} />}
         </div>
       </div>

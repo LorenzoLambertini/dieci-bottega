@@ -32,7 +32,7 @@ export function AutomationDelete({ id }: { id: string }) {
   );
 }
 
-export function NewAutomationForm({ stages }: { stages: string[] }) {
+export function NewAutomationForm({ stages, people }: { stages: string[]; people: { id: string; name: string }[] }) {
   const [state, action, pending] = useActionState(createAutomation, null);
   const [kind, setKind] = useState("follow_up");
   const [when, setWhen] = useState("lead_created");
@@ -67,6 +67,7 @@ export function NewAutomationForm({ stages }: { stages: string[] }) {
           <select name="action" value={kind} onChange={(e) => setKind(e.target.value)} className={input}>
             <option value="follow_up">Imposta un promemoria</option>
             <option value="add_tag">Aggiungi un tag</option>
+            <option value="assign">Assegna a una persona</option>
             <option value="create_project">Crea il progetto</option>
           </select>
         </div>
@@ -87,6 +88,12 @@ export function NewAutomationForm({ stages }: { stages: string[] }) {
         </div>
       )}
       {kind === "add_tag" && <input name="tag" placeholder="Tag (es. instagram, caldo)" className={input} />}
+      {kind === "assign" && (
+        <select name="user_id" className={input} defaultValue="">
+          <option value="" disabled>Chi se ne occupa?</option>
+          {people.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+        </select>
+      )}
       {state && !state.ok && <p className="text-[#E63B2E] text-xs">{state.error}</p>}
       <button type="submit" disabled={pending} className="bg-[#E63B2E] hover:bg-[#C44A38] disabled:opacity-40 text-white text-sm font-semibold px-4 py-2 rounded-lg">
         {pending ? "Salvataggio…" : "Crea automazione"}

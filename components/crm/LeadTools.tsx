@@ -40,6 +40,7 @@ export function NewLeadForm() {
         <Field label="Telefono"><input name="phone" type="tel" inputMode="tel" className={inputCls} placeholder="+39 333 1234567" /></Field>
         <Field label="Email"><input name="email" type="email" inputMode="email" className={inputCls} placeholder="mario@esempio.it" /></Field>
         <Field label="Sito web"><input name="website" className={inputCls} placeholder="trattoriadamario.it" /></Field>
+        <Field label="Segnalato da (se passaparola)"><input name="referred_by" className={inputCls} placeholder="es. Marco del Bar Centrale" /></Field>
         <Field label="Da dove arriva">
           <select name="source" defaultValue="manuale" className={inputCls}>
             <option value="manuale">Inserito a mano</option>
@@ -81,6 +82,9 @@ export interface EditableLead {
   company: string | null;
   website: string | null;
   notes: string | null;
+  referred_by?: string | null;
+  marketing_consent?: boolean | null;
+  do_not_contact?: boolean;
 }
 
 export function EditContactButton({ lead }: { lead: EditableLead }) {
@@ -121,6 +125,11 @@ export function EditContactButton({ lead }: { lead: EditableLead }) {
         </div>
         <Field label="Sito web"><input name="website" defaultValue={lead.website ?? ""} className={inputCls} /></Field>
         <Field label="Note"><textarea name="notes" rows={4} defaultValue={lead.notes ?? ""} className={`${inputCls} resize-none`} /></Field>
+        <Field label="Segnalato da (passaparola)"><input name="referred_by" defaultValue={lead.referred_by ?? ""} placeholder="es. Marco del Bar Centrale" className={inputCls} /></Field>
+        <div className="space-y-2 text-sm text-white/70">
+          <label className="flex items-center gap-2"><input type="checkbox" name="marketing_consent" defaultChecked={!!lead.marketing_consent} className="accent-[#E63B2E]" /> Consenso a ricevere comunicazioni commerciali</label>
+          <label className="flex items-center gap-2"><input type="checkbox" name="do_not_contact" defaultChecked={!!lead.do_not_contact} className="accent-[#E63B2E]" /> ⛔ Non contattare (ha chiesto di non essere ricontattato)</label>
+        </div>
         <ErrorLine state={state} />
         <div className="flex gap-2 justify-end">
           <button type="button" onClick={() => setOpen(false)} className={ghostBtn}>Annulla</button>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { SearchButton } from "./CommandPalette";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -59,6 +60,8 @@ export function MobileNav({ profile }: MobileNavProps) {
           <img src="/logo-mark.png" alt="Dieci Bottega" className="h-6 w-auto shrink-0" />
           <span className="text-white font-semibold text-sm">Dieci Bottega</span>
         </div>
+        <div className="flex items-center gap-1">
+        <SearchButton className="text-white/60 hover:text-white p-1.5 text-base" />
         <button
           onClick={() => setOpen(true)}
           className="text-white/50 hover:text-white transition-colors p-1"
@@ -68,6 +71,7 @@ export function MobileNav({ profile }: MobileNavProps) {
             <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
           </svg>
         </button>
+        </div>
       </div>
 
       {/* Drawer overlay */}

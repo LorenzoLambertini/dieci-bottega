@@ -27,11 +27,11 @@ export default async function ReportsPage() {
   const months = monthKeys(12);
   const since = `${months[0].key}-01T00:00:00Z`;
   const [leadsRes, quotesRes] = await Promise.all([
-    db.from("leads").select("id, created_at, source, status").gte("created_at", since).limit(10000),
-    db.from("quotes").select("total, accepted_at, status, created_at, lead:leads(created_at)").limit(5000),
+    db.from("leads").select("id, created_at, source, status, lost_reason, scheduled:metadata->>scheduled_slot").gte("created_at", since).limit(10000),
+    db.from("quotes").select("lead_id, total, accepted_at, status, created_at, lead:leads(created_at, source)").limit(5000),
   ]);
-  const leads = (leadsRes.data ?? []) as { id: string; created_at: string; source: string | null; status: string }[];
-  const quotes = (quotesRes.data ?? []) as unknown as { total: number; accepted_at: string | null; status: string; created_at: string; lead: { created_at: string } | null }[];
+  const leads = (leadsRes.data ?? []) as unknown as { id: string; created_at: string; source: string | null; status: string; lost_reason: string | null; scheduled: string | null }[];
+  const quotes = (quotesRes.data ?? []) as unknown as { lead_id: string; total: number; accepted_at: string | null; status: string; created_at: string; lead: { created_at: string; source: string | null } | null }[];
   const accepted = quotes.filter((q) => q.status === "accepted" && q.accepted_at);
 
   const leadsPerMonth: Point[] = months.map((m) => ({ label: m.label, full: m.full, value: leads.filter((l) => l.created_at.slice(0, 7) === m.key).length }));
@@ -57,6 +57,29 @@ export default async function ReportsPage() {
   const days = accepted.filter((q) => q.lead?.created_at).map((q) => (new Date(q.accepted_at!).getTime() - new Date(q.lead!.created_at).getTime()) / 86_400_000);
   const avgDays = days.length ? Math.round(days.reduce((a, b) => a + b, 0) / days.length) : null;
   const sentQuotes = quotes.filter((q) => q.status !== "draft").length;
+
+  // Funnel: contatti → call fissata → preventivo inviato → cliente (sui contatti degli ultimi 12 mesi)
+  const leadIds = new Set(leads.map((l) => l.id));
+  const quoted = new Set(quotes.filter((q) => q.status !== "draft" && leadIds.has(q.lead_id)).map((q) => q.lead_id));
+  const withCall = leads.filter((l) => l.scheduled || quoted.has(l.id) || l.status === "won").length;
+  const funnelSteps = [
+    { label: "Contatti", value: leads.length },
+    { label: "Call fissata", value: withCall },
+    { label: "Preventivo inviato", value: leads.filter((l) => quoted.has(l.id) || l.status === "won").length },
+    { label: "Clienti", value: won },
+  ];
+  const pct = (a: number, b: number) => (b ? `${Math.round((a / b) * 100)}%` : "—");
+
+  const lostMap = new Map<string, number>();
+  for (const l of leads.filter((x) => x.status === "lost")) lostMap.set(l.lost_reason ?? "Non indicato", (lostMap.get(l.lost_reason ?? "Non indicato") ?? 0) + 1);
+  const lostRows = [...lostMap.entries()].sort((a, b) => b[1] - a[1]).map(([label, value]) => ({ label, value }));
+
+  const revBySource = new Map<string, number>();
+  for (const q of accepted) {
+    const k = SOURCE_LABEL[q.lead?.source ?? ""] ?? q.lead?.source ?? "altro";
+    revBySource.set(k, (revBySource.get(k) ?? 0) + Number(q.total));
+  }
+  const revRows = [...revBySource.entries()].sort((a, b) => b[1] - a[1]).map(([label, value]) => ({ label, value }));
 
   const tiles = [
     ["Contatti (12 mesi)", String(leads.length)],
@@ -102,6 +125,31 @@ export default async function ReportsPage() {
         <div className="bg-[#141414] border border-white/[0.06] rounded-xl p-5">
           <h2 className="text-white font-semibold text-sm mb-4">A che punto sono</h2>
           <HBarList rows={funnel} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
+        <div className="bg-[#141414] border border-white/[0.06] rounded-xl p-5">
+          <h2 className="text-white font-semibold text-sm mb-4">Dove si fermano</h2>
+          <div className="space-y-3">
+            {funnelSteps.map((f, i) => (
+              <div key={f.label}>
+                <div className="flex items-baseline justify-between text-sm mb-1">
+                  <span className="text-white/75">{f.label}</span>
+                  <span className="text-white/60 tabular-nums text-xs">{f.value}{i > 0 && <span className="text-white/35"> · {pct(f.value, funnelSteps[i - 1].value)} del passo prima</span>}</span>
+                </div>
+                <div className="h-2 rounded-full bg-white/[0.05] overflow-hidden"><div className="h-full rounded-full" style={{ width: `${funnelSteps[0].value ? (f.value / funnelSteps[0].value) * 100 : 0}%`, minWidth: f.value ? 4 : 0, background: "#3987e5" }} /></div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="bg-[#141414] border border-white/[0.06] rounded-xl p-5">
+          <h2 className="text-white font-semibold text-sm mb-4">Perché li perdiamo</h2>
+          {lostRows.length ? <HBarList rows={lostRows} /> : <p className="text-white/30 text-sm">Nessun contatto perso.</p>}
+        </div>
+        <div className="bg-[#141414] border border-white/[0.06] rounded-xl p-5">
+          <h2 className="text-white font-semibold text-sm mb-4">Fatturato per canale</h2>
+          {revRows.length ? <HBarList rows={revRows} color={CHART_AQUA} format={eur} /> : <p className="text-white/30 text-sm">Ancora nessun preventivo accettato.</p>}
         </div>
       </div>
 

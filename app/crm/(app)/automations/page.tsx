@@ -26,7 +26,7 @@ interface CrmAutomation {
   name: string;
   trigger: string;
   conditions: { status?: string; stage_name?: string; source_in?: string[] };
-  action: { type: string; days?: number; note?: string; tag?: string };
+  action: { type: string; days?: number; note?: string; tag?: string; user_id?: string };
   is_active: boolean;
   run_count: number;
   last_run_at: string | null;
@@ -46,19 +46,23 @@ function describe(a: CrmAutomation): string {
         ? `tag #${a.action.tag}`
         : a.action.type === "create_project"
           ? "crea il progetto"
-          : a.action.type;
+          : a.action.type === "assign"
+            ? "assegna a una persona"
+            : a.action.type;
   return `${when} → ${then}`;
 }
 
 export default async function AutomationsPage() {
   const supabase = await createClient();
   const sdb = await createSocialClient();
-  const [{ data: workflows }, autoRes, stagesRes, user] = await Promise.all([
+  const [{ data: workflows }, autoRes, stagesRes, user, peopleRes] = await Promise.all([
     supabase.from("workflows").select("*").order("created_at", { ascending: false }),
     sdb.from("crm_automations").select("*").order("created_at"),
     sdb.from("pipeline_stages").select("name").order("position"),
     getCrmUser(),
+    sdb.from("profiles").select("id, full_name, email").order("full_name"),
   ]);
+  const people = ((peopleRes.data ?? []) as { id: string; full_name: string | null; email: string }[]).map((p) => ({ id: p.id, name: p.full_name ?? p.email }));
   const wfs = (workflows ?? []) as Workflow[];
   const autos = (autoRes.data ?? []) as CrmAutomation[];
   const stages = ((stagesRes.data ?? []) as { name: string }[]).map((s) => s.name);
@@ -89,7 +93,7 @@ export default async function AutomationsPage() {
             </div>
           ))}
         </div>
-        <div className="lg:col-span-2">{isAdmin ? <NewAutomationForm stages={stages} /> : <p className="text-white/30 text-sm">Solo gli admin possono creare automazioni.</p>}</div>
+        <div className="lg:col-span-2">{isAdmin ? <NewAutomationForm stages={stages} people={people} /> : <p className="text-white/30 text-sm">Solo gli admin possono creare automazioni.</p>}</div>
       </div>
 
       {wfs.length > 0 && (

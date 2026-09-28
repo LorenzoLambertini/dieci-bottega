@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Sidebar } from "@/components/crm/Sidebar";
 import { MobileNav } from "@/components/crm/MobileNav";
+import { CommandPalette } from "@/components/crm/CommandPalette";
 import type { Profile } from "@/lib/supabase/types";
 
 export const metadata = {
@@ -33,6 +34,7 @@ export default async function CRMLayout({
       <Sidebar profile={profile} />
       {/* Mobile top bar + drawer + bottom tabs */}
       <MobileNav profile={profile} />
+      <CommandPalette />
       {/* Main content */}
       <main className="lg:pl-[220px] min-h-screen pt-[56px] pb-[calc(64px+env(safe-area-inset-bottom))] lg:pt-0 lg:pb-0">
         <div className="max-w-[1400px] mx-auto px-4 py-5 lg:px-8 lg:py-8">

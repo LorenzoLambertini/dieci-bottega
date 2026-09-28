@@ -4,7 +4,8 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { deleteProject, updateProject } from "@/app/crm/(app)/projects/actions";
+import { deleteProject, saveChecklist, updateProject } from "@/app/crm/(app)/projects/actions";
+import { checklistFor, type CheckItem } from "@/lib/crm/checklists";
 
 export const PHASES: { id: string; label: string; color: string }[] = [
   { id: "brief", label: "Brief", color: "#9CA3AF" },
@@ -31,6 +32,7 @@ export interface ProjectRow {
   care_monthly: number | null;
   care_renewal_date: string | null;
   notes: string | null;
+  checklist?: CheckItem[] | null;
   lead: { name: string; company: string | null } | null;
 }
 
@@ -45,6 +47,16 @@ export function ProjectCard({ p, isAdmin }: { p: ProjectRow; isAdmin: boolean })
   const [pending, start] = useTransition();
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [items, setItems] = useState<CheckItem[]>(p.checklist ?? []);
+  const [newItem, setNewItem] = useState("");
+  const doneCount = items.filter((i) => i.done).length;
+  const saveItems = (next: CheckItem[]) => {
+    setItems(next);
+    start(async () => {
+      const r = await saveChecklist(p.id, next);
+      if (!r.ok) setError(r.error ?? "Errore");
+    });
+  };
   const phase = PHASES.find((x) => x.id === p.phase) ?? PHASES[0];
   const overdue = p.due_date && !["online", "manutenzione", "chiuso"].includes(p.phase) && p.due_date < today();
   const toCollect = Number(p.value) - (p.deposit_paid_at ? Number(p.deposit_amount) : 0) - (p.balance_paid_at ? Number(p.value) - Number(p.deposit_amount) : 0);
@@ -83,6 +95,32 @@ export function ProjectCard({ p, isAdmin }: { p: ProjectRow; isAdmin: boolean })
         {p.due_date && <span className={overdue ? "text-[#E63B2E] font-semibold" : "text-white/40"}>consegna {new Date(p.due_date).toLocaleDateString("it-IT")}</span>}
         {p.care_plan && <span className="text-teal-400">{p.care_plan}{p.care_renewal_date ? ` · rinnovo ${new Date(p.care_renewal_date).toLocaleDateString("it-IT")}` : ""}</span>}
       </div>
+
+      {items.length > 0 ? (
+        <details className="group">
+          <summary className="cursor-pointer list-none flex items-center gap-2 text-xs text-white/50">
+            <span className="flex-1 h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+              <span className="block h-full bg-green-500/70" style={{ width: `${(doneCount / items.length) * 100}%` }} />
+            </span>
+            <span className="tabular-nums shrink-0">Checklist {doneCount}/{items.length}</span>
+          </summary>
+          <div className="mt-2 space-y-1">
+            {items.map((it, i) => (
+              <label key={i} className="flex items-start gap-2 text-sm text-white/70">
+                <input type="checkbox" checked={it.done} onChange={() => saveItems(items.map((x, j) => (j === i ? { ...x, done: !x.done } : x)))} className="mt-1 accent-green-500" />
+                <span className={it.done ? "line-through text-white/30" : ""}>{it.label}</span>
+              </label>
+            ))}
+            <form onSubmit={(e) => { e.preventDefault(); if (newItem.trim()) { saveItems([...items, { label: newItem.trim(), done: false }]); setNewItem(""); } }} className="flex gap-2 pt-1">
+              <input value={newItem} onChange={(e) => setNewItem(e.target.value)} placeholder="Aggiungi voce…" className={input} />
+            </form>
+          </div>
+        </details>
+      ) : (
+        <button type="button" onClick={() => saveItems(checklistFor(p.name))} className="text-[11px] text-white/45 hover:text-white border border-dashed border-white/15 rounded-md px-2 py-1">
+          + Crea la checklist di avvio (materiali da chiedere al cliente)
+        </button>
+      )}
 
       <div className="flex flex-wrap gap-1.5">
         <button type="button" disabled={pending} onClick={() => save({ deposit_paid_at: p.deposit_paid_at ? null : today() })} className={`text-[11px] rounded-md px-2 py-1 ${p.deposit_paid_at ? "bg-green-500/10 text-green-400" : "bg-white/[0.05] text-white/50"}`}>
