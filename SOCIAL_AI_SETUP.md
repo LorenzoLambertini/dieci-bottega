@@ -182,7 +182,7 @@ TEAM_EMAILS=
 
 # Social AI
 ANTHROPIC_API_KEY=
-ANTHROPIC_MODEL=claude-opus-5
+ANTHROPIC_MODEL=claude-sonnet-5-5
 SOCIAL_TOKEN_ENCRYPTION_KEY=        # openssl rand -hex 32  (NON cambiarla dopo: i token salvati diventerebbero illeggibili)
 META_APP_ID=
 META_APP_SECRET=
