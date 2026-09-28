@@ -36,8 +36,14 @@ function setup(): boolean {
 
 /** Invia a tutti i dispositivi iscritti del team; rimuove le iscrizioni scadute. */
 export async function notifyTeam(payload: PushPayload, db?: SupabaseClient): Promise<number> {
+  return (await notifyTeamDetailed(payload, db)).sent;
+}
+
+/** Come notifyTeam, ma riporta anche gli errori (per il pulsante "Prova"). */
+export async function notifyTeamDetailed(payload: PushPayload, db?: SupabaseClient): Promise<{ sent: number; total: number; errors: string[] }> {
+  const errors: string[] = [];
   try {
-    if (!setup()) return 0;
+    if (!setup()) return { sent: 0, total: 0, errors: ["Chiavi VAPID non configurate su Vercel"] };
     const admin = db ?? createAdminClient();
     const { data } = await admin.from("push_subscriptions").select("id, endpoint, p256dh, auth");
     const subs = (data ?? []) as { id: string; endpoint: string; p256dh: string; auth: string }[];
@@ -45,17 +51,19 @@ export async function notifyTeam(payload: PushPayload, db?: SupabaseClient): Pro
     await Promise.all(
       subs.map(async (s) => {
         try {
-          await webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, JSON.stringify(payload), { TTL: 3600 });
+          await webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, JSON.stringify(payload), { TTL: 3600, urgency: "high" });
           sent++;
         } catch (e) {
-          const code = (e as { statusCode?: number }).statusCode;
-          if (code === 404 || code === 410) await admin.from("push_subscriptions").delete().eq("id", s.id);
+          const err = e as { statusCode?: number; body?: string; message?: string };
+          const host = (() => { try { return new URL(s.endpoint).host; } catch { return "?"; } })();
+          errors.push(`${host}: ${err.statusCode ?? ""} ${(err.body || err.message || "errore").toString().slice(0, 160)}`.trim());
+          if (err.statusCode === 404 || err.statusCode === 410) await admin.from("push_subscriptions").delete().eq("id", s.id);
         }
       })
     );
-    return sent;
+    return { sent, total: subs.length, errors };
   } catch (e) {
     console.error("[notify] push:", (e as Error).message);
-    return 0;
+    return { sent: 0, total: 0, errors: [(e as Error).message] };
   }
 }

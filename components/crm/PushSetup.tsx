@@ -27,9 +27,53 @@ export function PushSetup() {
       if (Notification.permission === "denied") return setState("denied");
       const reg = await navigator.serviceWorker.register("/crm-sw.js", { scope: "/crm/" });
       const sub = await reg.pushManager.getSubscription();
+      if (sub && Notification.permission === "granted") {
+        // Autoriparazione: il server deve sempre avere l'iscrizione di questo dispositivo
+        await subscribeAndSave(reg).catch(() => undefined);
+      }
       setState(sub ? "on" : "off");
     })().catch(() => setState("unsupported"));
   }, []);
+
+  /** Iscrive (o reiscrive, se la chiave è cambiata o `fresh`) e salva sul server. */
+  async function subscribeAndSave(reg: ServiceWorkerRegistration, fresh = false) {
+    let sub = await reg.pushManager.getSubscription();
+    const key = b64ToUint8(KEY);
+    const current = sub?.options.applicationServerKey ? new Uint8Array(sub.options.applicationServerKey) : null;
+    const sameKey = !!current && current.length === key.length && current.every((b, i) => b === key[i]);
+    if (sub && (fresh || !sameKey)) {
+      await sub.unsubscribe().catch(() => false);
+      sub = null;
+    }
+    if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key as BufferSource });
+    const r = await savePushSubscription(JSON.parse(JSON.stringify(sub)), navigator.userAgent);
+    if (!r.ok) throw new Error(r.error);
+  }
+
+  async function test() {
+    setBusy(true);
+    setMsg(null);
+    try {
+      const reg = await navigator.serviceWorker.register("/crm-sw.js", { scope: "/crm/" });
+      await subscribeAndSave(reg);
+      let t = await sendTestPush();
+      if (t.ok && !t.sent) {
+        // iscrizione non valida: se ne crea una nuova e si riprova
+        await subscribeAndSave(reg, true);
+        t = await sendTestPush();
+      }
+      if (!t.ok) return setMsg(t.error ?? "Errore");
+      setMsg(
+        t.sent
+          ? `Inviata a ${t.sent} dispositiv${t.sent === 1 ? "o" : "i"} ✓`
+          : `Non inviata${t.errors?.length ? `: ${t.errors.join(" · ")}` : " (nessun dispositivo iscritto)"}`
+      );
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : "Errore");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function enable() {
     setBusy(true);
@@ -39,12 +83,10 @@ export function PushSetup() {
       if (perm !== "granted") { setState(perm === "denied" ? "denied" : "off"); return; }
       const reg = await navigator.serviceWorker.register("/crm-sw.js", { scope: "/crm/" });
       await navigator.serviceWorker.ready;
-      const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToUint8(KEY) as BufferSource });
-      const r = await savePushSubscription(JSON.parse(JSON.stringify(sub)), navigator.userAgent);
-      if (!r.ok) throw new Error(r.error);
+      await subscribeAndSave(reg);
       setState("on");
       const t = await sendTestPush();
-      setMsg(t.ok ? "Fatto! Dovrebbe arrivarti una notifica di prova." : t.error ?? null);
+      setMsg(t.ok ? (t.sent ? "Fatto! Dovrebbe arrivarti una notifica di prova." : `Iscritto, ma l'invio non è riuscito: ${t.errors?.join(" · ") || "riprova con Prova"}`) : t.error ?? null);
     } catch (e) {
       setMsg(e instanceof Error ? e.message : "Errore");
     } finally {
@@ -76,7 +118,7 @@ export function PushSetup() {
       {state === "on" && (
         <div className="flex gap-2 flex-wrap">
           <span className="text-green-400 text-xs py-2">✓ Notifiche attive su questo dispositivo</span>
-          <button type="button" disabled={busy} onClick={async () => { const t = await sendTestPush(); setMsg(t.ok ? `Inviata a ${t.sent} dispositiv${t.sent === 1 ? "o" : "i"}` : t.error ?? null); }} className={btn}>Prova</button>
+          <button type="button" disabled={busy} onClick={test} className={btn}>{busy ? "Invio…" : "Prova"}</button>
           <button type="button" disabled={busy} onClick={disable} className="text-white/35 hover:text-white text-xs px-2">Disattiva</button>
         </div>
       )}
