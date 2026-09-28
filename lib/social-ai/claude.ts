@@ -21,7 +21,16 @@ export function anthropicConfigured(): boolean {
 export function defaultLlm(): LlmClient {
   return {
     createMessage(params) {
-      if (!singleton) singleton = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 2, timeout: 45_000 });
+      if (!singleton) {
+        // Chiavi API non legate a un workspace richiedono l'ID del workspace (ANTHROPIC_WORKSPACE_ID)
+        const workspace = process.env.ANTHROPIC_WORKSPACE_ID?.trim();
+        singleton = new Anthropic({
+          apiKey: process.env.ANTHROPIC_API_KEY,
+          maxRetries: 2,
+          timeout: 45_000,
+          ...(workspace ? { defaultHeaders: { "anthropic-workspace-id": workspace } } : {}),
+        });
+      }
       return singleton.messages.create(params);
     },
   };
