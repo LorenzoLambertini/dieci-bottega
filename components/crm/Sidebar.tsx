@@ -96,9 +96,7 @@ export function Sidebar({ profile }: SidebarProps) {
       {/* Brand */}
       <div className="px-5 py-5 border-b border-white/[0.06]">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[#E63B2E] flex items-center justify-center shrink-0">
-            <span className="text-white font-black text-xs tracking-tight">10</span>
-          </div>
+          <img src="/logo-mark.png" alt="Dieci Bottega" className="h-7 w-auto shrink-0" />
           <div>
             <p className="text-white font-semibold text-sm leading-none">Dieci Bottega</p>
             <p className="text-white/30 text-[10px] leading-none mt-0.5">CRM interno</p>

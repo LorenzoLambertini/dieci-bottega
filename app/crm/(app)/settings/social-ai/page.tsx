@@ -87,16 +87,16 @@ export default async function SocialAiSettingsPage({ searchParams }: { searchPar
           const connected = accs.filter((a) => a.status === "connected");
           const caps = PROVIDERS[p].capabilities;
           return (
-            <Card key={p} title={<span className="flex items-center gap-2"><PlatformBadge platform={p} full /> {connected.length ? "Connected" : accs.some((a) => a.status === "requires_approval") ? "Requires approval" : "Disconnected"}</span>}
+            <Card key={p} title={<span className="flex items-center gap-2 min-w-0"><PlatformBadge platform={p} full /> <span className="text-white/60 font-medium text-xs truncate">{connected.length ? "Connected" : accs.some((a) => a.status === "requires_approval") ? "Requires approval" : "Disconnected"}</span></span>}
               action={isAdmin && platformConfigured(p) ? (
-                <a href={`/api/social/oauth/${OAUTH_PATH[p]}`} className="text-xs bg-[#E63B2E] hover:bg-[#C44A38] text-white font-semibold px-3 py-1.5 rounded-lg">{accs.length ? "Reconnect" : "Collega"}</a>
-              ) : !platformConfigured(p) ? <span className="text-white/30 text-xs">Credenziali app mancanti</span> : undefined}>
+                <a href={`/api/social/oauth/${OAUTH_PATH[p]}`} className="shrink-0 whitespace-nowrap text-xs bg-[#E63B2E] hover:bg-[#C44A38] text-white font-semibold px-3 py-1.5 rounded-lg">{accs.length ? "Ricollega" : "Collega"}</a>
+              ) : !platformConfigured(p) ? <span className="shrink-0 text-white/30 text-xs">Credenziali app mancanti</span> : undefined}>
               <div className="divide-y divide-white/[0.04]">
                 {accs.map((a) => (
                   <div key={a.id} className="px-5 py-3 text-xs space-y-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-white/80 text-sm truncate">{a.username ? `@${a.username}` : a.account_name ?? a.id}</p>
-                      <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-white/80 text-sm truncate min-w-0">{a.username ? `@${a.username}` : a.account_name ?? a.id}</p>
+                      <div className="flex items-center gap-2 shrink-0">
                         <Pill tone={a.status === "connected" ? "green" : a.status === "requires_approval" ? "yellow" : a.status === "error" ? "red" : "gray"}>{a.status}</Pill>
                         {isAdmin && a.status !== "disconnected" && <DisconnectButton id={a.id} name={a.account_name ?? p} />}
                       </div>
@@ -106,7 +106,7 @@ export default async function SocialAiSettingsPage({ searchParams }: { searchPar
                     {a.last_error && <p className="text-[#E63B2E]/70">{a.last_error}</p>}
                   </div>
                 ))}
-                <div className="px-5 py-3 grid grid-cols-2 gap-x-4 gap-y-1.5">
+                <div className="px-5 py-3 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5">
                   {(Object.keys(CAP_LABEL) as Capability[]).map((c) => {
                     const st = caps[c].status === "supported" && !connected.length ? "not_connected" : caps[c].status;
                     return (

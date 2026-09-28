@@ -4,18 +4,20 @@
  */
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { SocialIcon } from "./icons";
 
 export const PLATFORM_META: Record<string, { label: string; short: string; className: string }> = {
-  instagram: { label: "Instagram", short: "IG", className: "bg-pink-500/10 text-pink-400 border-pink-500/20" },
-  facebook: { label: "Facebook", short: "FB", className: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
-  linkedin: { label: "LinkedIn", short: "IN", className: "bg-sky-500/10 text-sky-400 border-sky-500/20" },
+  instagram: { label: "Instagram", short: "IG", className: "bg-[#E4405F]/10 text-[#F06283] border-[#E4405F]/25" },
+  facebook: { label: "Facebook", short: "FB", className: "bg-[#1877F2]/10 text-[#4B95F5] border-[#1877F2]/25" },
+  linkedin: { label: "LinkedIn", short: "IN", className: "bg-[#0A66C2]/10 text-[#3D8BD9] border-[#0A66C2]/25" },
   tiktok: { label: "TikTok", short: "TT", className: "bg-white/10 text-white/70 border-white/20" },
 };
 
 export function PlatformBadge({ platform, full }: { platform: string; full?: boolean }) {
   const m = PLATFORM_META[platform] ?? { label: platform, short: platform.slice(0, 2).toUpperCase(), className: "bg-white/10 text-white/40 border-white/10" };
   return (
-    <span className={`inline-flex items-center text-[10px] font-semibold px-1.5 py-0.5 rounded border uppercase tracking-wide ${m.className}`}>
+    <span title={m.label} className={`inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded border uppercase tracking-wide whitespace-nowrap ${m.className}`}>
+      <SocialIcon platform={platform} className={full ? "w-3.5 h-3.5" : "w-3 h-3"} />
       {full ? m.label : m.short}
     </span>
   );

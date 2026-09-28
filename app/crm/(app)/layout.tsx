@@ -28,7 +28,7 @@ export default async function CRMLayout({
     .single<Profile>();
 
   return (
-    <div className="min-h-screen bg-[#0c0c0c] text-white">
+    <div className="crm-app min-h-screen bg-[#0c0c0c] text-white">
       {/* Desktop sidebar */}
       <Sidebar profile={profile} />
       {/* Mobile top bar + drawer + bottom tabs */}
