@@ -2,7 +2,7 @@
 
 import { requireCrmUser } from "@/lib/social-ai/auth";
 import { createSocialClient } from "@/lib/social-ai/db";
-import { notifyTeam, pushConfigured } from "@/lib/crm/notify";
+import { notifyTeamDetailed, pushConfigured } from "@/lib/crm/notify";
 
 export async function savePushSubscription(sub: { endpoint: string; keys: { p256dh: string; auth: string } }, userAgent: string): Promise<{ ok: boolean; error?: string }> {
   const user = await requireCrmUser();
@@ -22,9 +22,9 @@ export async function removePushSubscription(endpoint: string): Promise<{ ok: bo
   return { ok: true };
 }
 
-export async function sendTestPush(): Promise<{ ok: boolean; error?: string; sent?: number }> {
+export async function sendTestPush(): Promise<{ ok: boolean; error?: string; sent?: number; total?: number; errors?: string[] }> {
   await requireCrmUser();
   if (!pushConfigured()) return { ok: false, error: "Chiavi VAPID non configurate su Vercel" };
-  const sent = await notifyTeam({ title: "🔔 Notifiche attive", body: "Da ora ti avviso qui per nuovi contatti, chat da seguire e preventivi accettati.", url: "/crm/dashboard" });
-  return { ok: true, sent };
+  const r = await notifyTeamDetailed({ title: "🔔 Notifiche attive", body: "Da ora ti avviso qui per nuovi messaggi, contatti, chat da seguire e preventivi accettati.", url: "/crm/dashboard", tag: "test" });
+  return { ok: true, sent: r.sent, total: r.total, errors: r.errors };
 }
