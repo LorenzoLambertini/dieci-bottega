@@ -18,6 +18,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { StatusBadge } from "./Badge";
 import type { Lead, PipelineStage, Profile } from "@/lib/supabase/types";
@@ -60,9 +61,9 @@ function LeadCard({
       `}
     >
       <div className="flex items-start justify-between gap-2 mb-2">
-        <p className="text-white/80 text-sm font-medium leading-tight">
+        <Link href={`/crm/leads/${lead.id}`} className="text-white/80 hover:text-white text-sm font-medium leading-tight hover:underline underline-offset-2">
           {lead.name}
-        </p>
+        </Link>
         <div className="shrink-0">
           <div
             className="w-6 h-6 rounded-full bg-[#E63B2E]/10 flex items-center justify-center text-[#E63B2E] text-[9px] font-bold"

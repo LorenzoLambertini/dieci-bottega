@@ -5,6 +5,8 @@ import { StatusBadge } from "@/components/crm/Badge";
 import { LeadActions } from "@/components/crm/LeadActions";
 import { DeleteLeadButton } from "@/components/crm/DeleteLeadButton";
 import { getCrmUser } from "@/lib/social-ai/auth";
+import { ContactButtons } from "@/components/crm/ContactButtons";
+import { AddOpportunityForm, DeleteOpportunityButton, EditContactButton, FollowUpCard } from "@/components/crm/LeadTools";
 import type { Lead, Activity, PipelineStage, Profile, Opportunity } from "@/lib/supabase/types";
 
 const ACTIVITY_ICON: Record<string, string> = {
@@ -19,10 +21,13 @@ const ACTIVITY_ICON: Record<string, string> = {
 
 export default async function LeadDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ duplicate?: string }>;
 }) {
   const { id } = await params;
+  const { duplicate } = await searchParams;
   const supabase = await createClient();
 
   const { data: lead } = await supabase
@@ -88,6 +93,11 @@ export default async function LeadDetailPage({
         <span>/</span>
         <span className="text-white/60">{lead.name}</span>
       </div>
+      {duplicate && (
+        <div className="bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 rounded-xl px-5 py-3 mb-4 text-sm">
+          Questa email era già nel CRM: ti ho aperto il contatto esistente invece di crearne un doppione.
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main — left column */}
@@ -101,14 +111,18 @@ export default async function LeadDetailPage({
                 </div>
                 <div>
                   <h1 className="text-white text-xl font-bold">{lead.name}</h1>
-                  <p className="text-white/40 text-sm">{lead.email}</p>
+                  {lead.email && <p className="text-white/40 text-sm break-all">{lead.email}</p>}
                   {lead.company && (
                     <p className="text-white/30 text-sm">{lead.company}</p>
                   )}
                 </div>
               </div>
-              <StatusBadge status={lead.status} />
+              <div className="flex flex-col items-end gap-2 shrink-0">
+                <StatusBadge status={lead.status} />
+                <EditContactButton lead={{ id: lead.id, name: lead.name, email: lead.email, phone: lead.phone, company: lead.company, website: lead.website, notes: lead.notes }} />
+              </div>
             </div>
+            <ContactButtons phone={lead.phone} email={lead.email} name={lead.name} />
 
             {/* Info grid */}
             <div className="mt-5 pt-5 border-t border-white/[0.06] grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -169,6 +183,7 @@ export default async function LeadDetailPage({
                 <p className="text-white/30 text-xs uppercase tracking-wider mb-1">Creato</p>
                 <p className="text-white/70 text-sm">
                   {new Date(lead.created_at).toLocaleDateString("it-IT", {
+                    timeZone: "Europe/Rome",
                     day: "numeric",
                     month: "long",
                     year: "numeric",
@@ -213,22 +228,26 @@ export default async function LeadDetailPage({
           </div>
 
           {/* Opportunities */}
-          {opportunities.length > 0 && (
+          {(
             <div className="bg-[#141414] border border-white/[0.06] rounded-xl overflow-hidden">
-              <div className="px-5 py-4 border-b border-white/[0.06]">
+              <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between gap-3 flex-wrap">
                 <h2 className="text-white font-semibold text-sm">
                   Opportunità ({opportunities.length})
                 </h2>
+                <AddOpportunityForm leadId={lead.id} />
               </div>
+              {opportunities.length === 0 && (
+                <p className="px-5 py-4 text-white/25 text-xs">Aggiungi cosa gli stai proponendo e il valore: alimenta il totale della pipeline in dashboard.</p>
+              )}
               <div className="divide-y divide-white/[0.04]">
                 {opportunities.map((opp) => (
-                  <div key={opp.id} className="px-5 py-3.5 flex items-center justify-between">
-                    <div>
+                  <div key={opp.id} className="px-5 py-3.5 flex items-center gap-3">
+                    <div className="flex-1 min-w-0">
                       <p className="text-white/80 text-sm font-medium">{opp.title}</p>
                       {opp.expected_close && (
                         <p className="text-white/30 text-xs mt-0.5">
                           Chiusura:{" "}
-                          {new Date(opp.expected_close).toLocaleDateString("it-IT")}
+                          {new Date(opp.expected_close).toLocaleDateString("it-IT", { timeZone: "Europe/Rome" })}
                         </p>
                       )}
                     </div>
@@ -244,6 +263,7 @@ export default async function LeadDetailPage({
                       )}
                       <p className="text-white/30 text-xs">{opp.probability}%</p>
                     </div>
+                    {currentUser?.role === "admin" && <DeleteOpportunityButton id={opp.id} leadId={lead.id} />}
                   </div>
                 ))}
               </div>
@@ -281,6 +301,7 @@ export default async function LeadDetailPage({
                     )}
                     <p className="text-white/25 text-xs mt-1">
                       {new Date(act.created_at).toLocaleString("it-IT", {
+                    timeZone: "Europe/Rome",
                         day: "numeric",
                         month: "short",
                         year: "numeric",
@@ -297,6 +318,7 @@ export default async function LeadDetailPage({
 
         {/* Sidebar — right column */}
         <div className="space-y-4">
+          <FollowUpCard leadId={lead.id} at={lead.next_action_at} note={lead.next_action_note} />
           {socialConversations.length > 0 && (
             <div className="bg-[#141414] border border-white/[0.06] rounded-xl overflow-hidden">
               <div className="px-5 py-4 border-b border-white/[0.06]">

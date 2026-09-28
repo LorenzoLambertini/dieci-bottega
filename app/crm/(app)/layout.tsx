@@ -34,7 +34,7 @@ export default async function CRMLayout({
       {/* Mobile top bar + drawer + bottom tabs */}
       <MobileNav profile={profile} />
       {/* Main content */}
-      <main className="lg:pl-[220px] min-h-screen pt-[56px] pb-[64px] lg:pt-0 lg:pb-0">
+      <main className="lg:pl-[220px] min-h-screen pt-[56px] pb-[calc(64px+env(safe-area-inset-bottom))] lg:pt-0 lg:pb-0">
         <div className="max-w-[1400px] mx-auto px-4 py-5 lg:px-8 lg:py-8">
           {children}
         </div>

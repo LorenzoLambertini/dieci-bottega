@@ -14,6 +14,14 @@ const NAV = [
   { href: "/crm/settings",     label: "Impostazioni", emoji: "◈" },
 ];
 
+// Barra in basso da telefono: le 4 sezioni usate di più (l'Inbox social al posto delle automazioni)
+const TABS = [
+  { href: "/crm/dashboard",    label: "Dashboard" },
+  { href: "/crm/leads",        label: "Lead" },
+  { href: "/crm/pipeline",     label: "Pipeline" },
+  { href: "/crm/social/inbox", label: "Inbox" },
+];
+
 const SOCIAL_NAV = [
   { href: "/crm/social",               label: "Social AI · Dashboard" },
   { href: "/crm/social/inbox",         label: "Social AI · Inbox" },
@@ -143,8 +151,8 @@ export function MobileNav({ profile }: MobileNavProps) {
       </div>
 
       {/* Bottom tab bar — mobile only */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0f0f0f] border-t border-white/[0.06] flex">
-        {NAV.slice(0, 4).map(({ href, label }) => {
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0f0f0f] border-t border-white/[0.06] flex pb-[env(safe-area-inset-bottom)]">
+        {TABS.map(({ href, label }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (
             <Link
@@ -157,7 +165,7 @@ export function MobileNav({ profile }: MobileNavProps) {
               <span className="text-base leading-none">
                 {href.includes("dashboard") ? "▦" :
                  href.includes("leads") ? "◎" :
-                 href.includes("pipeline") ? "▤" : "◷"}
+                 href.includes("pipeline") ? "▤" : "✉"}
               </span>
               {label}
             </Link>
