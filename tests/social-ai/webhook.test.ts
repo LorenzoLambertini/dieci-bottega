@@ -78,6 +78,32 @@ describe("Webhook Meta", () => {
     expect(ko.status).toBe(401);
   });
 
+  it("pulsante Test di Meta (DM nel formato changes) → registrato ma ignorato: account non collegato", async () => {
+    const h = setup();
+    const testPayload = {
+      object: "instagram",
+      entry: [{ id: "0", time: 1_790_000_000, changes: [{ field: "messages", value: { sender: { id: "12334" }, recipient: { id: "23245" }, timestamp: "1527459824", message: { mid: "random_mid", text: "random_text" } } }] }],
+    };
+    const res = await metaReceive(signed(testPayload), () => h.deps);
+    expect(await res.json()).toMatchObject({ received: 1, queued: 1 });
+    for (const fn of pending.splice(0)) await fn();
+    expect(h.sent).toHaveLength(0);
+    expect(h.db.rows("leads")).toHaveLength(0);
+    expect(h.db.rows("social_webhook_events")[0]).toMatchObject({ status: "ignored", last_error: "account 23245 non collegato" });
+  });
+
+  it("DM reale nel formato changes → processato come un messaggio", async () => {
+    const h = setup();
+    const payload = {
+      object: "instagram",
+      entry: [{ id: "17841400000000000", time: 1_790_000_000, changes: [{ field: "messages", value: { sender: { id: "U9" }, recipient: { id: "17841400000000000" }, timestamp: Date.parse("2026-09-26T12:31:00Z"), message: { mid: "M-CH-1", text: "GUIDA" } } }] }],
+    };
+    await metaReceive(signed(payload), () => h.deps);
+    for (const fn of pending.splice(0)) await fn();
+    expect(h.db.rows("social_webhook_events")[0]).toMatchObject({ status: "processed" });
+    expect(h.sent.length).toBeGreaterThan(0);
+  });
+
   it("errore di registrazione su DB → 500 (Meta ritenterà, nessuna perdita)", async () => {
     const res = await metaReceive(signed(commentPayload("C9")), () => {
       throw new Error("SUPABASE_SERVICE_ROLE_KEY mancante");

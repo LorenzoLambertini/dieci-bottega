@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { StatusBadge } from "@/components/crm/Badge";
 import { LeadActions } from "@/components/crm/LeadActions";
+import { DeleteLeadButton } from "@/components/crm/DeleteLeadButton";
+import { getCrmUser } from "@/lib/social-ai/auth";
 import type { Lead, Activity, PipelineStage, Profile, Opportunity } from "@/lib/supabase/types";
 
 const ACTIVITY_ICON: Record<string, string> = {
@@ -39,6 +41,7 @@ export default async function LeadDetailPage({
     >();
 
   if (!lead) notFound();
+  const currentUser = await getCrmUser();
 
   const [activitiesRes, opportunitiesRes, stagesRes, profilesRes, socialRes] =
     await Promise.all([
@@ -317,6 +320,7 @@ export default async function LeadDetailPage({
             stages={stages}
             profiles={profiles}
           />
+          {currentUser?.role === "admin" && <DeleteLeadButton leadId={lead.id} name={lead.name ?? lead.email ?? "questo contatto"} />}
         </div>
       </div>
     </div>

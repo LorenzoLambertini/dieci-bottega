@@ -134,7 +134,7 @@ export const facebookProvider = makeProvider("facebook");
 interface MetaMessaging {
   sender?: { id?: string };
   recipient?: { id?: string };
-  timestamp?: number;
+  timestamp?: number | string;
   message?: { mid?: string; text?: string; is_echo?: boolean; is_deleted?: boolean; attachments?: { type?: string; payload?: { url?: string } }[] };
 }
 interface MetaChange {
@@ -168,7 +168,13 @@ export function parseMetaWebhook(body: unknown): InboundEvent[] {
   for (const entry of b.entry) {
     const accountId = String(entry.id ?? "");
 
-    for (const m of entry.messaging ?? []) {
+    // I DM arrivano in entry.messaging; il pulsante "Test" di Meta (e alcune consegne
+    // Instagram) li mette invece in entry.changes[field=messages].value.
+    const messagings: MetaMessaging[] = [
+      ...(entry.messaging ?? []),
+      ...(entry.changes ?? []).filter((c) => c.field === "messages" && c.value).map((c) => c.value as MetaMessaging),
+    ];
+    for (const m of messagings) {
       const msg = m.message;
       if (!msg?.mid || msg.is_echo || msg.is_deleted) continue;
       const senderId = m.sender?.id;
@@ -183,7 +189,7 @@ export function parseMetaWebhook(body: unknown): InboundEvent[] {
         senderId,
         text,
         externalId: msg.mid,
-        timestamp: iso(m.timestamp),
+        timestamp: iso(Number(m.timestamp) || undefined),
         raw: m,
       });
     }
