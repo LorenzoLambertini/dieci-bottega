@@ -418,3 +418,90 @@ export async function syncSocialNow(auto = false): Promise<SyncActionResult> {
     return fail(e);
   }
 }
+
+/* ─── Valutazione delle risposte AI (educare l'AI) ─────────── */
+
+export interface RateInput {
+  kind: "message" | "comment";
+  id: string;
+  rating: number;
+  betterReply?: string | null;
+  lesson?: string | null;
+  useForTraining?: boolean;
+}
+
+/** Salva voto, risposta ideale e lezione: dalle prossime risposte l'AI ne tiene conto. */
+export async function rateAiReply(input: RateInput): Promise<ActionResult> {
+  try {
+    const user = await requireCrmUser();
+    const rating = Math.round(Number(input.rating));
+    if (!(rating >= 1 && rating <= 5)) return { ok: false, error: "Voto da 1 a 5" };
+    const db = createAdminClient();
+    const table = input.kind === "message" ? "social_messages" : "social_comments";
+    const { data: row } = await db.from(table).select("id, conversation_id, platform, content, created_at, direction").eq("id", input.id).maybeSingle();
+    const reply = row as { id: string; conversation_id: string | null; platform: string; content: string | null; created_at: string; direction: string } | null;
+    if (!reply || reply.direction !== "outbound") return { ok: false, error: "Risposta non trovata" };
+
+    // Ultimo messaggio del cliente prima della risposta (DM o commento)
+    let customerText: string | null = null;
+    if (reply.conversation_id) {
+      const [m, c] = await Promise.all([
+        db.from("social_messages").select("content, created_at").eq("conversation_id", reply.conversation_id).eq("direction", "inbound").lte("created_at", reply.created_at).order("created_at", { ascending: false }).limit(1),
+        db.from("social_comments").select("content, created_at").eq("conversation_id", reply.conversation_id).eq("direction", "inbound").lte("created_at", reply.created_at).order("created_at", { ascending: false }).limit(1),
+      ]);
+      const last = [...((m.data ?? []) as { content: string | null; created_at: string }[]), ...((c.data ?? []) as { content: string | null; created_at: string }[])].sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
+      customerText = last?.content ?? null;
+    }
+
+    const payload = {
+      message_id: input.kind === "message" ? reply.id : null,
+      comment_id: input.kind === "comment" ? reply.id : null,
+      conversation_id: reply.conversation_id,
+      platform: reply.platform,
+      customer_text: customerText,
+      ai_reply: reply.content,
+      rating,
+      better_reply: input.betterReply?.trim().slice(0, 2000) || null,
+      lesson: input.lesson?.trim().slice(0, 500) || null,
+      use_for_training: input.useForTraining ?? true,
+      created_by: user.id,
+      updated_at: new Date().toISOString(),
+    };
+    const col = input.kind === "message" ? "message_id" : "comment_id";
+    const { data: existing } = await db.from("ai_reply_feedback").select("id").eq(col, reply.id).maybeSingle();
+    const { error } = existing
+      ? await db.from("ai_reply_feedback").update(payload).eq("id", (existing as { id: string }).id)
+      : await db.from("ai_reply_feedback").insert(payload);
+    if (error) return { ok: false, error: error.message };
+    await logAction(db, { conversation_id: reply.conversation_id, platform: reply.platform, action_type: "ai_feedback", actor: "human", actor_user_id: user.id, summary: `Risposta AI valutata ${rating}/5${payload.lesson ? " · nuova lezione" : ""}${payload.better_reply ? " · risposta corretta" : ""}` });
+    revalidatePath("/crm/social/replies");
+    if (reply.conversation_id) revalidatePath("/crm/social/inbox");
+    return ok();
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+export async function setFeedbackTraining(id: string, on: boolean): Promise<ActionResult> {
+  try {
+    await requireCrmUser(["admin", "marketing"]);
+    const { error } = await createAdminClient().from("ai_reply_feedback").update({ use_for_training: on, updated_at: new Date().toISOString() }).eq("id", id);
+    if (error) return { ok: false, error: error.message };
+    revalidatePath("/crm/social/replies");
+    return ok();
+  } catch (e) {
+    return fail(e);
+  }
+}
+
+export async function deleteFeedback(id: string): Promise<ActionResult> {
+  try {
+    await requireCrmUser(["admin"]);
+    const { error } = await createAdminClient().from("ai_reply_feedback").delete().eq("id", id);
+    if (error) return { ok: false, error: error.message };
+    revalidatePath("/crm/social/replies");
+    return ok();
+  } catch (e) {
+    return fail(e);
+  }
+}

@@ -117,6 +117,33 @@ export function buildKnowledge(rows: KnowledgeRow[]): string {
   return out.join("\n").trim();
 }
 
+export interface FeedbackRow {
+  rating: number;
+  customer_text: string | null;
+  ai_reply: string | null;
+  better_reply: string | null;
+  lesson: string | null;
+}
+
+/**
+ * Cosa ha insegnato il team valutando le risposte: lezioni (regole) ed esempi di
+ * risposte approvate o corrette. Va in coda alla knowledge base (blocco in cache).
+ */
+export function buildLearning(rows: FeedbackRow[], maxLessons = 25, maxExamples = 6): string {
+  const clean = (s: string | null | undefined, n: number) => (s ?? "").replace(/\s+/g, " ").trim().slice(0, n);
+  const lessons = [...new Set(rows.map((r) => clean(r.lesson, 400)).filter(Boolean))].slice(0, maxLessons);
+  const examples = rows
+    .map((r) => ({ q: clean(r.customer_text, 300), a: clean(r.better_reply, 600) || (r.rating >= 4 ? clean(r.ai_reply, 600) : "") }))
+    .filter((e) => e.q && e.a)
+    .slice(0, maxExamples);
+  const bad = rows.filter((r) => r.rating <= 2 && !r.better_reply && r.ai_reply).map((r) => clean(r.ai_reply, 300)).slice(0, 3);
+  const out: string[] = [];
+  if (lessons.length) out.push(`## Lezioni dal team (seguile sempre, hanno priorità sullo stile generale)\n${lessons.map((l) => `- ${l}`).join("\n")}`);
+  if (examples.length) out.push(`## Esempi di risposte approvate dal team (imita tono e lunghezza, non copiare alla lettera)\n${examples.map((e) => `Cliente: ${e.q}\nRisposta: ${e.a}`).join("\n\n")}`);
+  if (bad.length) out.push(`## Risposte giudicate scarse dal team (evita questo stile)\n${bad.map((b) => `- ${b}`).join("\n")}`);
+  return out.join("\n\n");
+}
+
 export function buildSystemText(settings: SocialAiSettings): string {
   const base = settings.system_prompt?.trim() || DEFAULT_SYSTEM_PROMPT;
   const extra: string[] = [];

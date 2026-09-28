@@ -84,6 +84,7 @@ export function PageHeader({ title, subtitle, action }: { title: string; subtitl
 export const SOCIAL_TABS = [
   { href: "/crm/social", label: "Dashboard" },
   { href: "/crm/social/inbox", label: "Inbox" },
+  { href: "/crm/social/replies", label: "Risposte AI" },
   { href: "/crm/leads?channel=social", label: "Contatti" },
   { href: "/crm/social/guides", label: "Guide" },
   { href: "/crm/social/automations", label: "Automazioni" },

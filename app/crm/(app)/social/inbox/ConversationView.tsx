@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { createSocialClient } from "@/lib/social-ai/db";
 import { Card, fmtDate, Pill, PlatformBadge, TemperaturePill } from "@/components/crm/social/ui";
 import { ConversationActions, Composer, MarkReadOnOpen, RetryButton } from "@/components/crm/social/ConversationControls";
+import { ReplyFeedback, type FeedbackValue } from "@/components/crm/social/ReplyFeedback";
+import { SyncButton } from "@/components/crm/social/SyncButton";
 import { StatusBadge } from "@/components/crm/Badge";
 import { SIGNAL_LABELS } from "@/lib/social-ai/scoring";
 import { PROVIDERS } from "@/lib/social-ai/providers";
@@ -59,6 +61,19 @@ export async function ConversationView({ id }: { id: string }) {
     ...((commentsRes.data ?? []) as TimelineItem[]).map((c) => ({ ...c, kind: "comment" as const })),
   ].sort((a, b) => a.created_at.localeCompare(b.created_at));
 
+  // Valutazioni già date alle risposte dell'AI
+  const { data: fbData } = await supabase
+    .from("ai_reply_feedback")
+    .select("message_id, comment_id, rating, better_reply, lesson, use_for_training")
+    .eq("conversation_id", id);
+  const feedback = new Map<string, FeedbackValue>();
+  for (const f of (fbData ?? []) as (FeedbackValue & { message_id: string | null; comment_id: string | null })[]) {
+    if (f.message_id) feedback.set(`message-${f.message_id}`, f);
+    if (f.comment_id) feedback.set(`comment-${f.comment_id}`, f);
+  }
+  // Risposte valutabili: DM scritti dall'AI e risposte automatiche ai commenti
+  const rateable = (t: TimelineItem) => t.direction === "outbound" && (t.kind === "comment" || !!t.ai_generated);
+
   const name = lead?.name ?? identity?.display_name ?? (identity?.username ? `@${identity.username}` : "Utente");
   const [firstName, ...rest] = name.replace(/^@/, "").split(" ");
   const platform = conv.platform as Platform;
@@ -69,10 +84,11 @@ export async function ConversationView({ id }: { id: string }) {
   return (
     <div>
       <MarkReadOnOpen id={id} unread={conv.unread_count} />
-      <div className="flex items-center gap-2 text-sm text-white/30 mb-4">
+      <div className="flex items-start gap-2 text-sm text-white/30 mb-4">
         <Link href="/crm/social/inbox" className="hover:text-white/60">← Inbox</Link>
         <span>/</span>
-        <span className="text-white/60 truncate">{name}</span>
+        <span className="text-white/60 truncate flex-1">{name}</span>
+        <SyncButton />
       </div>
 
       {conv.status === "needs_human" && (
@@ -156,6 +172,7 @@ export async function ConversationView({ id }: { id: string }) {
                       )}
                     </div>
                     {out && t.delivery_status === "failed" && t.error && <p className="text-[#E63B2E]/60 text-[11px] mt-0.5">{t.error}</p>}
+                    {rateable(t) && t.content && <ReplyFeedback kind={t.kind} id={t.id} aiText={t.content} initial={feedback.get(`${t.kind}-${t.id}`)} />}
                   </div>
                 </div>
               );
