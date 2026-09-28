@@ -2,8 +2,10 @@ import Link from "next/link";
 import { createSocialClient } from "@/lib/social-ai/db";
 import { fmtDate, isMissingTable, MigrationNotice, PageHeader, Pill, PlatformBadge, SocialTabs, TemperaturePill } from "@/components/crm/social/ui";
 import { ConversationView } from "./ConversationView";
+import { SyncButton } from "@/components/crm/social/SyncButton";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60; // "Sincronizza ora" può processare diversi messaggi con l'AI
 
 const FILTERS = [
   { key: "all", label: "Tutti" },
@@ -75,7 +77,7 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
 
   return (
     <div>
-      <PageHeader title="Social Inbox" subtitle={`${count ?? 0} conversazioni`} />
+      <PageHeader title="Social Inbox" subtitle={`${count ?? 0} conversazioni`} action={<SyncButton />} />
       <SocialTabs active="/crm/social/inbox" />
       {isMissingTable(error) && <MigrationNotice error={error!.message} />}
 

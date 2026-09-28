@@ -122,8 +122,11 @@ export async function retryDueEvents(deps: EngineDeps, limit = 10): Promise<numb
     .lte("next_retry_at", nowIso)
     .order("next_retry_at", { ascending: true })
     .limit(limit);
+  // Eventi registrati ma mai processati (es. funzione interrotta prima di finire)
+  const stuckBefore = new Date((deps.now?.() ?? new Date()).getTime() - 5 * 60_000).toISOString();
+  const { data: stuck } = await deps.db.from("social_webhook_events").select("id").eq("status", "received").lte("received_at", stuckBefore).order("received_at", { ascending: true }).limit(limit);
   let n = 0;
-  for (const r of (data ?? []) as { id: string }[]) {
+  for (const r of [...((data ?? []) as { id: string }[]), ...((stuck ?? []) as { id: string }[])].slice(0, limit)) {
     await processRecordedEvent(deps, r.id);
     n++;
   }
@@ -215,14 +218,15 @@ export async function processInbound(deps: EngineDeps, ev: InboundEvent): Promis
     if (error) throw new Error(`social_comments: ${error.message}`);
   }
 
+  // Un elemento importato in ritardo (sync) non deve spostare indietro la conversazione
+  const isLatest = !conv.last_message_at || ev.timestamp >= new Date(conv.last_message_at).toISOString();
   const convPatch: Record<string, unknown> = {
-    last_message_at: ev.timestamp,
-    last_message_preview: `${ev.kind === "comment" ? "💬 " : ""}${ev.text}`.slice(0, 140),
+    ...(isLatest ? { last_message_at: ev.timestamp, last_message_preview: `${ev.kind === "comment" ? "💬 " : ""}${ev.text}`.slice(0, 140) } : {}),
     unread_count: (conv.unread_count ?? 0) + 1,
     contact_id: conv.contact_id ?? lead.id,
   };
   // Solo un DM apre la finestra di messaggistica di 24h
-  if (ev.kind === "message") convPatch.last_inbound_at = ev.timestamp;
+  if (ev.kind === "message" && (!conv.last_inbound_at || ev.timestamp >= new Date(conv.last_inbound_at).toISOString())) convPatch.last_inbound_at = ev.timestamp;
   await updateConversation(db, conv.id, convPatch);
   conv = { ...conv, ...(convPatch as Partial<ConversationRow>) };
 
@@ -242,6 +246,13 @@ export async function processInbound(deps: EngineDeps, ev: InboundEvent): Promis
     ev.kind === "comment"
       ? db.from("social_comments").update({ ai_processed: true }).eq("platform", ev.platform).eq("external_comment_id", ev.externalId)
       : Promise.resolve();
+
+  // Letto in ritardo dalla sincronizzazione: solo importato, nessuna risposta fuori tempo
+  if (ev.importOnly) {
+    await markCommentProcessed();
+    await logAction(db, { contact_id: lead.id, conversation_id: conv.id, platform: ev.platform, action_type: "skip", actor: "system", status: "skipped", summary: "Importato dalla sincronizzazione (troppo vecchio per una risposta automatica)" });
+    return { status: "skipped", conversationId: conv.id, reason: "imported" };
+  }
 
   // 3. Conversazione in mano a un umano → nessuna automazione
   if (conv.human_takeover || !conv.ai_enabled) {

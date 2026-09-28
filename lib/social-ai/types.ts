@@ -47,6 +47,8 @@ export interface InboundEvent {
   postId?: string | null;
   parentCommentId?: string | null;
   timestamp: string; // ISO
+  /** Letto dalla sync in ritardo: si salva nel CRM ma senza risposte automatiche. */
+  importOnly?: boolean;
   raw?: unknown;
 }
 
