@@ -10,6 +10,7 @@ export interface LeadFilterParams {
   assigned?: string;
   channel?: string;
   follow?: string;
+  tag?: string;
 }
 
 export const LEAD_STATUSES = ["new", "contacted", "qualified", "proposal", "won", "lost"] as const;
@@ -45,5 +46,12 @@ export function applyLeadFilters<T>(query: T, p: LeadFilterParams): T {
   if (p.channel === "social") q = q.in("source", SOCIAL_SOURCES);
   if (p.follow === "due") q = q.lte("next_action_at", endOfToday());
   if (p.follow === "planned") q = q.not("next_action_at", "is", null);
+  // richiede nella select l'embed `lead_tags!inner(tag_id)` (vedi tagFilterSelect)
+  if (p.tag && /^[0-9a-f-]{36}$/i.test(p.tag)) q = q.eq("lead_tags.tag_id", p.tag);
   return q as T;
+}
+
+/** Embed da aggiungere alla select quando si filtra per tag. */
+export function tagFilterSelect(p: LeadFilterParams): string {
+  return p.tag && /^[0-9a-f-]{36}$/i.test(p.tag) ? ", lead_tags!inner(tag_id)" : "";
 }

@@ -6,7 +6,7 @@
  */
 import { useActionState, useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { addOpportunity, createLead, deleteOpportunity, setFollowUp, updateLeadContact, type FormState } from "@/app/crm/(app)/leads/actions";
+import { addLeadTag, addOpportunity, createLead, deleteOpportunity, deleteTag, removeLeadTag, sendDigestNow, setFollowUp, updateLeadContact, type FormState } from "@/app/crm/(app)/leads/actions";
 
 export const inputCls =
   "w-full bg-[#1a1a1a] border border-white/[0.08] rounded-lg px-3 py-2 text-white/85 text-sm placeholder:text-white/20 focus:outline-none focus:border-[#E63B2E]/50 transition-colors";
@@ -274,5 +274,136 @@ export function DeleteOpportunityButton({ id, leadId }: { id: string; leadId: st
     >
       ✕
     </button>
+  );
+}
+
+/* ─── Tag ────────────────────────────────────────────────── */
+
+export interface TagChip {
+  id: string;
+  name: string;
+  color: string;
+}
+
+export function TagPill({ tag, onRemove }: { tag: Pick<TagChip, "name" | "color">; onRemove?: () => void }) {
+  return (
+    <span
+      className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full border"
+      style={{ background: `${tag.color}1a`, color: tag.color, borderColor: `${tag.color}40` }}
+    >
+      #{tag.name}
+      {onRemove && (
+        <button type="button" onClick={onRemove} className="opacity-60 hover:opacity-100 leading-none" aria-label={`Rimuovi ${tag.name}`}>
+          ✕
+        </button>
+      )}
+    </span>
+  );
+}
+
+export function TagEditor({ leadId, tags, allTags, canEdit }: { leadId: string; tags: TagChip[]; allTags: TagChip[]; canEdit: boolean }) {
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  const [name, setName] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const suggestions = allTags.filter((t) => !tags.some((x) => x.id === t.id));
+
+  function run(fn: () => Promise<FormState>) {
+    start(async () => {
+      setError(null);
+      const r = await fn();
+      if (r && !r.ok) setError(r.error ?? "Errore");
+      else {
+        setName("");
+        router.refresh();
+      }
+    });
+  }
+
+  return (
+    <div className="bg-[#141414] border border-white/[0.06] rounded-xl p-5 space-y-3">
+      <h3 className="text-white/50 text-xs font-semibold uppercase tracking-wider">Tag</h3>
+      <div className="flex flex-wrap gap-1.5">
+        {tags.length === 0 && <p className="text-white/25 text-xs">Nessun tag.</p>}
+        {tags.map((t) => (
+          <TagPill key={t.id} tag={t} onRemove={canEdit ? () => run(() => removeLeadTag(leadId, t.id)) : undefined} />
+        ))}
+      </div>
+      {canEdit && (
+        <>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (name.trim()) run(() => addLeadTag(leadId, name));
+            }}
+            className="flex gap-2"
+          >
+            <input value={name} onChange={(e) => setName(e.target.value)} list={`tags-${leadId}`} placeholder="es. ristorante, caldo, bologna" className={`${inputCls} flex-1`} />
+            <datalist id={`tags-${leadId}`}>
+              {suggestions.map((t) => <option key={t.id} value={t.name} />)}
+            </datalist>
+            <button type="submit" disabled={pending || !name.trim()} className="bg-white/[0.08] hover:bg-white/[0.14] text-white/80 text-xs font-semibold rounded-lg px-3 transition-colors disabled:opacity-40">
+              Aggiungi
+            </button>
+          </form>
+          {suggestions.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {suggestions.slice(0, 8).map((t) => (
+                <button key={t.id} type="button" disabled={pending} onClick={() => run(() => addLeadTag(leadId, t.name))} className="text-[11px] text-white/35 hover:text-white/70 border border-dashed border-white/15 rounded-full px-2 py-0.5 transition-colors">
+                  + {t.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+      {error && <p className="text-[#E63B2E] text-xs">{error}</p>}
+    </div>
+  );
+}
+
+export function DeleteTagButton({ id, name, count }: { id: string; name: string; count: number }) {
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  return (
+    <button
+      type="button"
+      disabled={pending}
+      onClick={() => {
+        if (!confirm(`Eliminare il tag "${name}"?${count ? ` Verrà tolto da ${count} contatt${count === 1 ? "o" : "i"}.` : ""}`)) return;
+        start(async () => {
+          await deleteTag(id);
+          router.refresh();
+        });
+      }}
+      className="text-white/25 hover:text-[#E63B2E] text-xs px-2 transition-colors"
+    >
+      Elimina
+    </button>
+  );
+}
+
+/* ─── Email del mattino ──────────────────────────────────── */
+
+export function SendDigestButton() {
+  const [pending, start] = useTransition();
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  return (
+    <div className="space-y-2">
+      <button
+        type="button"
+        disabled={pending}
+        onClick={() =>
+          start(async () => {
+            const r = await sendDigestNow();
+            setMsg({ ok: r?.ok ?? false, text: (r?.ok ? r.info : r?.error) ?? "" });
+          })
+        }
+        className="bg-white/[0.08] hover:bg-white/[0.14] text-white/80 text-xs font-semibold rounded-lg px-3 py-2 transition-colors disabled:opacity-40"
+      >
+        {pending ? "Invio…" : "Invia ora una prova"}
+      </button>
+      {msg && <p className={`text-xs ${msg.ok ? "text-green-400" : "text-white/45"}`}>{msg.text}</p>}
+    </div>
   );
 }

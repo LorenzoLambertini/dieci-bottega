@@ -5,7 +5,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getCrmUser } from "@/lib/social-ai/auth";
 import { createSocialClient } from "@/lib/social-ai/db";
-import { applyLeadFilters, STATUS_LABEL_IT } from "@/lib/crm/lead-filters";
+import { applyLeadFilters, STATUS_LABEL_IT, tagFilterSelect } from "@/lib/crm/lead-filters";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
   const query = applyLeadFilters(
     db
       .from("leads")
-      .select("name, email, phone, company, website, status, score, source, notes, next_action_at, next_action_note, created_at, stage:pipeline_stages(name)")
+      .select(`name, email, phone, company, website, status, score, source, notes, next_action_at, next_action_note, created_at, stage:pipeline_stages(name), taglist:lead_tags(tag:tags(name))${tagFilterSelect(p)}`)
       .order("created_at", { ascending: false })
       .limit(5000),
     p
@@ -35,12 +35,13 @@ export async function GET(req: NextRequest) {
   const { data, error } = await query;
   if (error) return new NextResponse(error.message, { status: 500 });
 
-  const header = ["Nome", "Email", "Telefono", "Azienda", "Sito", "Stato", "Stage", "Score", "Sorgente", "Prossima azione", "Nota promemoria", "Note", "Creato il"];
-  const rows = (data ?? []).map((l: Record<string, unknown>) => [
+  const header = ["Nome", "Email", "Telefono", "Azienda", "Sito", "Stato", "Stage", "Score", "Sorgente", "Tag", "Prossima azione", "Nota promemoria", "Note", "Creato il"];
+  const rows = ((data ?? []) as unknown as Record<string, unknown>[]).map((l) => [
     l.name, l.email, l.phone, l.company, l.website,
     STATUS_LABEL_IT[String(l.status)] ?? l.status,
     (l.stage as { name?: string } | null)?.name,
     l.score, l.source,
+    ((l.taglist as { tag: { name: string } | null }[] | undefined) ?? []).map((t) => t.tag?.name).filter(Boolean).join(", "),
     l.next_action_at ? new Date(String(l.next_action_at)).toLocaleString("it-IT", { timeZone: "Europe/Rome" }) : "",
     l.next_action_note, l.notes,
     new Date(String(l.created_at)).toLocaleDateString("it-IT", { timeZone: "Europe/Rome" }),

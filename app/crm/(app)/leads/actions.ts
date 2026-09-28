@@ -8,6 +8,9 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireCrmUser } from "@/lib/social-ai/auth";
 import { createSocialClient } from "@/lib/social-ai/db";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { addTag } from "@/lib/social-ai/crm";
+import { sendDigest } from "@/lib/crm/digest";
 
 export type FormState = { ok: boolean; error?: string } | null;
 
@@ -158,4 +161,46 @@ export async function deleteOpportunity(id: string, leadId: string): Promise<For
   revalidatePath(`/crm/leads/${leadId}`);
   revalidatePath("/crm/dashboard");
   return { ok: true };
+}
+
+/* ─── Tag ────────────────────────────────────────────────── */
+
+export async function addLeadTag(leadId: string, name: string): Promise<FormState> {
+  await requireCrmUser(["admin", "marketing"]);
+  const db = await createSocialClient();
+  const added = await addTag(db, leadId, name);
+  if (!added) return { ok: false, error: "Nome tag non valido (almeno 2 caratteri)" };
+  revalidatePath(`/crm/leads/${leadId}`);
+  revalidatePath("/crm/leads");
+  return { ok: true };
+}
+
+export async function removeLeadTag(leadId: string, tagId: string): Promise<FormState> {
+  await requireCrmUser(["admin", "marketing"]);
+  const db = await createSocialClient();
+  const { error } = await db.from("lead_tags").delete().eq("lead_id", leadId).eq("tag_id", tagId);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath(`/crm/leads/${leadId}`);
+  revalidatePath("/crm/leads");
+  return { ok: true };
+}
+
+export async function deleteTag(tagId: string): Promise<FormState> {
+  await requireCrmUser(["admin"]);
+  const db = await createSocialClient();
+  const { error } = await db.from("tags").delete().eq("id", tagId);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/crm/settings");
+  revalidatePath("/crm/leads");
+  return { ok: true };
+}
+
+/* ─── Email del mattino: invio manuale (prova) ───────────── */
+
+export async function sendDigestNow(): Promise<FormState & { info?: string }> {
+  await requireCrmUser(["admin"]);
+  const r = await sendDigest(createAdminClient());
+  return r.sent
+    ? { ok: true, info: `Inviata: ${r.counts?.due ?? 0} promemoria, ${r.counts?.fresh ?? 0} nuovi contatti, ${r.counts?.needsHuman ?? 0} chat` }
+    : { ok: false, error: r.reason === "niente da segnalare" ? "Oggi non c'è niente da segnalare: nessuna email inviata" : r.reason };
 }

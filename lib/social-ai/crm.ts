@@ -201,12 +201,21 @@ export function sanitizeTag(name: string): string | null {
   return t.length >= 2 ? t : null;
 }
 
+const TAG_COLORS = ["#E63B2E", "#F59E0B", "#10B981", "#3B82F6", "#8B5CF6", "#EC4899", "#14B8A6", "#F97316"];
+
+/** Colore stabile per nome: lo stesso tag ha sempre lo stesso colore. */
+export function tagColor(name: string): string {
+  let h = 0;
+  for (const c of name) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return TAG_COLORS[h % TAG_COLORS.length];
+}
+
 export async function addTag(db: SupabaseClient, leadId: string, rawName: string): Promise<string | null> {
   const name = sanitizeTag(rawName);
   if (!name) return null;
   let { data: tag } = await db.from("tags").select("id, name").eq("name", name).maybeSingle();
   if (!tag) {
-    const ins = await db.from("tags").insert({ name, color: "#E63B2E" }).select("id, name").single();
+    const ins = await db.from("tags").insert({ name, color: tagColor(name) }).select("id, name").single();
     tag = ins.data;
     if (!tag) {
       // creato in parallelo da un altro evento

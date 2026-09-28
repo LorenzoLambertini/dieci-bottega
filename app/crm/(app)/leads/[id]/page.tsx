@@ -6,7 +6,7 @@ import { LeadActions } from "@/components/crm/LeadActions";
 import { DeleteLeadButton } from "@/components/crm/DeleteLeadButton";
 import { getCrmUser } from "@/lib/social-ai/auth";
 import { ContactButtons } from "@/components/crm/ContactButtons";
-import { AddOpportunityForm, DeleteOpportunityButton, EditContactButton, FollowUpCard } from "@/components/crm/LeadTools";
+import { AddOpportunityForm, DeleteOpportunityButton, EditContactButton, FollowUpCard, TagEditor, type TagChip } from "@/components/crm/LeadTools";
 import type { Lead, Activity, PipelineStage, Profile, Opportunity } from "@/lib/supabase/types";
 
 const ACTIVITY_ICON: Record<string, string> = {
@@ -48,7 +48,7 @@ export default async function LeadDetailPage({
   if (!lead) notFound();
   const currentUser = await getCrmUser();
 
-  const [activitiesRes, opportunitiesRes, stagesRes, profilesRes, socialRes] =
+  const [activitiesRes, opportunitiesRes, stagesRes, profilesRes, socialRes, leadTagsRes, allTagsRes] =
     await Promise.all([
       supabase
         .from("activities")
@@ -68,7 +68,11 @@ export default async function LeadDetailPage({
         .select("id, platform, status, lead_score, last_message_at, last_message_preview")
         .eq("contact_id", id)
         .order("last_message_at", { ascending: false }),
+      supabase.from("lead_tags").select("tag:tags(id, name, color)").eq("lead_id", id),
+      supabase.from("tags").select("id, name, color").order("name"),
     ]);
+  const leadTags = ((leadTagsRes.data ?? []) as unknown as { tag: TagChip | null }[]).map((r) => r.tag).filter((t): t is TagChip => !!t);
+  const allTags = (allTagsRes.data ?? []) as TagChip[];
 
   const activities = (activitiesRes.data ?? []) as Activity[];
   const opportunities = (opportunitiesRes.data ?? []) as Opportunity[];
@@ -319,6 +323,7 @@ export default async function LeadDetailPage({
         {/* Sidebar — right column */}
         <div className="space-y-4">
           <FollowUpCard leadId={lead.id} at={lead.next_action_at} note={lead.next_action_note} />
+          <TagEditor leadId={lead.id} tags={leadTags} allTags={allTags} canEdit={currentUser?.role === "admin" || currentUser?.role === "marketing"} />
           {socialConversations.length > 0 && (
             <div className="bg-[#141414] border border-white/[0.06] rounded-xl overflow-hidden">
               <div className="px-5 py-4 border-b border-white/[0.06]">

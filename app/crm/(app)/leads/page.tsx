@@ -2,7 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { StatusBadge } from "@/components/crm/Badge";
 import type { Lead, PipelineStage, Profile } from "@/lib/supabase/types";
-import { applyLeadFilters, LEAD_STATUSES, STATUS_LABEL_IT } from "@/lib/crm/lead-filters";
+import { applyLeadFilters, LEAD_STATUSES, STATUS_LABEL_IT, tagFilterSelect } from "@/lib/crm/lead-filters";
+import { TagPill } from "@/components/crm/LeadTools";
 import { getCrmUser } from "@/lib/social-ai/auth";
 
 interface SearchParams {
@@ -12,6 +13,7 @@ interface SearchParams {
   assigned?: string;
   channel?: string;
   follow?: string;
+  tag?: string;
   page?: string;
 }
 
@@ -36,7 +38,8 @@ export default async function LeadsPage({
       `
       id, name, email, company, phone, status, score, source, next_action_at, created_at, updated_at,
       stage:pipeline_stages(id, name, color),
-      assigned_profile:profiles!leads_assigned_to_fkey(id, full_name, avatar_url)
+      assigned_profile:profiles!leads_assigned_to_fkey(id, full_name, avatar_url),
+      taglist:lead_tags(tag:tags(id, name, color))${tagFilterSelect(searchParams)}
     `,
       { count: "exact" }
     )
@@ -46,11 +49,17 @@ export default async function LeadsPage({
   // Filtri condivisi con l'export CSV (ricerca ripulita, promemoria, canale social)
   query = applyLeadFilters(query, searchParams);
 
-  const [leadsRes, stagesRes, currentUser] = await Promise.all([
+  const [leadsRes, stagesRes, currentUser, tagsRes] = await Promise.all([
     query,
     supabase.from("pipeline_stages").select("*").order("position"),
     getCrmUser(),
+    supabase.from("tags").select("id, name").order("name"),
   ]);
+  const tagOptions = (tagsRes.data ?? []) as { id: string; name: string }[];
+  const tagsOf = (l: unknown) =>
+    (((l as { taglist?: { tag: { id: string; name: string; color: string } | null }[] }).taglist) ?? [])
+      .map((x) => x.tag)
+      .filter((t): t is { id: string; name: string; color: string } => !!t);
 
   const leads = (leadsRes.data ?? []) as (Lead & {
     stage: PipelineStage | null;
@@ -128,6 +137,18 @@ export default async function LeadsPage({
             </option>
           ))}
         </select>
+        {tagOptions.length > 0 && (
+          <select
+            name="tag"
+            defaultValue={searchParams.tag ?? ""}
+            className="bg-[#141414] border border-white/[0.08] rounded-lg px-3 py-2 text-white/70 text-sm focus:outline-none focus:border-[#E63B2E]/50 transition-colors"
+          >
+            <option value="">Tutti i tag</option>
+            {tagOptions.map((t) => (
+              <option key={t.id} value={t.id}>#{t.name}</option>
+            ))}
+          </select>
+        )}
         <select
           name="follow"
           defaultValue={searchParams.follow ?? ""}
@@ -143,7 +164,7 @@ export default async function LeadsPage({
         >
           Filtra
         </button>
-        {(searchParams.q || searchParams.status || searchParams.stage || searchParams.channel || searchParams.follow) && (
+        {(searchParams.q || searchParams.status || searchParams.stage || searchParams.channel || searchParams.follow || searchParams.tag) && (
           <Link
             href="/crm/leads"
             className="text-white/30 hover:text-white/60 text-sm px-3 py-2 transition-colors"
@@ -170,6 +191,11 @@ export default async function LeadsPage({
             <div className="flex-1 min-w-0">
               <p className="text-white/80 text-sm font-medium truncate">{lead.name}</p>
               <p className="text-white/30 text-xs truncate">{lead.company ?? lead.email ?? lead.phone ?? lead.source}</p>
+              {tagsOf(lead).length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {tagsOf(lead).slice(0, 3).map((t) => <TagPill key={t.id} tag={t} />)}
+                </div>
+              )}
             </div>
             <div className="flex flex-col items-end gap-1 shrink-0">
               <StatusBadge status={lead.status} />
@@ -255,6 +281,11 @@ export default async function LeadsPage({
                           <span className="text-[#E63B2E] font-semibold"> · ⏰ da ricontattare</span>
                         )}
                       </p>
+                      {tagsOf(lead).length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {tagsOf(lead).slice(0, 4).map((t) => <TagPill key={t.id} tag={t} />)}
+                        </div>
+                      )}
                     </div>
                   </Link>
                 </td>
