@@ -45,9 +45,7 @@ export function MobileNav({ profile }: MobileNavProps) {
       {/* Top bar — mobile only */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#0f0f0f] border-b border-white/[0.06] px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#E63B2E] flex items-center justify-center">
-            <span className="text-white font-black text-[10px]">10</span>
-          </div>
+          <img src="/logo-mark.png" alt="Dieci Bottega" className="h-6 w-auto shrink-0" />
           <span className="text-white font-semibold text-sm">Dieci Bottega</span>
         </div>
         <button
@@ -78,9 +76,7 @@ export function MobileNav({ profile }: MobileNavProps) {
         {/* Header */}
         <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#E63B2E] flex items-center justify-center">
-              <span className="text-white font-black text-xs">10</span>
-            </div>
+            <img src="/logo-mark.png" alt="Dieci Bottega" className="h-7 w-auto shrink-0" />
             <span className="text-white font-semibold text-sm">Dieci Bottega</span>
           </div>
           <button

@@ -117,11 +117,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="flex justify-center mb-10">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-[#E63B2E] flex items-center justify-center">
-              <span className="text-white font-black text-sm tracking-tight">
-                10
-              </span>
-            </div>
+            <img src="/logo-mark.png" alt="Dieci Bottega" className="h-9 w-auto shrink-0" />
             <span className="text-white font-bold text-lg tracking-tight">
               Dieci Bottega
             </span>

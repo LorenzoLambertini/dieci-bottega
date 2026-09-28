@@ -53,6 +53,7 @@ async function saveAccount(
     expiresAt?: string | null;
     webhookStatus: string;
     status?: string;
+    lastError?: string | null;
   }
 ) {
   const { data: row, error } = await db
@@ -69,7 +70,7 @@ async function saveAccount(
         token_expires_at: a.expiresAt ?? null,
         webhook_status: a.webhookStatus,
         last_sync_at: new Date().toISOString(),
-        last_error: null,
+        last_error: a.lastError ?? null,
         updated_at: new Date().toISOString(),
       },
       { onConflict: "platform,account_id" }
@@ -93,7 +94,7 @@ async function saveAccount(
 export async function completeOAuth(db: SupabaseClient, p: OAuthPlatform, code: string): Promise<number> {
   if (p === "meta") {
     const assets = await metaExchangeCode(code, redirectUri(p));
-    const subscribed = new Map<string, boolean>();
+    const subscribed = new Map<string, Awaited<ReturnType<typeof metaSubscribePage>>>();
     for (const a of assets) {
       if (!subscribed.has(a.pageId)) subscribed.set(a.pageId, await metaSubscribePage(a.pageId, a.pageToken));
       await saveAccount(db, {
@@ -104,7 +105,8 @@ export async function completeOAuth(db: SupabaseClient, p: OAuthPlatform, code: 
         pageId: a.pageId,
         scopes: META_SCOPES,
         token: a.pageToken,
-        webhookStatus: subscribed.get(a.pageId) ? "subscribed" : "failed",
+        webhookStatus: subscribed.get(a.pageId)!.status,
+        lastError: subscribed.get(a.pageId)!.error ?? null,
       });
     }
     return assets.length;

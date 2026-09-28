@@ -309,10 +309,18 @@ export async function metaExchangeCode(code: string, redirectUri: string): Promi
 }
 
 /** Iscrive la Pagina ai webhook dell'app (feed + messaggi). */
-export async function metaSubscribePage(pageId: string, pageToken: string): Promise<boolean> {
-  const r = await graphRequest(`${pageId}/subscribed_apps`, pageToken, {
+/**
+ * Iscrive l'app ai webhook della Pagina (serve anche per i webhook Instagram).
+ * Se i campi di messaggistica non sono concessi (es. manca pages_messaging) ripiega su
+ * "feed": i webhook Instagram funzionano comunque, i DM della Pagina Facebook no.
+ */
+export async function metaSubscribePage(pageId: string, pageToken: string): Promise<{ status: "subscribed" | "partial" | "failed"; error?: string }> {
+  const full = await graphRequest(`${pageId}/subscribed_apps`, pageToken, {
     method: "POST",
     query: { subscribed_fields: "feed,messages,messaging_postbacks" },
   });
-  return r.ok;
+  if (full.ok) return { status: "subscribed" };
+  const feed = await graphRequest(`${pageId}/subscribed_apps`, pageToken, { method: "POST", query: { subscribed_fields: "feed" } });
+  if (feed.ok) return { status: "partial", error: `Webhook Pagina solo "feed": ${full.error}` };
+  return { status: "failed", error: `Iscrizione webhook fallita: ${full.error}` };
 }
