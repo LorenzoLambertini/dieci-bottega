@@ -54,6 +54,7 @@ export async function createLead(_prev: FormState, fd: FormData): Promise<FormSt
       website: normalizeUrl(str(fd.get("website"), 300)),
       source: str(fd.get("source"), 50) ?? "manuale",
       notes: str(fd.get("notes"), 5000),
+      referred_by: str(fd.get("referred_by"), 200),
       status: "new",
       score: 0,
       assigned_to: user.id,
@@ -83,6 +84,10 @@ export async function updateLeadContact(_prev: FormState, fd: FormData): Promise
     const { data: other } = await db.from("leads").select("id, name").eq("email", email).neq("id", id).maybeSingle();
     if (other) return { ok: false, error: `Email già usata da "${other.name}"` };
   }
+  const { data: before } = await db.from("leads").select("marketing_consent").eq("id", id).maybeSingle();
+  const consent = fd.get("marketing_consent") === "on";
+  const dnc = fd.get("do_not_contact") === "on";
+  const consentChanged = (before as { marketing_consent: boolean | null } | null)?.marketing_consent !== consent;
   const { error } = await db
     .from("leads")
     .update({
@@ -92,6 +97,12 @@ export async function updateLeadContact(_prev: FormState, fd: FormData): Promise
       company: str(fd.get("company"), 200),
       website: normalizeUrl(str(fd.get("website"), 300)),
       notes: str(fd.get("notes"), 5000),
+      referred_by: str(fd.get("referred_by"), 200),
+      marketing_consent: consent,
+      ...(consentChanged ? { consent_at: new Date().toISOString() } : {}),
+      do_not_contact: dnc,
+      // chi non vuole essere contattato non riceve promemoria di ricontatto
+      ...(dnc ? { next_action_at: null, next_action_note: null } : {}),
       updated_at: new Date().toISOString(),
     })
     .eq("id", id);

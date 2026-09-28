@@ -34,6 +34,10 @@ export async function createAutomation(_prev: { ok: boolean; error?: string } | 
     const tag = String(fd.get("tag") ?? "").trim().toLowerCase().replace(/\s+/g, "-").slice(0, 40);
     if (tag.length < 2) return { ok: false, error: "Scrivi il tag" };
     action = { type: "add_tag", tag };
+  } else if (actionType === "assign") {
+    const userId = String(fd.get("user_id") ?? "");
+    if (!/^[0-9a-f-]{36}$/i.test(userId)) return { ok: false, error: "Scegli la persona" };
+    action = { type: "assign", user_id: userId };
   } else if (actionType === "create_project") action = { type: "create_project" };
   else return { ok: false, error: "Scegli cosa deve fare" };
 

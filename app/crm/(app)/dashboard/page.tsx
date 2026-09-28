@@ -3,7 +3,10 @@ import { KPICard } from "@/components/crm/KPICard";
 import type { KPI, Lead, Activity } from "@/lib/supabase/types";
 import Link from "next/link";
 import { createSocialClient } from "@/lib/social-ai/db";
-import { endOfToday, SOCIAL_SOURCES } from "@/lib/crm/lead-filters";
+import { SOCIAL_SOURCES } from "@/lib/crm/lead-filters";
+import { computeToday, type TodayKind } from "@/lib/crm/today";
+
+const ACTION_ICON: Record<TodayKind, string> = { call: "📞", followup: "⏰", chat: "💬", new: "✨", quote: "📄", due: "🚀", renewal: "🔁", dormant: "🤝" };
 
 function fmt(n: number | null | undefined, decimals = 0) {
   if (n == null) return "—";
@@ -25,7 +28,7 @@ export default async function DashboardPage() {
   const weekAgo = new Date(Date.now() - 7 * 86_400_000).toISOString();
 
   // Fetch KPIs and recent data in parallel
-  const [kpiRes, recentLeadsRes, recentActivitiesRes, dueRes, needsHumanRes, socialLeadsRes] = await Promise.all([
+  const [kpiRes, recentLeadsRes, recentActivitiesRes, today, needsHumanRes, socialLeadsRes] = await Promise.all([
     supabase.from("crm_kpi").select("*").single<KPI>(),
     supabase
       .from("leads")
@@ -37,21 +40,13 @@ export default async function DashboardPage() {
       .select("id, type, subject, created_at, lead_id, leads(name)")
       .order("created_at", { ascending: false })
       .limit(8),
-    // Promemoria scaduti o in scadenza oggi
-    sdb
-      .from("leads")
-      .select("id, name, company, phone, next_action_at, next_action_note")
-      .lte("next_action_at", endOfToday())
-      .order("next_action_at", { ascending: true })
-      .limit(8),
+    computeToday(sdb),
     // Social AI: conversazioni che aspettano una persona, contatti social della settimana
     sdb.from("social_conversations").select("id", { count: "exact", head: true }).eq("status", "needs_human"),
     sdb.from("leads").select("id", { count: "exact", head: true }).in("source", SOCIAL_SOURCES).gte("created_at", weekAgo),
   ]);
-  const due = (dueRes.data ?? []) as { id: string; name: string; company: string | null; phone: string | null; next_action_at: string; next_action_note: string | null }[];
   const needsHuman = needsHumanRes.count ?? 0;
   const socialLeadsWeek = socialLeadsRes.count ?? 0;
-  const nowMs = Date.now();
 
   const kpi = kpiRes.data;
   const recentLeads = (recentLeadsRes.data ?? []) as Lead[];
@@ -103,6 +98,59 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
+      {/* Oggi: cosa richiede una decisione adesso */}
+      <div className="grid grid-cols-3 lg:grid-cols-6 gap-2 lg:gap-3 mb-4">
+        {[
+          ["Nuovi oggi", String(today.counters.newToday), "/crm/leads"],
+          ["Da contattare", String(today.counters.toContact), "/crm/leads?status=new"],
+          ["Promemoria", String(today.counters.followups), "/crm/leads?follow=due"],
+          ["Call oggi", String(today.counters.calls), "/crm/calendar"],
+          ["Preventivi aperti", today.counters.openQuotes ? `${today.counters.openQuotes} · ${fmtEur(today.counters.openQuotesValue)}` : "0", "/crm/reports"],
+          ["Chat da seguire", String(today.counters.chats), "/crm/social/inbox"],
+        ].map(([k, v, href]) => (
+          <Link key={k} href={href} className="bg-[#141414] border border-white/[0.06] hover:border-white/15 rounded-xl px-3 py-3 transition-colors">
+            <p className="text-white/40 text-[11px] leading-tight">{k}</p>
+            <p className="text-white text-lg font-bold mt-1 tabular-nums truncate">{v}</p>
+          </Link>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mb-6 lg:mb-8">
+        <div className="lg:col-span-2 bg-[#141414] border border-white/[0.06] rounded-xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
+            <h2 className="text-white font-semibold text-sm">Da fare adesso {today.actions.length > 0 && <span className="text-[#E63B2E]">({today.actions.length})</span>}</h2>
+            <Link href="/crm/calendar" className="text-white/30 hover:text-white/60 text-xs transition-colors">Calendario →</Link>
+          </div>
+          {today.actions.length === 0 ? (
+            <p className="px-5 py-6 text-white/30 text-sm">Tutto in ordine: niente da fare in questo momento. 🎉</p>
+          ) : (
+            <div className="divide-y divide-white/[0.04]">
+              {today.actions.slice(0, 15).map((a, i) => (
+                <Link key={`${a.kind}-${i}`} href={a.href} className="flex items-center gap-3 px-5 py-3 hover:bg-white/[0.02] transition-colors">
+                  <span className="text-base shrink-0" aria-hidden>{ACTION_ICON[a.kind]}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white/85 text-sm font-medium truncate">{a.title}</p>
+                    {a.detail && <p className={`text-xs truncate ${a.late ? "text-[#E63B2E]" : "text-white/35"}`}>{a.detail}</p>}
+                  </div>
+                  <span className="text-white/20 text-xs shrink-0">→</span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="bg-[#141414] border border-white/[0.06] rounded-xl p-5 flex flex-col gap-4">
+          <h2 className="text-white font-semibold text-sm">Social AI</h2>
+          <Link href="/crm/social/inbox" className={`rounded-lg px-4 py-3 border transition-colors ${needsHuman ? "bg-[#E63B2E]/10 border-[#E63B2E]/25 hover:bg-[#E63B2E]/15" : "bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.05]"}`}>
+            <p className={`text-2xl font-bold ${needsHuman ? "text-[#E63B2E]" : "text-white/80"}`}>{needsHuman}</p>
+            <p className="text-white/40 text-xs">conversazioni aspettano una persona</p>
+          </Link>
+          <Link href="/crm/leads?channel=social" className="rounded-lg px-4 py-3 border bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.05] transition-colors">
+            <p className="text-2xl font-bold text-white/80">{socialLeadsWeek}</p>
+            <p className="text-white/40 text-xs">nuovi contatti dai social negli ultimi 7 giorni</p>
+          </Link>
+        </div>
+      </div>
+
       {/* KPI Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6 lg:mb-8">
         <KPICard
@@ -126,48 +174,6 @@ export default async function DashboardPage() {
           value={`${fmt(kpi?.conversion_rate, 1)}%`}
           sub={`${fmt(kpi?.won_leads)} vinti · ${fmt(kpi?.lost_leads)} persi`}
         />
-      </div>
-
-      {/* Da fare oggi + Social AI */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mb-6 lg:mb-8">
-        <div className="lg:col-span-2 bg-[#141414] border border-white/[0.06] rounded-xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
-            <h2 className="text-white font-semibold text-sm">⏰ Da ricontattare oggi {due.length > 0 && <span className="text-[#E63B2E]">({due.length})</span>}</h2>
-            <Link href="/crm/leads?follow=due" className="text-white/30 hover:text-white/60 text-xs transition-colors">Vedi tutti →</Link>
-          </div>
-          {due.length === 0 ? (
-            <p className="px-5 py-6 text-white/25 text-sm">Nessun promemoria per oggi. Impostali dalla scheda di ogni contatto.</p>
-          ) : (
-            <div className="divide-y divide-white/[0.04]">
-              {due.map((l) => {
-                const late = new Date(l.next_action_at).getTime() < nowMs - 3_600_000;
-                return (
-                  <Link key={l.id} href={`/crm/leads/${l.id}`} className="flex items-center gap-3 px-5 py-3 hover:bg-white/[0.02] transition-colors">
-                    <span className={`w-2 h-2 rounded-full shrink-0 ${late ? "bg-[#E63B2E]" : "bg-yellow-400"}`} />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-white/80 text-sm font-medium truncate">{l.name}{l.company ? <span className="text-white/30 font-normal"> · {l.company}</span> : null}</p>
-                      <p className="text-white/35 text-xs truncate">{l.next_action_note ?? "Ricontattare"}</p>
-                    </div>
-                    <span className={`text-xs shrink-0 ${late ? "text-[#E63B2E]" : "text-white/40"}`}>
-                      {new Date(l.next_action_at).toLocaleString("it-IT", { timeZone: "Europe/Rome", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-        </div>
-        <div className="bg-[#141414] border border-white/[0.06] rounded-xl p-5 flex flex-col gap-4">
-          <h2 className="text-white font-semibold text-sm">Social AI</h2>
-          <Link href="/crm/social/inbox" className={`rounded-lg px-4 py-3 border transition-colors ${needsHuman ? "bg-[#E63B2E]/10 border-[#E63B2E]/25 hover:bg-[#E63B2E]/15" : "bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.05]"}`}>
-            <p className={`text-2xl font-bold ${needsHuman ? "text-[#E63B2E]" : "text-white/80"}`}>{needsHuman}</p>
-            <p className="text-white/40 text-xs">conversazioni aspettano una persona</p>
-          </Link>
-          <Link href="/crm/leads?channel=social" className="rounded-lg px-4 py-3 border bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.05] transition-colors">
-            <p className="text-2xl font-bold text-white/80">{socialLeadsWeek}</p>
-            <p className="text-white/40 text-xs">nuovi contatti dai social negli ultimi 7 giorni</p>
-          </Link>
-        </div>
       </div>
 
       {/* Two-col layout */}

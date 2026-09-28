@@ -10,7 +10,7 @@ export default async function PipelinePage() {
     supabase
       .from("leads")
       .select(`
-        id, name, email, company, status, score, stage_id, created_at,
+        id, name, email, company, status, score, stage_id, stage_entered_at, next_action_at, created_at,
         assigned_profile:profiles!leads_assigned_to_fkey(id, full_name, avatar_url)
       `)
       .not("stage_id", "is", null)
