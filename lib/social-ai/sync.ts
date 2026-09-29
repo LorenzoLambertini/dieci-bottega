@@ -34,6 +34,10 @@ export interface AccountSyncResult {
   found: number;
   queued: number;
   errors: string[];
+  /** Note non bloccanti (es. funzione non attiva per un permesso mancante). */
+  info: string[];
+  /** Conversazioni DM che Meta rende visibili all'app (username/nome dell'altra persona). */
+  dmVisible: string[];
 }
 
 export interface SyncResult {
@@ -87,7 +91,7 @@ export async function collectMetaEvents(
   since: Date,
   now: Date,
   graph: Graph = graphRequest
-): Promise<{ events: InboundEvent[]; errors: string[] }> {
+): Promise<{ events: InboundEvent[]; errors: string[]; info: string[]; dmVisible: string[] }> {
   const row = acct.row;
   const platform = row.platform as "instagram" | "facebook";
   const token = acct.accessToken;
@@ -96,6 +100,8 @@ export async function collectMetaEvents(
   const selfName = row.username?.toLowerCase() ?? null;
   const events: InboundEvent[] = [];
   const errors: string[] = [];
+  const info: string[] = [];
+  const dmVisible: string[] = [];
 
   const push = (ev: Omit<InboundEvent, "platform" | "accountExternalId">, liveMs: number) => {
     if (new Date(ev.timestamp) < since) return;
@@ -129,7 +135,11 @@ export async function collectMetaEvents(
     const r = await graph<{ data?: { id: string; comments?: { data?: FbComment[] } }[] }>(`${pageId}/posts`, token, {
       query: { fields: "id,comments.filter(stream).order(reverse_chronological).limit(50){id,message,created_time,from,parent{id}}", limit: "15" },
     });
-    if (!r.ok) errors.push(`Commenti Facebook → ${r.error}`);
+    if (!r.ok) {
+      // Permesso non concesso: funzione non attiva, non un errore da segnalare ogni volta
+      if (/pages_read_user_content|Page Public Content Access/i.test(r.error)) info.push("Commenti della Pagina Facebook non letti: manca il permesso pages_read_user_content");
+      else errors.push(`Commenti Facebook → ${r.error}`);
+    }
     else {
       for (const post of r.data.data ?? []) {
         for (const c of post.comments?.data ?? []) {
@@ -146,12 +156,14 @@ export async function collectMetaEvents(
   }
 
   /* DM */
-  const r = await graph<{ data?: { id: string; updated_time?: string; messages?: { data?: GraphMessage[] } }[] }>(`${pageId}/conversations`, token, {
-    query: { platform: platform === "instagram" ? "instagram" : "messenger", fields: "id,updated_time,messages.limit(10){id,message,created_time,from}", limit: "25" },
+  const r = await graph<{ data?: { id: string; updated_time?: string; participants?: { data?: { id?: string; username?: string; name?: string }[] }; messages?: { data?: GraphMessage[] } }[] }>(`${pageId}/conversations`, token, {
+    query: { platform: platform === "instagram" ? "instagram" : "messenger", fields: "id,updated_time,participants,messages.limit(10){id,message,created_time,from}", limit: "25" },
   });
   if (!r.ok) errors.push(`DM ${platform === "instagram" ? "Instagram" : "Messenger"} → ${r.error}`);
   else {
     for (const conv of r.data.data ?? []) {
+      const other = (conv.participants?.data ?? []).find((p) => p.id && !self.has(p.id) && p.username?.toLowerCase() !== selfName);
+      dmVisible.push(other?.username ? `@${other.username}` : other?.name ?? "sconosciuto");
       const updated = isoOf(conv.updated_time);
       if (updated && new Date(updated) < since) continue;
       for (const m of conv.messages?.data ?? []) {
@@ -165,7 +177,7 @@ export async function collectMetaEvents(
       }
     }
   }
-  return { events, errors };
+  return { events, errors, info, dmVisible };
 }
 
 /**
@@ -183,7 +195,7 @@ export async function syncMetaAccounts(deps: SyncDeps, opts: { minIntervalMs?: n
   const accounts: AccountSyncResult[] = [];
   const collected: { ev: InboundEvent; res: AccountSyncResult }[] = [];
   for (const row of rows) {
-    const res: AccountSyncResult = { accountId: row.id, platform: row.platform, name: row.username ? `@${row.username}` : row.account_name ?? row.platform, found: 0, queued: 0, errors: [] };
+    const res: AccountSyncResult = { accountId: row.id, platform: row.platform, name: row.username ? `@${row.username}` : row.account_name ?? row.platform, found: 0, queued: 0, errors: [], info: [], dmVisible: [] };
     accounts.push(res);
     const acct = await loadAccount(deps, row.id);
     if (!acct) {
@@ -191,9 +203,11 @@ export async function syncMetaAccounts(deps: SyncDeps, opts: { minIntervalMs?: n
       continue;
     }
     const since = row.last_sync_at ? new Date(new Date(row.last_sync_at).getTime() - OVERLAP_MS) : new Date(now.getTime() - FIRST_SYNC_LOOKBACK_MS);
-    const { events, errors } = await collectMetaEvents(acct, since, now, deps.graph);
+    const { events, errors, info, dmVisible } = await collectMetaEvents(acct, since, now, deps.graph);
     res.found = events.length;
     res.errors.push(...errors);
+    res.info.push(...info);
+    res.dmVisible = dmVisible;
     collected.push(...events.map((ev) => ({ ev, res })));
     // Avanza il punto di partenza solo se almeno una lettura è riuscita
     if (errors.length < 2) await deps.db.from("social_accounts").update({ last_sync_at: now.toISOString() }).eq("id", row.id);

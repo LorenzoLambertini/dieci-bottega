@@ -46,6 +46,8 @@ export function SyncButton({ auto = true }: { auto?: boolean }) {
   }, [auto, run]);
 
   const errors = res?.accounts?.flatMap((a) => a.errors.map((e) => `${a.name}: ${e}`)) ?? [];
+  const info = res?.accounts?.flatMap((a) => (a.info ?? []).map((e) => `${a.name}: ${e}`)) ?? [];
+  const visible = res?.accounts?.filter((a) => a.platform === "instagram" || (a.dmVisible ?? []).length) ?? [];
   const time = res?.at ? new Date(res.at).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" }) : null;
 
   return (
@@ -68,17 +70,23 @@ export function SyncButton({ auto = true }: { auto?: boolean }) {
             <p className="text-white/40">
               {time && `Ultima lettura ${time} · `}
               {res.queued ? <span className="text-green-400">{res.queued} nuovi</span> : "nessun messaggio nuovo"}
-              {errors.length > 0 && (
-                <button type="button" onClick={() => setShowDetails((v) => !v)} className="ml-2 text-yellow-400 underline underline-offset-2">
-                  {errors.length} avvisi Meta
-                </button>
-              )}
+              <button type="button" onClick={() => setShowDetails((v) => !v)} className={`ml-2 underline underline-offset-2 ${errors.length ? "text-yellow-400" : "text-white/40"}`}>
+                {errors.length ? `${errors.length} avvisi Meta` : "dettagli"}
+              </button>
             </p>
           )}
-          {showDetails && errors.length > 0 && (
-            <ul className="mt-1 space-y-1 text-left bg-[#1a1a1a] border border-white/[0.08] rounded-lg p-2.5 text-white/60">
-              {errors.map((e) => <li key={e} className="break-words">{e}</li>)}
-            </ul>
+          {showDetails && (
+            <div className="mt-1 space-y-2 text-left bg-[#1a1a1a] border border-white/[0.08] rounded-lg p-2.5 text-white/60">
+              {errors.length > 0 && <ul className="space-y-1 text-yellow-400/90">{errors.map((e) => <li key={e} className="break-words">⚠️ {e}</li>)}</ul>}
+              {visible.map((a) => (
+                <p key={a.accountId} className="break-words">
+                  <span className="text-white/80">{a.name}</span> · Meta mostra {(a.dmVisible ?? []).length} conversazioni DM
+                  {(a.dmVisible ?? []).length > 0 && <>: {(a.dmVisible ?? []).slice(0, 12).join(", ")}</>}
+                </p>
+              ))}
+              <p className="text-white/35">Se una persona che ti ha scritto non è in questo elenco, Meta non la rende visibile all&apos;app (app non ancora pubblicata): aggiungila come tester o attendi la pubblicazione.</p>
+              {info.length > 0 && <ul className="space-y-1 text-white/35">{info.map((e) => <li key={e} className="break-words">ℹ️ {e}</li>)}</ul>}
+            </div>
           )}
         </div>
       )}
