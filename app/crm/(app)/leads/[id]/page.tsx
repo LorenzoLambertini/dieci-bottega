@@ -7,6 +7,7 @@ import { DeleteLeadButton } from "@/components/crm/DeleteLeadButton";
 import { getCrmUser } from "@/lib/social-ai/auth";
 import { ContactButtons } from "@/components/crm/ContactButtons";
 import { LeadAiCard, type EmailTemplate } from "@/components/crm/LeadAi";
+import { LeadMagnetCard, type LeadMagnetRow } from "@/components/crm/LeadMagnetCard";
 import { QuotesCard, type QuoteRow } from "@/components/crm/Quotes";
 import { createSocialClient } from "@/lib/social-ai/db";
 import { ActivityActions, MergeButton } from "@/components/crm/CrmTools";
@@ -86,7 +87,7 @@ export default async function LeadDetailPage({
     link_preventivo: lastSentQuote ? `${siteBase}/preventivo/${lastSentQuote.public_token}` : "{{link_preventivo}}",
   };
 
-  const [activitiesRes, opportunitiesRes, stagesRes, profilesRes, socialRes, leadTagsRes, allTagsRes] =
+  const [activitiesRes, opportunitiesRes, stagesRes, profilesRes, socialRes, leadTagsRes, allTagsRes, magnetRes] =
     await Promise.all([
       supabase
         .from("activities")
@@ -108,7 +109,13 @@ export default async function LeadDetailPage({
         .order("last_message_at", { ascending: false }),
       supabase.from("lead_tags").select("tag:tags(id, name, color)").eq("lead_id", id),
       supabase.from("tags").select("id, name, color").order("name"),
+      supabase
+        .from("guide_deliveries")
+        .select("id, platform, keyword, trigger_kind, post_id, status, channel, attachment_sent, sent_at, opened_at, last_opened_at, open_count, downloaded_at, follow_up_status, guide:guides(id, name, file_url)")
+        .eq("contact_id", id)
+        .order("sent_at", { ascending: false }),
     ]);
+  const magnetRows = (magnetRes.data ?? []) as unknown as LeadMagnetRow[];
   const leadTags = ((leadTagsRes.data ?? []) as unknown as { tag: TagChip | null }[]).map((r) => r.tag).filter((t): t is TagChip => !!t);
   const allTags = (allTagsRes.data ?? []) as TagChip[];
 
@@ -412,6 +419,7 @@ export default async function LeadDetailPage({
         {/* Sidebar — right column */}
         <div className="space-y-4">
           <FollowUpCard leadId={lead.id} at={lead.next_action_at} note={lead.next_action_note} />
+          <LeadMagnetCard rows={magnetRows} />
           <AppointmentCard leadId={lead.id} slot={((lead.metadata as Record<string, unknown> | null)?.scheduled_slot as string | undefined) ?? null} />
           <LeadAiCard leadId={lead.id} phone={lead.phone} email={lead.email} templates={templates} vars={templateVars} />
           <TagEditor leadId={lead.id} tags={leadTags} allTags={allTags} canEdit={currentUser?.role === "admin" || currentUser?.role === "marketing"} />

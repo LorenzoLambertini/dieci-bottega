@@ -1,6 +1,8 @@
 import { createSocialClient } from "@/lib/social-ai/db";
 import { Card, isMissingTable, MigrationNotice, PageHeader, Pill, PlatformBadge, SocialTabs } from "@/components/crm/social/ui";
-import { EditableGuide, GuideForm } from "@/components/crm/social/Forms";
+import { EditableGuide, GuideForm, type GuideFormValue } from "@/components/crm/social/Forms";
+import Link from "next/link";
+import { computeFunnel, type DeliveryRow } from "@/lib/social-ai/lead-magnet";
 
 export const dynamic = "force-dynamic";
 
@@ -8,11 +10,11 @@ export default async function GuidesPage() {
   const supabase = await createSocialClient();
   const [{ data, error }, { data: deliveries }] = await Promise.all([
     supabase.from("guides").select("*").order("created_at", { ascending: false }),
-    supabase.from("guide_deliveries").select("guide_id, status"),
+    supabase.from("guide_deliveries").select("guide_id, platform, status, opened_at, downloaded_at, attachment_sent").limit(5000),
   ]);
-  const guides = (data ?? []) as { id: string; name: string; slug: string; description: string | null; url: string; active: boolean; trigger_keywords: string[]; platforms: string[] }[];
-  const sent = new Map<string, number>();
-  for (const d of (deliveries ?? []) as { guide_id: string; status: string }[]) if (d.status === "sent") sent.set(d.guide_id, (sent.get(d.guide_id) ?? 0) + 1);
+  const guides = (data ?? []) as { id: string; name: string; slug: string; description: string | null; url: string; active: boolean; trigger_keywords: string[]; platforms: string[]; file_url: string | null; match_mode: string }[];
+  const byGuide = new Map<string, DeliveryRow[]>();
+  for (const d of (deliveries ?? []) as (DeliveryRow & { guide_id: string })[]) byGuide.set(d.guide_id, [...(byGuide.get(d.guide_id) ?? []), d]);
 
   return (
     <div>
@@ -24,10 +26,10 @@ export default async function GuidesPage() {
           <div className="divide-y divide-white/[0.04]">
             {guides.length === 0 && <p className="px-5 py-10 text-center text-white/20 text-sm">Nessuna guida.</p>}
             {guides.map((g) => (
-              <EditableGuide key={g.id} guide={g}>
+              <EditableGuide key={g.id} guide={g as GuideFormValue}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-white/85 text-sm font-medium">{g.name}</p>
+                    <p className="text-white/85 text-sm font-medium">{g.file_url ? "🎁 " : ""}{g.name}</p>
                     <a href={g.url} target="_blank" rel="noopener noreferrer" className="text-white/30 text-xs hover:text-[#E63B2E] truncate block">{g.url}</a>
                     {g.description && <p className="text-white/40 text-xs mt-1">{g.description}</p>}
                     <div className="flex flex-wrap gap-1 mt-2">
@@ -37,7 +39,16 @@ export default async function GuidesPage() {
                   </div>
                   <div className="flex flex-col items-end gap-1 shrink-0">
                     <Pill tone={g.active ? "green" : "gray"}>{g.active ? "Attiva" : "Off"}</Pill>
-                    <span className="text-white/25 text-xs">{sent.get(g.id) ?? 0} invii</span>
+                    {(() => {
+                      const f = computeFunnel(byGuide.get(g.id) ?? []);
+                      return (
+                        <Link href={`/crm/social/guides/${g.id}`} className="text-right text-white/40 hover:text-white text-[11px] leading-relaxed">
+                          {f.requests} richieste · {f.sent} inviati<br />
+                          {f.opened} aperti{g.file_url ? ` · ${f.downloaded} download` : ""}<br />
+                          <span className="text-[#E63B2E]">Statistiche →</span>
+                        </Link>
+                      );
+                    })()}
                   </div>
                 </div>
               </EditableGuide>

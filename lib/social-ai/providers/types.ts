@@ -47,6 +47,8 @@ export interface SocialProvider {
     ctx: { postId?: string | null }
   ): Promise<SendResult>;
   sendPrivateReply(acct: ProviderAccount, commentId: string, text: string): Promise<SendResult>;
+  /** Allegato file (es. PDF) in DM. Assente = la piattaforma non lo consente via API. */
+  sendFile?(acct: ProviderAccount, recipientId: string, fileUrl: string): Promise<SendResult>;
   fetchProfile?(acct: ProviderAccount, userId: string): Promise<ProfileInfo | null>;
 }
 

@@ -48,25 +48,35 @@ const FILLER = new Set([
  * Una guida si attiva senza AI solo se il messaggio è essenzialmente la keyword
  * ("GUIDA", "guida sito per favore"), non se la keyword compare in una frase
  * più articolata ("quanto costa un sito?" → va a Claude).
+ * I lead magnet con match_mode 'contains' (es. "ERRORI") si attivano invece
+ * ovunque compaia la keyword: "Mi interessano gli errori", "Dove trovo ERRORI?".
  */
-export function matchGuideDeterministic(text: string, guides: GuideRow[], platform: Platform): GuideRow | null {
+export function matchGuideKeyword(text: string, guides: GuideRow[], platform: Platform): { guide: GuideRow; keyword: string } | null {
   const w = words(text);
-  if (w.length === 0 || w.length > 6) return null;
+  if (w.length === 0) return null;
   const meaningful = w.filter((x) => !FILLER.has(x));
-  if (meaningful.length > 3) return null;
-  for (const g of guides) {
+  const short = w.length <= 6 && meaningful.length <= 3;
+  // prima i lead magnet "contains", poi le guide classiche
+  const ordered = [...guides].sort((a, b) => Number(b.match_mode === "contains") - Number(a.match_mode === "contains"));
+  for (const g of ordered) {
     if (!g.active) continue;
     if (g.platforms.length && !g.platforms.includes(platform)) continue;
+    const contains = g.match_mode === "contains";
+    if (!contains && !short) continue;
     const kws = [...g.trigger_keywords].sort((a, b) => normalize(b).length - normalize(a).length);
     for (const k of kws) {
       const nk = normalize(k);
-      if (!nk) continue;
+      if (!nk || !containsKeyword(text, k)) continue;
       const kw = nk.split(" ");
-      // tutte le parole significative devono appartenere alla keyword
-      if (containsKeyword(text, k) && meaningful.every((m) => kw.includes(m))) return g;
+      // modalità classica: tutte le parole significative devono appartenere alla keyword
+      if (contains || meaningful.every((m) => kw.includes(m))) return { guide: g, keyword: k };
     }
   }
   return null;
+}
+
+export function matchGuideDeterministic(text: string, guides: GuideRow[], platform: Platform): GuideRow | null {
+  return matchGuideKeyword(text, guides, platform)?.guide ?? null;
 }
 
 /** Commenti che non meritano una risposta AI (emoji, tag di amici, complimenti brevi). */

@@ -92,7 +92,11 @@ class Query implements PromiseLike<{ data: unknown; error: { message: string; co
 
   constructor(private db: FakeDb, private table: string) {}
 
-  select(_cols?: string, opts?: { count?: string; head?: boolean }) {
+  /** Embed "alias:tabella(...)" risolti tramite la colonna `<alias>_id` (es. guide:guides → guide_id). */
+  private embeds: { alias: string; table: string }[] = [];
+
+  select(cols?: string, opts?: { count?: string; head?: boolean }) {
+    for (const m of (cols ?? "").matchAll(/(\w+):(\w+)(?:!\w+)?\(/g)) this.embeds.push({ alias: m[1], table: m[2] });
     if (this.op === "select") this.op = "select";
     else this.returning = true;
     if (opts?.count) this.countMode = true;
@@ -151,7 +155,14 @@ class Query implements PromiseLike<{ data: unknown; error: { message: string; co
     }
     const total = out.length;
     out = out.slice(this.offset, this.lim != null ? this.offset + this.lim : undefined);
-    const clone = out.map((r) => structuredClone(r));
+    const clone = out.map((r) => {
+      const c = structuredClone(r);
+      for (const e of this.embeds) {
+        const fk = r[`${e.alias}_id`];
+        if (fk !== undefined) c[e.alias] = structuredClone(this.db.t(e.table).find((x) => x.id === fk) ?? null);
+      }
+      return c;
+    });
     if (this.mode === "single") {
       if (clone.length !== 1) return { data: null, error: { message: `expected 1 row, got ${clone.length}`, code: "PGRST116" }, count: total };
       return { data: clone[0], error: null, count: total };

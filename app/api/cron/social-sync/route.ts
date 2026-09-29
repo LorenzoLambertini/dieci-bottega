@@ -8,6 +8,7 @@ import { createEngineDeps } from "@/lib/social-ai/runtime";
 import { processSyncedEvents, syncMetaAccounts } from "@/lib/social-ai/sync";
 import { retryDueEvents } from "@/lib/social-ai/engine";
 import { safeEqual } from "@/lib/social-ai/crypto";
+import { runLeadMagnetFollowUps } from "@/lib/social-ai/lead-magnet";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,12 +24,15 @@ async function handle(req: NextRequest) {
   const { processed, rest } = await processSyncedEvents(deps, r.eventIds, 40_000);
   // eventi rimasti indietro (o interrotti) verranno ripresi qui al giro successivo
   const retried = rest.length ? 0 : await retryDueEvents(deps, 5).catch(() => 0);
+  // follow-up dei lead magnet (solo se attivati nella guida)
+  const followUps = rest.length ? null : await runLeadMagnetFollowUps(deps).catch(() => null);
   return NextResponse.json({
     skipped: r.skipped ?? null,
     queued: r.eventIds.length,
     processed,
     pending: rest.length,
     retried,
+    followUps,
     errors: r.accounts.flatMap((a) => a.errors.map((e) => `${a.name}: ${e}`)),
   });
 }

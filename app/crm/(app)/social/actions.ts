@@ -180,8 +180,16 @@ export async function saveGuide(_: ActionResult | null, form: FormData): Promise
       active: b(form.get("active")),
       trigger_keywords: parseKeywords(s(form.get("keywords"), 1000)).slice(0, 30),
       platforms: platforms.length ? platforms : ["instagram", "facebook", "linkedin", "tiktok"],
+      match_mode: s(form.get("match_mode"), 10) === "contains" ? "contains" : "short",
+      file_url: s(form.get("file_url"), 500) || null,
+      attach_file: b(form.get("attach_file")),
+      message_template: s(form.get("message_template"), 1000) || null,
+      follow_up_enabled: b(form.get("follow_up_enabled")),
+      follow_up_hours: n(form.get("follow_up_hours"), 1, 720, 24),
+      follow_up_message: s(form.get("follow_up_message"), 1000) || null,
       updated_at: new Date().toISOString(),
     };
+    if (row.file_url && !/^(\/[\w./-]+\.pdf|https:\/\/\S+)$/i.test(row.file_url)) throw new Error("File PDF: usa un percorso tipo /lead-magnets/guida.pdf o un URL https://");
     const { error } = id ? await db.from("guides").update(row).eq("id", id) : await db.from("guides").insert(row);
     if (error) throw new Error(error.message.includes("duplicate") ? "Slug già in uso" : error.message);
     await logAction(db, { action_type: id ? "update_guide" : "create_guide", actor: "human", actor_user_id: user.id, summary: `Guida "${name}"` });

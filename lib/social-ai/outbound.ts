@@ -61,6 +61,8 @@ export interface DmOptions {
   /** Invia come private reply al commento indicato (non richiede finestra 24h). */
   privateReplyToCommentId?: string | null;
   commentCreatedAt?: string | null;
+  /** Invia un allegato (URL pubblico del file) invece del testo; `text` diventa la descrizione nel CRM. */
+  attachmentUrl?: string | null;
 }
 
 export async function sendDirectMessage(
@@ -92,7 +94,7 @@ export async function sendDirectMessage(
       contact_id: conv.contact_id,
       platform: conv.platform,
       direction: "outbound",
-      message_type: "text",
+      message_type: opts.attachmentUrl ? "file" : "text",
       content: text,
       ai_generated: !!opts.aiGenerated,
       ai_action_id: opts.aiActionId ?? null,
@@ -107,7 +109,14 @@ export async function sendDirectMessage(
   const result = await attempt(
     deps,
     conv.account_id,
-    (p, a) => (opts.privateReplyToCommentId ? p.sendPrivateReply(a, opts.privateReplyToCommentId, text) : p.sendMessage(a, recipientId, text)),
+    (p, a) =>
+      opts.attachmentUrl
+        ? p.sendFile
+          ? p.sendFile(a, recipientId, opts.attachmentUrl)
+          : Promise.resolve({ ok: false, retryable: false, error: "Allegati non disponibili via API su questa piattaforma" })
+        : opts.privateReplyToCommentId
+          ? p.sendPrivateReply(a, opts.privateReplyToCommentId, text)
+          : p.sendMessage(a, recipientId, text),
     conv.platform
   );
   await deps.db

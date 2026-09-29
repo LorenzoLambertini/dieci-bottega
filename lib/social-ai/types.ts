@@ -119,6 +119,15 @@ export interface GuideRow {
   active: boolean;
   trigger_keywords: string[];
   platforms: string[];
+  /** Lead magnet: PDF servito dalla pagina di download tracciata. */
+  file_url?: string | null;
+  /** 'short' = il messaggio è essenzialmente la keyword; 'contains' = la keyword compare nel testo. */
+  match_mode?: "short" | "contains";
+  message_template?: string | null;
+  attach_file?: boolean;
+  follow_up_enabled?: boolean;
+  follow_up_hours?: number;
+  follow_up_message?: string | null;
 }
 
 export type RuleTrigger =

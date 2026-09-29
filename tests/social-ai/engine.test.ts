@@ -22,7 +22,8 @@ describe("Scenario completo: commento 'GUIDA' → DM → 'Quanto costa un sito?'
 
     // private reply con link + risposta pubblica al commento, token decifrato server-side
     expect(h.sent.map((s) => s.op)).toEqual(["private_reply", "comment_reply"]);
-    expect(h.sent[0].text).toContain("https://diecibottega.it/guide/checklist-sito");
+    // link univoco tracciato (apertura/download registrati), non l'URL diretto
+    expect(h.sent[0].text).toMatch(/https:\/\/diecibottega\.it\/g\/[a-f0-9]{32}/);
     expect(h.sent[0].token).toBe("PAGE_TOKEN");
 
     // guide_delivery, tag, lead score, audit log
@@ -70,7 +71,7 @@ describe("Casi conversazionali", () => {
     expect(h.llm.calls).toHaveLength(0);
     expect(h.sent).toHaveLength(1);
     expect(h.sent[0]).toMatchObject({ op: "dm" });
-    expect(h.sent[0].text).toContain("checklist-sito");
+    expect(h.sent[0].text).toMatch(/\/g\/[a-f0-9]{32}/);
   });
 
   it("'Vorrei parlare con qualcuno.' → human handoff completo", async () => {

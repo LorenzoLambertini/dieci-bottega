@@ -12,6 +12,12 @@ export interface LeadFilterParams {
   follow?: string;
   tag?: string;
   view?: string;
+  /** Lead magnet: id della guida oppure "any" */
+  magnet?: string;
+  /** Stato del lead magnet: sent | opened | not_opened | downloaded */
+  ms?: string;
+  /** Piattaforma di provenienza (leads.source) */
+  source?: string;
 }
 
 export const LEAD_STATUSES = ["new", "contacted", "qualified", "proposal", "won", "lost"] as const;
@@ -54,12 +60,35 @@ export function applyLeadFilters<T>(query: T, p: LeadFilterParams): T {
   if (p.view === "clients") q = q.eq("status", "won");
   // richiede nella select l'embed `lead_tags!inner(tag_id)` (vedi tagFilterSelect)
   if (p.tag && /^[0-9a-f-]{36}$/i.test(p.tag)) q = q.eq("lead_tags.tag_id", p.tag);
+  if (p.source && SOCIAL_SOURCES.includes(p.source)) q = q.eq("source", p.source);
+  // lead magnet: richiede l'embed `guide_deliveries!inner(...)` (vedi tagFilterSelect)
+  if (hasMagnet(p)) {
+    if (p.magnet !== "any") q = q.eq("guide_deliveries.guide_id", p.magnet);
+    if (p.ms === "sent") q = q.eq("guide_deliveries.status", "sent");
+    if (p.ms === "opened") q = q.not("guide_deliveries.opened_at", "is", null);
+    if (p.ms === "not_opened") q = q.eq("guide_deliveries.status", "sent").is("guide_deliveries.opened_at", null);
+    if (p.ms === "downloaded") q = q.not("guide_deliveries.downloaded_at", "is", null);
+  }
   return q as T;
 }
 
-/** Embed da aggiungere alla select quando si filtra per tag. */
+function hasMagnet(p: LeadFilterParams): boolean {
+  return !!p.magnet && (p.magnet === "any" || /^[0-9a-f-]{36}$/i.test(p.magnet));
+}
+
+export const MAGNET_STATES: Record<string, string> = {
+  sent: "Hanno ricevuto il PDF/link",
+  opened: "Hanno aperto il link",
+  not_opened: "Non hanno aperto il link",
+  downloaded: "Hanno scaricato il PDF",
+};
+
+/** Embed da aggiungere alla select quando si filtra per tag o per lead magnet. */
 export function tagFilterSelect(p: LeadFilterParams): string {
-  return p.tag && /^[0-9a-f-]{36}$/i.test(p.tag) ? ", lead_tags!inner(tag_id)" : "";
+  return (
+    (p.tag && /^[0-9a-f-]{36}$/i.test(p.tag) ? ", lead_tags!inner(tag_id)" : "") +
+    (hasMagnet(p) ? ", guide_deliveries!inner(guide_id, status, opened_at, downloaded_at)" : "")
+  );
 }
 
 /** Viste rapide mostrate come "chip" sopra la lista. */
@@ -71,4 +100,5 @@ export const SAVED_VIEWS: { label: string; params: Record<string, string> }[] = 
   { label: "💤 Fermi da 30 giorni", params: { view: "idle" } },
   { label: "🤝 Clienti", params: { view: "clients" } },
   { label: "📱 Dai social", params: { channel: "social" } },
+  { label: "🎁 Lead magnet", params: { magnet: "any" } },
 ];
