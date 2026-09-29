@@ -63,7 +63,7 @@ export function decision(d: Partial<{ intent: string; interest: string | null; s
 
 export interface SentCall {
   platform: Platform;
-  op: "dm" | "private_reply" | "comment_reply";
+  op: "dm" | "private_reply" | "comment_reply" | "file";
   target: string;
   text: string;
   token: string;
@@ -84,6 +84,12 @@ export function fakeProviders(sent: SentCall[], opts: { fail?: () => SendResult 
       if (f) return f;
       sent.push({ platform: p, op: "private_reply", target: commentId, text, token: a.accessToken });
       return { ok: true, externalId: `out_${sent.length}` };
+    },
+    async sendFile(a, to, url) {
+      const f = opts.fail?.();
+      if (f) return f;
+      sent.push({ platform: p, op: "file", target: to, text: url, token: a.accessToken });
+      return { ok: true, externalId: `f_${sent.length}` };
     },
     async replyToComment(a, commentId, text) {
       const f = opts.fail?.();

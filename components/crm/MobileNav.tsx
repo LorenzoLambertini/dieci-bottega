@@ -32,7 +32,7 @@ const SOCIAL_NAV = [
   { href: "/crm/social/inbox",         label: "Social AI · Inbox" },
   { href: "/crm/social/replies",       label: "Social AI · Risposte AI" },
   { href: "/crm/leads?channel=social", label: "Social AI · Contatti" },
-  { href: "/crm/social/guides",        label: "Social AI · Guide" },
+  { href: "/crm/social/guides",        label: "Social AI · Lead magnet" },
   { href: "/crm/social/automations",   label: "Social AI · Automazioni" },
   { href: "/crm/ai/knowledge",         label: "Social AI · Knowledge" },
   { href: "/crm/social/logs",          label: "Social AI · AI Logs" },

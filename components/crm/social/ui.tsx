@@ -86,7 +86,7 @@ export const SOCIAL_TABS = [
   { href: "/crm/social/inbox", label: "Inbox" },
   { href: "/crm/social/replies", label: "Risposte AI" },
   { href: "/crm/leads?channel=social", label: "Contatti" },
-  { href: "/crm/social/guides", label: "Guide" },
+  { href: "/crm/social/guides", label: "Lead magnet" },
   { href: "/crm/social/automations", label: "Automazioni" },
   { href: "/crm/ai/knowledge", label: "Knowledge" },
   { href: "/crm/social/logs", label: "AI Logs" },

@@ -27,11 +27,14 @@ import {
   type LeadRow,
 } from "./crm";
 import { findAccountByExternalId, loadAccount, replyToComment, sendDirectMessage, type OutboundDeps } from "./outbound";
-import { isLowValueComment, matchContentRules, matchGuideDeterministic, matchPostDecisionRules } from "./rules";
+import { isLowValueComment, matchContentRules, matchGuideKeyword, matchPostDecisionRules } from "./rules";
 import { becameHot, computeScore, mergeSignals, resolveScoringConfig, scoreBand, temperatureFor } from "./scoring";
 import { buildContextMessage, buildKnowledge, buildLearning, buildSystemText, type FeedbackRow, type KnowledgeRow } from "./prompt";
 import { recordRun, runDecision, summarize, type LlmClient } from "./claude";
 import type { ToolRuntime } from "./tools";
+import { absoluteFileUrl, buildMagnetMessage, firstNameOf, newDeliveryToken, trackedLink } from "./lead-magnet";
+
+const PLATFORM_LABEL: Record<string, string> = { instagram: "Instagram", facebook: "Facebook", linkedin: "LinkedIn", tiktok: "TikTok" };
 
 export interface EngineDeps extends OutboundDeps {
   db: SupabaseClient;
@@ -301,9 +304,9 @@ export async function processInbound(deps: EngineDeps, ev: InboundEvent): Promis
   }
 
   if (!handled && !forceAi && settings.auto_send_guides) {
-    const g = matchGuideDeterministic(ev.text, guides, ev.platform);
-    if (g) {
-      const r = await deliverGuide(ctx, g, "rule");
+    const m = matchGuideKeyword(ev.text, guides, ev.platform);
+    if (m) {
+      const r = await deliverGuide(ctx, m.guide, "rule", m.keyword);
       handled = r.ok;
     }
   }
@@ -361,7 +364,7 @@ async function applyRule(ctx: Ctx, rule: AutomationRuleRow, guides: GuideRow[]):
         await log("guida non trovata o non attiva", "error");
         return "none";
       }
-      const r = await deliverGuide(ctx, g, "rule");
+      const r = await deliverGuide(ctx, g, "rule", rule.trigger_value || null);
       return r.ok ? "handled" : "none";
     }
     case "reply_text": {
@@ -420,23 +423,41 @@ async function publicReply(ctx: Ctx, text: string) {
 }
 
 /**
- * Consegna di una guida:
- *   commento → risposta pubblica breve + DM privato (private reply) con il link
- *              (se la piattaforma non consente DM: link nella risposta pubblica)
- *   DM       → messaggio con il link
- * Poi: guide_delivery, tag guida:<slug>, segnale guide_download, attività CRM.
+ * Consegna di una guida / lead magnet:
+ *   commento → private reply con il link tracciato (+ risposta pubblica breve);
+ *              se la piattaforma non consente DM: link nella risposta pubblica
+ *   DM       → messaggio con il link tracciato (+ PDF allegato se attivo e consentito)
+ * Poi: guide_delivery con token, tag guida:<slug>, segnale guide_download, timeline CRM.
+ * Il link /g/<token> registra apertura e download (vedi lead-magnet.ts).
  */
-export async function deliverGuide(ctx: Ctx, guide: GuideRow, actor: "ai" | "rule"): Promise<{ ok: boolean; error?: string }> {
+export async function deliverGuide(ctx: Ctx, guide: GuideRow, actor: "ai" | "rule", keyword?: string | null): Promise<{ ok: boolean; error?: string }> {
   const { deps, lead, conv, ev, settings } = ctx;
-  const link = `Ecco la guida "${guide.name}": ${guide.url}`;
   const caps = deps.providers[ev.platform].capabilities;
+  const platformLabel = PLATFORM_LABEL[ev.platform] ?? ev.platform;
+  const token = newDeliveryToken();
+  const link = trackedLink(token);
+  const text = buildMagnetMessage(guide, firstNameOf(lead.name), link);
   let ok = false;
   let channel: "dm" | "private_reply" | "comment" = "dm";
   let error: string | undefined;
+  let sentText = text;
+
+  // Timeline: richiesta con keyword
+  if (keyword) {
+    const where = ev.kind === "comment" ? `Commento${ev.postId ? ` al post ${ev.postId}` : ""}` : "DM";
+    await createSystemActivity(deps.db, lead.id, `🟠 Keyword "${keyword.toUpperCase()}" rilevata su ${platformLabel}`, `${where}: «${ev.text.slice(0, 300)}»`, {
+      guide_id: guide.id,
+      event: "lead_magnet_request",
+      platform: ev.platform,
+      post_id: ev.postId ?? null,
+      comment_id: ev.kind === "comment" ? ev.externalId : null,
+    });
+  }
 
   if (ev.kind === "comment") {
     if (caps.private_reply.status === "supported") {
-      const r = await dm(ctx, `Ciao! ${link}`, actor === "ai", true);
+      // la private reply è un solo messaggio di testo: niente allegato, solo link
+      const r = await dm(ctx, text, actor === "ai", true);
       ok = r.ok;
       error = r.error;
       channel = r.channel;
@@ -445,19 +466,34 @@ export async function deliverGuide(ctx: Ctx, guide: GuideRow, actor: "ai" | "rul
         ctx.used.commentReply = true;
       }
     } else {
-      const r = await publicReply(ctx, link);
+      sentText = `${guide.name}: ${link}`;
+      const r = await publicReply(ctx, sentText);
       ok = r.ok;
       error = r.error;
       channel = "comment";
       ctx.used.commentReply = true;
     }
   } else {
-    const r = await dm(ctx, link, actor === "ai");
+    const r = await dm(ctx, text, actor === "ai");
     ok = r.ok;
     error = r.error;
   }
   if (ok && channel !== "comment") ctx.used.dm = true;
 
+  // Caso A: allegato PDF nel DM (Instagram / Messenger, dentro la finestra 24h)
+  let attachmentSent = false;
+  let attachmentError: string | null = null;
+  if (ok && channel === "dm" && guide.attach_file && guide.file_url) {
+    if (deps.providers[ev.platform].sendFile) {
+      const r = await sendDirectMessage(deps, conv, ctx.recipientId, `📎 ${guide.name} (PDF)`, { aiGenerated: false, attachmentUrl: absoluteFileUrl(guide.file_url) });
+      attachmentSent = r.ok;
+      attachmentError = r.ok ? null : r.error ?? "errore";
+    } else {
+      attachmentError = "Allegati non disponibili via API su questa piattaforma: inviato solo il link";
+    }
+  }
+
+  const now = deps.now?.() ?? new Date();
   await deps.db.from("guide_deliveries").insert({
     guide_id: guide.id,
     contact_id: lead.id,
@@ -466,11 +502,32 @@ export async function deliverGuide(ctx: Ctx, guide: GuideRow, actor: "ai" | "rul
     channel,
     status: ok ? "sent" : "failed",
     error: error ?? null,
+    token,
+    keyword: keyword ?? null,
+    trigger_kind: actor === "ai" ? "ai" : ev.kind === "comment" ? "comment" : "dm",
+    trigger_text: ev.text.slice(0, 500),
+    post_id: ev.postId ?? null,
+    comment_id: ev.kind === "comment" ? ev.externalId : null,
+    message_text: ok ? sentText : null,
+    link_url: link,
+    attachment_sent: attachmentSent,
+    attachment_error: attachmentError,
+    follow_up_due_at: ok && guide.follow_up_enabled ? new Date(now.getTime() + (guide.follow_up_hours ?? 24) * 3600_000).toISOString() : null,
+    follow_up_status: ok && guide.follow_up_enabled ? "scheduled" : null,
   });
   if (ok) {
     await addTag(deps.db, lead.id, `guida:${guide.slug}`);
     ctx.extraSignals.add("guide_download");
-    await createSystemActivity(deps.db, lead.id, `Guida inviata: ${guide.name}`, `Canale: ${channel} · ${ev.platform}`, { guide_id: guide.id });
+    const how = channel === "comment" ? "risposta pubblica al commento" : channel === "private_reply" ? "DM (risposta privata al commento)" : "DM";
+    await createSystemActivity(
+      deps.db,
+      lead.id,
+      `📩 Lead magnet inviato: ${guide.name}`,
+      [`Canale: ${how} · ${platformLabel}`, `Link: ${link}`, attachmentSent ? "PDF allegato: sì" : attachmentError ? `PDF allegato: no (${attachmentError})` : null, `Messaggio: ${sentText}`].filter(Boolean).join("\n"),
+      { guide_id: guide.id, event: "lead_magnet_sent", token_link: link }
+    );
+  } else {
+    await createSystemActivity(deps.db, lead.id, `⚠️ Invio non riuscito: ${guide.name}`, error ?? null, { guide_id: guide.id, event: "lead_magnet_failed" });
   }
   await logAction(deps.db, {
     contact_id: lead.id,
@@ -478,9 +535,9 @@ export async function deliverGuide(ctx: Ctx, guide: GuideRow, actor: "ai" | "rul
     platform: ev.platform,
     action_type: "send_guide",
     actor,
-    summary: `${actor === "rule" ? "Regola" : "AI"}: invio guida "${guide.name}" (${channel})`,
-    input: { text: ev.text, guide: guide.slug },
-    output: { channel },
+    summary: `${actor === "rule" ? "Regola" : "AI"}: invio guida "${guide.name}" (${channel}${attachmentSent ? " + PDF" : ""})`,
+    input: { text: ev.text, guide: guide.slug, keyword: keyword ?? null },
+    output: { channel, attachment: attachmentSent },
     status: ok ? "success" : "error",
     error: error ?? null,
   });

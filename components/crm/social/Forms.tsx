@@ -70,6 +70,13 @@ export interface GuideFormValue {
   active?: boolean;
   trigger_keywords?: string[];
   platforms?: string[];
+  file_url?: string | null;
+  match_mode?: string | null;
+  message_template?: string | null;
+  attach_file?: boolean | null;
+  follow_up_enabled?: boolean | null;
+  follow_up_hours?: number | null;
+  follow_up_message?: string | null;
 }
 
 export function GuideForm({ guide, onDone }: { guide?: GuideFormValue; onDone?: () => void }) {
@@ -96,6 +103,34 @@ export function GuideForm({ guide, onDone }: { guide?: GuideFormValue; onDone?: 
       <div className="flex flex-wrap gap-4">
         {["instagram", "facebook", "linkedin", "tiktok"].map((p) => <Check key={p} name={`p_${p}`} label={p} defaultChecked={platforms.includes(p)} />)}
       </div>
+      <details className="rounded-lg border border-white/[0.06] px-3 py-2" open={!!guide?.file_url}>
+        <summary className="cursor-pointer text-white/60 text-xs font-semibold">🎁 Lead magnet (PDF, messaggio, follow-up)</summary>
+        <div className="space-y-3 pt-3">
+          <div>
+            <label className={labelCls}>Attivazione</label>
+            <select name="match_mode" defaultValue={guide?.match_mode ?? "short"} className={inputCls}>
+              <option value="short">Solo se il messaggio è la keyword (es. &quot;GUIDA&quot;)</option>
+              <option value="contains">Se la keyword compare nel testo (es. &quot;mi interessano gli errori&quot;)</option>
+            </select>
+          </div>
+          <div>
+            <label className={labelCls}>File PDF (percorso sul sito o URL)</label>
+            <input name="file_url" defaultValue={guide?.file_url ?? ""} className={inputCls} placeholder="/lead-magnets/guida.pdf" />
+            <p className="text-white/25 text-[11px] mt-1">Con un PDF il link porta a una pagina di download tracciata (link aperto → PDF scaricato).</p>
+          </div>
+          <Check name="attach_file" label="Allega anche il PDF nei DM (Instagram/Messenger)" defaultChecked={guide?.attach_file ?? false} />
+          <div>
+            <label className={labelCls}>Messaggio ({"{nome}"} {"{guida}"} {"{link}"})</label>
+            <textarea name="message_template" rows={3} defaultValue={guide?.message_template ?? ""} className={`${inputCls} resize-y`} placeholder={'Ciao{nome}! 🎁 Ecco la guida "{guida}":\n{link}'} />
+          </div>
+          <div className="grid grid-cols-[auto_1fr] gap-3 items-end">
+            <Check name="follow_up_enabled" label="Follow-up dopo" defaultChecked={guide?.follow_up_enabled ?? false} />
+            <div className="flex items-center gap-2"><input name="follow_up_hours" type="number" min={1} max={720} defaultValue={guide?.follow_up_hours ?? 24} className={`${inputCls} w-24`} /><span className="text-white/40 text-xs">ore</span></div>
+          </div>
+          <textarea name="follow_up_message" rows={2} defaultValue={guide?.follow_up_message ?? ""} className={`${inputCls} resize-y`} placeholder="Ciao{nome}, sei riuscito a dare un'occhiata alla guida?" />
+          <p className="text-white/25 text-[11px]">Meta consente messaggi automatici solo entro 24h dall&apos;ultimo messaggio del cliente: oltre, il CRM crea un promemoria per ricontattarlo a mano.</p>
+        </div>
+      </details>
       <div className="flex items-center justify-between gap-3">
         <Check name="active" label="Attiva" defaultChecked={guide?.active ?? true} />
         <div className="flex items-center gap-3"><Feedback state={state} /><button disabled={pending} className={btnPrimary}>{pending ? "Salvataggio…" : guide?.id ? "Salva" : "Crea guida"}</button></div>

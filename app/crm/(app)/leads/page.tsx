@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { StatusBadge } from "@/components/crm/Badge";
 import type { Lead, PipelineStage, Profile } from "@/lib/supabase/types";
-import { applyLeadFilters, LEAD_STATUSES, SAVED_VIEWS, STATUS_LABEL_IT, tagFilterSelect } from "@/lib/crm/lead-filters";
+import { applyLeadFilters, LEAD_STATUSES, MAGNET_STATES, SAVED_VIEWS, SOCIAL_SOURCES, STATUS_LABEL_IT, tagFilterSelect } from "@/lib/crm/lead-filters";
 import { TagPill } from "@/components/crm/LeadTools";
 import { getCrmUser } from "@/lib/social-ai/auth";
 
@@ -15,6 +15,9 @@ interface SearchParams {
   follow?: string;
   tag?: string;
   view?: string;
+  magnet?: string;
+  ms?: string;
+  source?: string;
   page?: string;
 }
 
@@ -56,6 +59,8 @@ export default async function LeadsPage({
     getCrmUser(),
     supabase.from("tags").select("id, name").order("name"),
   ]);
+  const { data: magnetData } = await supabase.from("guides").select("id, name").order("created_at", { ascending: false });
+  const magnetOptions = (magnetData ?? []) as { id: string; name: string }[];
   const tagOptions = (tagsRes.data ?? []) as { id: string; name: string }[];
   const tagsOf = (l: unknown) =>
     (((l as { taglist?: { tag: { id: string; name: string; color: string } | null }[] }).taglist) ?? [])
@@ -182,13 +187,30 @@ export default async function LeadsPage({
           <option value="planned">Con promemoria</option>
           <option value="none">Senza prossima azione</option>
         </select>
+        <select name="source" defaultValue={searchParams.source ?? ""} className="bg-[#141414] border border-white/[0.08] rounded-lg px-3 py-2 text-white/70 text-sm focus:outline-none focus:border-[#E63B2E]/50 transition-colors">
+          <option value="">Tutte le provenienze</option>
+          {SOCIAL_SOURCES.map((p) => <option key={p} value={p}>{p[0].toUpperCase() + p.slice(1)}</option>)}
+        </select>
+        {magnetOptions.length > 0 && (
+          <select name="magnet" defaultValue={searchParams.magnet ?? ""} className="bg-[#141414] border border-white/[0.08] rounded-lg px-3 py-2 text-white/70 text-sm focus:outline-none focus:border-[#E63B2E]/50 transition-colors">
+            <option value="">Lead magnet: tutti i contatti</option>
+            <option value="any">🎁 Hanno richiesto un lead magnet</option>
+            {magnetOptions.map((m) => <option key={m.id} value={m.id}>🎁 {m.name}</option>)}
+          </select>
+        )}
+        {searchParams.magnet && (
+          <select name="ms" defaultValue={searchParams.ms ?? ""} className="bg-[#141414] border border-white/[0.08] rounded-lg px-3 py-2 text-white/70 text-sm focus:outline-none focus:border-[#E63B2E]/50 transition-colors">
+            <option value="">Tutte le richieste</option>
+            {Object.entries(MAGNET_STATES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+          </select>
+        )}
         <button
           type="submit"
           className="bg-white/[0.06] hover:bg-white/[0.1] text-white/70 text-sm px-4 py-2 rounded-lg transition-colors"
         >
           Filtra
         </button>
-        {(searchParams.q || searchParams.status || searchParams.stage || searchParams.channel || searchParams.follow || searchParams.tag || searchParams.view) && (
+        {(searchParams.q || searchParams.status || searchParams.stage || searchParams.channel || searchParams.follow || searchParams.tag || searchParams.view || searchParams.magnet || searchParams.source) && (
           <Link
             href="/crm/leads"
             className="text-white/30 hover:text-white/60 text-sm px-3 py-2 transition-colors"

@@ -8,6 +8,7 @@
  * Endpoint usati (Graph API, versione in META_GRAPH_VERSION):
  *   DM (Messenger / Instagram Messaging) POST /{page-id}/messages  recipient.id
  *   Private reply a un commento          POST /{page-id}/messages  recipient.comment_id
+ *   Allegato PDF in DM                   POST /{page-id}/messages  message.attachment type=file
  *   Risposta pubblica commento IG        POST /{ig-comment-id}/replies
  *   Risposta pubblica commento FB        POST /{comment-id}/comments
  *   Profilo utente IG                    GET  /{igsid}?fields=name,username,profile_pic
@@ -91,6 +92,15 @@ function makeProvider(platform: "instagram" | "facebook"): SocialProvider {
       return graphRequest(`${pageIdOf(acct)}/messages`, acct.accessToken, {
         method: "POST",
         body: { recipient: { id: recipientId }, messaging_type: "RESPONSE", message: { text } },
+      }).then(toSend);
+    },
+
+    // Instagram Messaging e Messenger accettano allegati "file" (PDF fino a 25 MB) via URL pubblico,
+    // solo nella finestra di 24h (non come private reply a un commento).
+    sendFile(acct, recipientId, fileUrl) {
+      return graphRequest(`${pageIdOf(acct)}/messages`, acct.accessToken, {
+        method: "POST",
+        body: { recipient: { id: recipientId }, messaging_type: "RESPONSE", message: { attachment: { type: "file", payload: { url: fileUrl, is_reusable: true } } } },
       }).then(toSend);
     },
 
