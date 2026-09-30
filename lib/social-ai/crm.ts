@@ -282,7 +282,7 @@ export async function createNotification(
     link: n.link ?? null,
   });
   // push sul telefono: nuovi messaggi, lead social e conversazioni che richiedono una persona
-  if (!n.userId && ["social_message", "social_lead", "social_ai"].includes(n.type)) {
+  if (!n.userId && ["social_message", "social_lead", "social_ai", "blog_comment"].includes(n.type)) {
     const { notifyTeam } = await import("@/lib/crm/notify");
     // numero di chat non lette per il pallino sull'icona dell'app
     const { count } = await db.from("social_conversations").select("id", { count: "exact", head: true }).gt("unread_count", 0);

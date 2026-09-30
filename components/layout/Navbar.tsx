@@ -46,6 +46,7 @@ const NAV: NavItem[] = [
   },
   { label: "Servizi",   href: "/servizi"   },
   { label: "Progetti",  href: "/progetti"  },
+  { label: "Blog",      href: "/blog"      },
   { label: "Chi siamo", href: "/chi-siamo" },
   { label: "Contatti",  href: "/contatti"  },
 ];

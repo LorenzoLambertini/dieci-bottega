@@ -16,6 +16,7 @@ const NAV = [
   { href: "/crm/projects",     label: "Progetti",     emoji: "▭" },
   { href: "/crm/reports",      label: "Report",       emoji: "▥" },
   { href: "/crm/automations",  label: "Automazioni",  emoji: "◷" },
+  { href: "/crm/blog",         label: "Blog",         emoji: "▧" },
   { href: "/crm/settings",     label: "Impostazioni", emoji: "◈" },
 ];
 
