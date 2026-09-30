@@ -12,3 +12,10 @@ export const WHATSAPP_URL =
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 
 export const EMAIL = "info@diecibottega.it";
+
+/** Profili social mostrati nel footer del sito. */
+export const SOCIAL_LINKS = [
+  { platform: "instagram", label: "Instagram", href: "https://www.instagram.com/diecibottega/" },
+  { platform: "facebook",  label: "Facebook",  href: "https://www.facebook.com/1309642035566812" },
+  { platform: "linkedin",  label: "LinkedIn",  href: "https://www.linkedin.com/company/diecibottega/" },
+] as const;
