@@ -19,7 +19,7 @@ export interface LeadMagnetRow {
   guide: { id: string; name: string; file_url: string | null } | null;
 }
 
-const PLATFORM: Record<string, string> = { instagram: "Instagram", facebook: "Facebook", linkedin: "LinkedIn", tiktok: "TikTok" };
+const PLATFORM: Record<string, string> = { instagram: "Instagram", facebook: "Facebook", linkedin: "LinkedIn", tiktok: "TikTok", web: "Chat sito" };
 const fmt = (d: string) =>
   new Date(d).toLocaleString("it-IT", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Rome" });
 

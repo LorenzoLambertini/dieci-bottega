@@ -234,8 +234,9 @@ export function magnetSupport(providers: Record<string, { capabilities: Record<s
     facebook: "Messenger: link tracciato + PDF allegato (entro 24h). Commenti alla Pagina: risposta privata con il link; la lettura dei commenti via sincronizzazione richiede il permesso pages_read_user_content.",
     linkedin: "Le API LinkedIn non consentono DM né risposte private: nessun invio automatico. Commenti solo con Community Management API approvata.",
     tiktok: "La Business Messaging API non è disponibile in UE/UK: nessun DM automatico. Commenti solo con TikTok API for Business approvata.",
+    web: "Chat del sito: link tracciato mostrato nella chat, funziona con tutti i visitatori senza approvazioni.",
   };
-  return ["instagram", "facebook", "linkedin", "tiktok"].map((p) => {
+  return ["instagram", "facebook", "linkedin", "tiktok", "web"].map((p) => {
     const c = providers[p]?.capabilities ?? {};
     const dm = st(c.receive_dm?.status ?? "not_available") === "yes" && st(c.send_dm?.status ?? "") === "yes" ? "yes" : st(c.send_dm?.status ?? "not_available");
     const privateReply = st(c.private_reply?.status ?? "not_available");

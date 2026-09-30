@@ -4,7 +4,9 @@
  * (lib/supabase/types.ts), quindi sono descritte qui.
  */
 
-export type Platform = "instagram" | "facebook" | "linkedin" | "tiktok";
+/** "web" = chat del sito: stesso motore AI, nessun account social da collegare. */
+export type Platform = "instagram" | "facebook" | "linkedin" | "tiktok" | "web";
+/** Piattaforme social da collegare (la chat del sito è sempre attiva). */
 export const PLATFORMS: Platform[] = ["instagram", "facebook", "linkedin", "tiktok"];
 
 export type Temperature = "cold" | "warm" | "hot";

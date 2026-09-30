@@ -171,7 +171,7 @@ export async function saveGuide(_: ActionResult | null, form: FormData): Promise
     const url = s(form.get("url"), 500);
     if (!name) throw new Error("Nome obbligatorio");
     if (!/^https:\/\/\S+$/.test(url)) throw new Error("URL non valido (deve iniziare con https://)");
-    const platforms = ["instagram", "facebook", "linkedin", "tiktok"].filter((p) => b(form.get(`p_${p}`)));
+    const platforms = ["instagram", "facebook", "linkedin", "tiktok", "web"].filter((p) => b(form.get(`p_${p}`)));
     const row = {
       name,
       slug: s(form.get("slug"), 80) ? slugify(s(form.get("slug"), 80)) : slugify(name),
@@ -179,7 +179,7 @@ export async function saveGuide(_: ActionResult | null, form: FormData): Promise
       url,
       active: b(form.get("active")),
       trigger_keywords: parseKeywords(s(form.get("keywords"), 1000)).slice(0, 30),
-      platforms: platforms.length ? platforms : ["instagram", "facebook", "linkedin", "tiktok"],
+      platforms: platforms.length ? platforms : ["instagram", "facebook", "linkedin", "tiktok", "web"],
       match_mode: s(form.get("match_mode"), 10) === "contains" ? "contains" : "short",
       file_url: s(form.get("file_url"), 500) || null,
       attach_file: b(form.get("attach_file")),
