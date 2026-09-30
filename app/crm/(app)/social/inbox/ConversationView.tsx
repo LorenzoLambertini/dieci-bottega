@@ -79,7 +79,8 @@ export async function ConversationView({ id }: { id: string }) {
   const platform = conv.platform as Platform;
   const caps = PROVIDERS[platform].capabilities;
   const hasComment = timeline.some((t) => t.kind === "comment" && t.direction === "inbound");
-  const windowOpen = !!conv.last_inbound_at && Date.now() - new Date(conv.last_inbound_at).getTime() < 24 * 3600_000;
+  // la chat del sito non ha la finestra di 24h delle piattaforme social
+  const windowOpen = platform === "web" || (!!conv.last_inbound_at && Date.now() - new Date(conv.last_inbound_at).getTime() < 24 * 3600_000);
 
   return (
     <div>
@@ -109,7 +110,7 @@ export async function ConversationView({ id }: { id: string }) {
               <div className="flex items-center justify-between"><span className="text-white/30 text-xs uppercase tracking-wider">AI</span><Pill tone={conv.ai_enabled ? "green" : "gray"}>{conv.ai_enabled ? "Attiva" : "Sospesa"}</Pill></div>
               <div className="flex items-center justify-between"><span className="text-white/30 text-xs uppercase tracking-wider">Lead score</span><TemperaturePill temperature={conv.temperature} score={conv.lead_score} /></div>
               {conv.intent && <div className="flex items-center justify-between"><span className="text-white/30 text-xs uppercase tracking-wider">Intent</span><span className="text-white/70">{conv.intent}</span></div>}
-              <div className="flex items-center justify-between"><span className="text-white/30 text-xs uppercase tracking-wider">Finestra DM</span><span className={windowOpen ? "text-green-400 text-xs" : "text-white/40 text-xs"}>{windowOpen ? "Aperta (24h)" : "Chiusa"}</span></div>
+              <div className="flex items-center justify-between"><span className="text-white/30 text-xs uppercase tracking-wider">Finestra DM</span><span className={windowOpen ? "text-green-400 text-xs" : "text-white/40 text-xs"}>{platform === "web" ? "Chat sito: sempre aperta" : windowOpen ? "Aperta (24h)" : "Chiusa"}</span></div>
               {(conv.signals as string[]).length > 0 && (
                 <div>
                   <p className="text-white/30 text-xs uppercase tracking-wider mb-1.5">Segnali</p>

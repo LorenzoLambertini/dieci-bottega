@@ -130,7 +130,9 @@ export async function ensureContact(db: SupabaseClient, identity: IdentityRow, p
     const { data } = await db.from("leads").select("*").eq("id", identity.lead_id).maybeSingle();
     if (data) return data as LeadRow;
   }
-  const name = identity.display_name || (identity.username ? `@${identity.username}` : `Utente ${platform}`);
+  const name =
+    identity.display_name ||
+    (identity.username ? `@${identity.username}` : platform === "web" ? `Visitatore sito #${identity.platform_user_id.slice(0, 4)}` : `Utente ${platform}`);
   const { data: lead, error } = await db
     .from("leads")
     .insert({

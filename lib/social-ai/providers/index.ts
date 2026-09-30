@@ -3,12 +3,14 @@ import type { SocialProvider } from "./types";
 import { facebookProvider, instagramProvider } from "./meta";
 import { linkedinProvider } from "./linkedin";
 import { tiktokProvider } from "./tiktok";
+import { webProvider } from "./web";
 
 export const PROVIDERS: Record<Platform, SocialProvider> = {
   instagram: instagramProvider,
   facebook: facebookProvider,
   linkedin: linkedinProvider,
   tiktok: tiktokProvider,
+  web: webProvider,
 };
 
 export const PLATFORM_LABEL: Record<Platform, string> = {
@@ -16,6 +18,7 @@ export const PLATFORM_LABEL: Record<Platform, string> = {
   facebook: "Facebook",
   linkedin: "LinkedIn",
   tiktok: "TikTok",
+  web: "Chat sito",
 };
 
 /** Variabili d'ambiente necessarie per poter collegare ciascuna piattaforma. */
@@ -28,6 +31,8 @@ export function platformConfigured(p: Platform): boolean {
       return !!(process.env.LINKEDIN_CLIENT_ID && process.env.LINKEDIN_CLIENT_SECRET);
     case "tiktok":
       return !!(process.env.TIKTOK_CLIENT_KEY && process.env.TIKTOK_CLIENT_SECRET);
+    case "web":
+      return true;
   }
 }
 

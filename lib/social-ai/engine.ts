@@ -34,7 +34,15 @@ import { recordRun, runDecision, summarize, type LlmClient } from "./claude";
 import type { ToolRuntime } from "./tools";
 import { absoluteFileUrl, buildMagnetMessage, firstNameOf, newDeliveryToken, trackedLink } from "./lead-magnet";
 
-const PLATFORM_LABEL: Record<string, string> = { instagram: "Instagram", facebook: "Facebook", linkedin: "LinkedIn", tiktok: "TikTok" };
+const PLATFORM_LABEL: Record<string, string> = { instagram: "Instagram", facebook: "Facebook", linkedin: "LinkedIn", tiktok: "TikTok", web: "Chat del sito" };
+
+/** Istruzioni in più quando si risponde dal widget del sito (tag letti dal widget). */
+export const WEB_CHAT_HINT = `Canale: CHAT DEL SITO diecibottega.it (widget). Il visitatore è sul sito adesso.
+- Risposte brevi: massimo 2-3 frasi, una domanda alla volta, niente elenchi puntati.
+- Obiettivo: capire l'attività, se ha già un sito e l'obiettivo, poi suggerire il pacchetto giusto e far lasciare il contatto.
+- Quando suggerisci un pacchetto, termina la response con UNO di questi tag esatti: [SUGGEST_PACKAGE:BASIC] [SUGGEST_PACKAGE:PRO] [SUGGEST_PACKAGE:PREMIUM]
+- Quando è il momento di lasciare i dati (preventivo, call, parlare con una persona), termina con [SHOW_FORM:QUOTE] oppure [SHOW_FORM:CONTACT]: il sito mostra il form.
+- Non chiedere email o telefono nel testo: usa il tag del form.`;
 
 export interface EngineDeps extends OutboundDeps {
   db: SupabaseClient;
@@ -162,7 +170,8 @@ export async function processInbound(deps: EngineDeps, ev: InboundEvent): Promis
   const account = await findAccountByExternalId(db, ev.platform, ev.accountExternalId);
   // Evento per un account non collegato (es. il pulsante "Test" di Meta): registrato ma non processato.
   // Il simulatore (sandbox) lavora senza account e resta ammesso.
-  if (!account && !deps.sandbox) return { status: "ignored", reason: `account ${ev.accountExternalId} non collegato` };
+  // La chat del sito (web) non ha un account da collegare.
+  if (!account && !deps.sandbox && ev.platform !== "web") return { status: "ignored", reason: `account ${ev.accountExternalId} non collegato` };
   let profile = null;
   const { data: knownIdentity } = await db.from("social_identities").select("id").eq("platform", ev.platform).eq("platform_user_id", ev.senderId).maybeSingle();
   if (!knownIdentity && account) {
@@ -236,10 +245,10 @@ export async function processInbound(deps: EngineDeps, ev: InboundEvent): Promis
   // Notifica al team (campanella + push sul telefono), come un messaggio WhatsApp
   if (!ev.importOnly && !deps.sandbox) {
     const who = identity.username ? `@${identity.username}` : lead.name;
-    const where = ev.platform === "instagram" ? "Instagram" : ev.platform === "facebook" ? "Facebook" : ev.platform;
+    const where = PLATFORM_LABEL[ev.platform] ?? ev.platform;
     await createNotification(db, {
       type: "social_message",
-      title: `${ev.kind === "comment" ? "💬 Commento" : "✉️ DM"} da ${who} · ${where}`,
+      title: ev.platform === "web" ? `🌐 Chat sito · ${who}` : `${ev.kind === "comment" ? "💬 Commento" : "✉️ DM"} da ${who} · ${where}`,
       body: ev.text.slice(0, 180),
       link: `/crm/social/inbox?c=${conv.id}`,
       tag: `conv-${conv.id}`,
@@ -341,6 +350,7 @@ export async function processInbound(deps: EngineDeps, ev: InboundEvent): Promis
   }
 
   // 6. Claude
+  if (ev.platform === "web") ruleHints.push(WEB_CHAT_HINT);
   const decision = await decide(ctx, ruleHints);
   await markCommentProcessed();
   if (!decision) return { status: "handoff", conversationId: conv.id, reason: "ai_error" };

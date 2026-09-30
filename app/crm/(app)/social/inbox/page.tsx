@@ -13,6 +13,7 @@ const FILTERS = [
   { key: "facebook", label: "Facebook" },
   { key: "linkedin", label: "LinkedIn" },
   { key: "tiktok", label: "TikTok" },
+  { key: "web", label: "Chat sito" },
   { key: "unread", label: "Non letti" },
   { key: "ai", label: "AI" },
   { key: "human", label: "Richiede umano" },
@@ -53,7 +54,7 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
     )
     .order("last_message_at", { ascending: false, nullsFirst: false })
     .range((page - 1) * PAGE, page * PAGE - 1);
-  if (["instagram", "facebook", "linkedin", "tiktok"].includes(f)) q = q.eq("platform", f);
+  if (["instagram", "facebook", "linkedin", "tiktok", "web"].includes(f)) q = q.eq("platform", f);
   if (f === "unread") q = q.gt("unread_count", 0);
   if (f === "ai") q = q.eq("ai_enabled", true).eq("human_takeover", false);
   if (f === "human") q = q.eq("status", "needs_human");

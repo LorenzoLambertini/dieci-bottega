@@ -98,7 +98,7 @@ export function fakeProviders(sent: SentCall[], opts: { fail?: () => SendResult 
       return { ok: true, externalId: `c_${sent.length}` };
     },
   });
-  return { instagram: make("instagram"), facebook: make("facebook"), linkedin: make("linkedin"), tiktok: make("tiktok") };
+  return { instagram: make("instagram"), facebook: make("facebook"), linkedin: make("linkedin"), tiktok: make("tiktok"), web: make("web") };
 }
 
 /* ─── Setup ────────────────────────────────────────────────── */

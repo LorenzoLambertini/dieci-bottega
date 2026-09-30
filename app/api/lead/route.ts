@@ -9,6 +9,8 @@
  */
 
 import { notifyTeam } from "@/lib/crm/notify";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { linkWebVisitor, VISITOR_RE } from "@/lib/social-ai/web-chat";
 import { NextRequest, NextResponse } from "next/server";
 import { generateSlots, signSlot, type Slot } from "@/lib/scheduling";
 
@@ -23,6 +25,8 @@ interface LeadPayload {
   message?: string;
   package?: "BASIC" | "PRO" | "PREMIUM" | null;
   source?:  string;
+  /** Id del visitatore della chat: collega il form alla conversazione già nel CRM */
+  visitorId?: string;
 }
 
 function escapeHtml(s: string): string {
@@ -279,9 +283,24 @@ export async function POST(req: NextRequest) {
 
   const payload = p as LeadPayload;
 
-  // 1. Save lead in CRM
-  const captured = await captureLead(payload);
-  const leadId = captured?.id ?? null;
+  // 1. Save lead in CRM: se il visitatore ha già scritto in chat si completa quel contatto
+  //    (stessa conversazione dell'Inbox, niente doppioni), altrimenti pipeline classica
+  let leadId: string | null = null;
+  if (payload.visitorId && VISITOR_RE.test(payload.visitorId)) {
+    const note = [
+      payload.type === "quote" ? "Richiesta preventivo dalla chat" : "Contatto dalla chat",
+      payload.business ? `Tipo attività: ${payload.business}` : null,
+      payload.package ? `Pacchetto interessato: ${payload.package}` : null,
+      payload.message ?? null,
+    ].filter(Boolean).join("\n");
+    leadId = await linkWebVisitor(createAdminClient(), payload.visitorId, {
+      name: payload.name.trim(), email: payload.email, phone: payload.phone?.trim() || null, company: payload.business?.trim() || null, note,
+    }).catch((e: Error) => { console.warn("[lead] link chat:", e.message); return null; });
+  }
+  if (!leadId) {
+    const captured = await captureLead(payload);
+    leadId = captured?.id ?? null;
+  }
   await notifyTeam({ title: "💬 Nuovo contatto dal chatbot", body: payload.name + (payload.business ? ` · ${payload.business}` : ""), url: leadId ? `/crm/leads/${leadId}` : "/crm/leads" }).catch(() => 0);
 
   // 2. Build clickable slots

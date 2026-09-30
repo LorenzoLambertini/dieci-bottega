@@ -15,6 +15,53 @@ interface Message {
   content: string
   suggestedPackage?: PackageType
   showForm?: FormType
+  /** Risposta scritta da una persona del team dal CRM */
+  human?: boolean
+}
+
+interface ServerMessage {
+  id: string
+  role: Role
+  content: string
+  at: string
+  human?: boolean
+}
+
+// ── Visitatore: id casuale salvato nel browser, collega la chat al CRM ──
+const VISITOR_KEY = 'db-chat-visitor'
+function getVisitorId(): string {
+  try {
+    const saved = localStorage.getItem(VISITOR_KEY)
+    if (saved && /^[a-zA-Z0-9-]{16,64}$/.test(saved)) return saved
+    const id = crypto.randomUUID()
+    localStorage.setItem(VISITOR_KEY, id)
+    return id
+  } catch {
+    return crypto.randomUUID()
+  }
+}
+
+function toMessage(m: ServerMessage): Message {
+  const { clean, pkg, form } = parseMessage(m.content)
+  return { id: m.id, role: m.role, content: clean, suggestedPackage: pkg, showForm: form, human: m.human }
+}
+
+/** Link cliccabili nei messaggi (es. la guida inviata dall'AI). */
+function Linkified({ text }: { text: string }) {
+  const parts = text.split(/(https?:\/\/[^\s)]+)/g)
+  return (
+    <>
+      {parts.map((p, i) =>
+        /^https?:\/\//.test(p) ? (
+          <a key={i} href={p} target="_blank" rel="noopener noreferrer" style={{ color: '#F4EFE6', textDecoration: 'underline', wordBreak: 'break-all' }}>
+            {p}
+          </a>
+        ) : (
+          <span key={i}>{p}</span>
+        )
+      )}
+    </>
+  )
 }
 
 // ── Package data ───────────────────────────────────────
@@ -82,8 +129,60 @@ export default function ChatWidget() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [selectedPkg, setSelectedPkg] = useState<PackageType>(null)
+  const [waiting, setWaiting] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const visitorRef = useRef<string>('')
+  const lastAtRef = useRef<string | null>(null)
+  const lastActivityRef = useRef(0)
+  const restoredRef = useRef(false)
+
+  // Aggiunge i messaggi del server non ancora mostrati
+  function merge(list: ServerMessage[], onlyAssistant: boolean) {
+    if (!list.length) return
+    for (const m of list) if (!lastAtRef.current || m.at > lastAtRef.current) lastAtRef.current = m.at
+    setMessages((prev) => {
+      const seen = new Set(prev.map((p) => p.id))
+      const fresh = list.filter((m) => !seen.has(m.id) && (!onlyAssistant || m.role === 'assistant')).map(toMessage)
+      const pkg = [...fresh].reverse().find((m) => m.suggestedPackage)?.suggestedPackage
+      if (pkg) setSelectedPkg(pkg)
+      return fresh.length ? [...prev, ...fresh] : prev
+    })
+  }
+
+  // Alla prima apertura: ripristina la conversazione salvata nel CRM
+  useEffect(() => {
+    if (!open || restoredRef.current) return
+    restoredRef.current = true
+    visitorRef.current = visitorRef.current || getVisitorId()
+    fetch(`/api/chat?v=${encodeURIComponent(visitorRef.current)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { messages?: ServerMessage[]; waiting?: boolean } | null) => {
+        if (!d?.messages?.length) return
+        merge(d.messages, false)
+        setWaiting(!!d.waiting)
+      })
+      .catch(() => {})
+  }, [open])
+
+  // Mentre la chat è aperta e attiva: legge le risposte scritte dal team nel CRM
+  useEffect(() => {
+    if (!open) return
+    const t = setInterval(() => {
+      const active = waiting || Date.now() - lastActivityRef.current < 10 * 60_000
+      if (!active || !visitorRef.current || document.visibilityState !== 'visible') return
+      const after = lastAtRef.current ? `&after=${encodeURIComponent(lastAtRef.current)}` : ''
+      fetch(`/api/chat?v=${encodeURIComponent(visitorRef.current)}${after}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d: { messages?: ServerMessage[]; waiting?: boolean } | null) => {
+          if (!d) return
+          merge(d.messages ?? [], true)
+          setWaiting(!!d.waiting)
+        })
+        .catch(() => {})
+    }, 5000)
+    return () => clearInterval(t)
+  }, [open, waiting])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -98,35 +197,21 @@ export default function ChatWidget() {
     if (!content || loading) return
 
     const userMsg: Message = { id: Date.now().toString(), role: 'user', content }
-    const updated = [...messages, userMsg]
-    setMessages(updated)
+    setMessages((prev) => [...prev, userMsg])
     setInput('')
     setLoading(true)
 
     try {
+      visitorRef.current = visitorRef.current || getVisitorId()
+      lastActivityRef.current = Date.now()
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: updated
-            .filter((m) => m.id !== 'welcome')
-            .map((m) => ({ role: m.role, content: m.content })),
-        }),
+        body: JSON.stringify({ visitorId: visitorRef.current, message: content }),
       })
-
-      const data = await res.json()
-      const { clean, pkg, form } = parseMessage(data.message || '')
-
-      const assistantMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: clean,
-        suggestedPackage: pkg,
-        showForm: form,
-      }
-
-      setMessages((prev) => [...prev, assistantMsg])
-      if (pkg) setSelectedPkg(pkg)
+      const data = (await res.json()) as { messages?: ServerMessage[]; waiting?: boolean }
+      merge(data.messages ?? [], true)
+      setWaiting(!!data.waiting)
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -311,7 +396,12 @@ export default function ChatWidget() {
                     whiteSpace: 'pre-wrap',
                   }}
                 >
-                  {msg.content}
+                  {msg.human && (
+                    <div style={{ fontFamily: 'var(--db-jetbrains)', fontSize: '9px', color: '#E63B2E', letterSpacing: '0.08em', marginBottom: '4px' }}>
+                      TEAM DIECI BOTTEGA
+                    </div>
+                  )}
+                  <Linkified text={msg.content} />
                 </div>
               </div>
 
@@ -332,6 +422,7 @@ export default function ChatWidget() {
               {msg.showForm && (
                 <div style={{ marginTop: '10px' }}>
                   <ChatForm
+                    visitorId={visitorRef.current}
                     type={msg.showForm}
                     selectedPackage={selectedPkg}
                     onSuccess={(name) => {
@@ -344,6 +435,11 @@ export default function ChatWidget() {
           ))}
 
           {/* Loading dots */}
+          {waiting && !loading && (
+            <div style={{ fontFamily: 'var(--db-jetbrains)', fontSize: '10px', color: '#8A7A7A', textAlign: 'center', letterSpacing: '0.04em' }}>
+              Lorenzo o Tommaso ti rispondono qui a breve
+            </div>
+          )}
           {loading && (
             <div style={{ display: 'flex', gap: '4px', padding: '10px 14px' }}>
               {[0, 1, 2].map((i) => (

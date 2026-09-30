@@ -7,7 +7,7 @@ import { PROVIDERS } from "@/lib/social-ai/providers";
 
 export const dynamic = "force-dynamic";
 
-const PLATFORM_LABEL: Record<string, string> = { instagram: "Instagram", facebook: "Facebook", linkedin: "LinkedIn", tiktok: "TikTok" };
+const PLATFORM_LABEL: Record<string, string> = { instagram: "Instagram", facebook: "Facebook", linkedin: "LinkedIn", tiktok: "TikTok", web: "Chat sito" };
 const SUPPORT: Record<string, { label: string; tone: "green" | "yellow" | "gray" }> = {
   yes: { label: "Supportato", tone: "green" },
   approval: { label: "Richiede approvazione", tone: "yellow" },

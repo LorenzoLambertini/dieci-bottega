@@ -85,7 +85,7 @@ export function GuideForm({ guide, onDone }: { guide?: GuideFormValue; onDone?: 
   useEffect(() => {
     if (state?.ok) onDone?.();
   }, [state, onDone]);
-  const platforms = guide?.platforms ?? ["instagram", "facebook", "linkedin", "tiktok"];
+  const platforms = guide?.platforms ?? ["instagram", "facebook", "linkedin", "tiktok", "web"];
   return (
     <form ref={ref} action={action} className="space-y-3">
       {guide?.id && <input type="hidden" name="id" value={guide.id} />}
@@ -101,7 +101,7 @@ export function GuideForm({ guide, onDone }: { guide?: GuideFormValue; onDone?: 
         <p className="text-white/25 text-[11px] mt-1">Un messaggio breve che è essenzialmente una keyword (es. &quot;GUIDA&quot;) invia la guida senza chiamare Claude. Frasi più complesse passano all&apos;AI.</p>
       </div>
       <div className="flex flex-wrap gap-4">
-        {["instagram", "facebook", "linkedin", "tiktok"].map((p) => <Check key={p} name={`p_${p}`} label={p} defaultChecked={platforms.includes(p)} />)}
+        {["instagram", "facebook", "linkedin", "tiktok", "web"].map((p) => <Check key={p} name={`p_${p}`} label={p === "web" ? "chat sito" : p} defaultChecked={platforms.includes(p)} />)}
       </div>
       <details className="rounded-lg border border-white/[0.06] px-3 py-2" open={!!guide?.file_url}>
         <summary className="cursor-pointer text-white/60 text-xs font-semibold">🎁 Lead magnet (PDF, messaggio, follow-up)</summary>

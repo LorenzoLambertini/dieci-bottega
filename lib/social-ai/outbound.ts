@@ -6,6 +6,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ConversationRow, Platform, SocialAccountRow } from "./types";
 import type { ProviderAccount, SendResult, SocialProvider } from "./providers/types";
+import { WEB_ACCOUNT } from "./providers/web";
 
 export const MAX_SEND_RETRIES = 5;
 export const DM_WINDOW_MS = 24 * 60 * 60 * 1000;
@@ -49,6 +50,8 @@ async function attempt(
   platform: Platform
 ): Promise<SendResult> {
   if (deps.sandbox) return { ok: true, externalId: `sandbox-${Date.now()}-${Math.random().toString(36).slice(2, 8)}` };
+  // Chat del sito: nessun account esterno, il messaggio resta nel CRM e il widget lo legge
+  if (platform === "web") return fn(deps.providers.web, WEB_ACCOUNT);
   const acct = await loadAccount(deps, accountId);
   if (!acct) return { ok: false, retryable: false, error: "Account social non collegato o token mancante" };
   return fn(deps.providers[platform], acct);
@@ -80,7 +83,8 @@ export async function sendDirectMessage(
     if (now.getTime() - created > PRIVATE_REPLY_WINDOW_MS) {
       return { ok: false, messageId: null, error: "Private reply oltre i 7 giorni dal commento: non consentita" };
     }
-  } else {
+  } else if (conv.platform !== "web") {
+    // la chat del sito non ha la finestra di 24h delle piattaforme social
     const last = conv.last_inbound_at ? new Date(conv.last_inbound_at).getTime() : 0;
     if (now.getTime() - last > DM_WINDOW_MS) {
       return { ok: false, messageId: null, error: "Fuori dalla finestra di 24h: la piattaforma non consente l'invio automatico" };

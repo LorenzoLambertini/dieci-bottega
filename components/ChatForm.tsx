@@ -9,6 +9,8 @@ interface Props {
   type: FormType
   selectedPackage: PkgKey
   onSuccess: (name: string) => void
+  /** Collega i dati alla conversazione della chat già presente nel CRM */
+  visitorId?: string
 }
 
 const inputStyle = {
@@ -35,7 +37,7 @@ const labelStyle = {
   marginBottom: '4px',
 }
 
-export default function ChatForm({ type, selectedPackage, onSuccess }: Props) {
+export default function ChatForm({ type, selectedPackage, onSuccess, visitorId }: Props) {
   const isQuote = type === 'quote'
 
   const [form, setForm] = useState({
@@ -64,6 +66,7 @@ export default function ChatForm({ type, selectedPackage, onSuccess }: Props) {
           ...form,
           package: selectedPackage,
           source: 'chatbot',
+          visitorId,
         }),
       })
       setStatus('done')

@@ -11,6 +11,7 @@ export const PLATFORM_META: Record<string, { label: string; short: string; class
   facebook: { label: "Facebook", short: "FB", className: "bg-[#1877F2]/10 text-[#4B95F5] border-[#1877F2]/25" },
   linkedin: { label: "LinkedIn", short: "IN", className: "bg-[#0A66C2]/10 text-[#3D8BD9] border-[#0A66C2]/25" },
   tiktok: { label: "TikTok", short: "TT", className: "bg-white/10 text-white/70 border-white/20" },
+  web: { label: "Chat sito", short: "WEB", className: "bg-[#E63B2E]/10 text-[#F07A70] border-[#E63B2E]/25" },
 };
 
 export function PlatformBadge({ platform, full }: { platform: string; full?: boolean }) {
