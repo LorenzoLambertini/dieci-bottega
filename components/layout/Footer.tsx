@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { EMAIL, WHATSAPP_URL } from "@/lib/contacts";
+import { EMAIL, SOCIAL_LINKS, WHATSAPP_URL } from "@/lib/contacts";
+import { SocialIcon } from "@/components/crm/social/icons";
 
 const ease = [0.2, 0.8, 0.2, 1] as const;
 
@@ -106,6 +107,21 @@ export default function Footer() {
               Micro-agenzia digitale di Bologna. Siti, CRM e automazioni
               per chi vuole un lavoro che si veda.
             </p>
+            <div className="flex items-center gap-3 mt-6">
+              {SOCIAL_LINKS.map((s) => (
+                <a
+                  key={s.platform}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Dieci Bottega su ${s.label}`}
+                  title={s.label}
+                  className="w-10 h-10 flex items-center justify-center rounded-full border border-ivory/15 text-white hover:bg-white hover:text-obsidian transition-colors duration-200"
+                >
+                  <SocialIcon platform={s.platform} className="w-[18px] h-[18px]" />
+                </a>
+              ))}
+            </div>
           </div>
 
           {NAV.map(group => (

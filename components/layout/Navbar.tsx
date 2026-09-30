@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
-import { useCart } from "@/lib/cart";
 
 const ease = [0.2, 0.8, 0.2, 1] as const;
 
@@ -62,9 +61,6 @@ export default function Navbar() {
 
   const closeTimer = useRef<number | null>(null);
 
-  // Cart count (hydration-safe)
-  const cartCount = useCart(s => s.totalItems());
-  const cartHydrated = useCart(s => s.hydrated);
 
   // Scroll progress bar
   const { scrollYProgress } = useScroll();
@@ -304,29 +300,8 @@ export default function Navbar() {
             })}
           </ul>
 
-          {/* Right: Cart + CTA + Hamburger */}
+          {/* Right: CTA + Hamburger */}
           <div className="flex items-center gap-2 lg:gap-3 shrink-0">
-
-            {/* Cart icon */}
-            <Link
-              href="/carrello"
-              aria-label="Carrello"
-              className={`relative w-10 h-10 flex items-center justify-center group ${textColorMuted} ${textColorHover} transition-colors duration-300`}
-            >
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
-                <path d="M2 2H4L5 11H15L16 4H5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <circle cx="7" cy="15" r="1" fill="currentColor" />
-                <circle cx="13" cy="15" r="1" fill="currentColor" />
-              </svg>
-              {cartHydrated && cartCount > 0 && (
-                <span
-                  className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-rosewood text-ivory flex items-center justify-center tabular-nums"
-                  style={{ fontFamily: "var(--db-jetbrains)", fontSize: "0.625rem", fontWeight: 700, lineHeight: 1 }}
-                >
-                  {cartCount}
-                </span>
-              )}
-            </Link>
 
             {/* CTA */}
             <Link
@@ -518,21 +493,6 @@ export default function Navbar() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease, delay: 0.4 }}
               >
-                <Link
-                  href="/carrello"
-                  className="flex items-center justify-between gap-2 border border-obsidian/15 text-obsidian w-full py-3 px-4"
-                  style={{
-                    fontFamily:    "var(--db-jetbrains)",
-                    fontSize:      "0.6875rem",
-                    letterSpacing: "0.10em",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  <span>Carrello</span>
-                  <span className="bg-rosewood text-ivory px-2 py-0.5" style={{ fontSize: "0.625rem" }}>
-                    {cartHydrated ? cartCount : 0}
-                  </span>
-                </Link>
                 <Link
                   href="/inizia-progetto"
                   className="flex items-center justify-center gap-2 bg-rosewood text-ivory w-full py-3.5 press"
