@@ -21,6 +21,7 @@ export default function Promise() {
 
           {/* LEFT — copy */}
           <motion.div
+            style={{ containerType: "inline-size" }}
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-15%" }}
@@ -35,7 +36,7 @@ export default function Promise() {
               style={{
                 fontFamily:    "var(--db-archivo)",
                 fontWeight:    900,
-                fontSize:      "clamp(2.5rem, 6vw, 5.5rem)",
+                fontSize:      "min(clamp(2.5rem, 6vw, 5.5rem), 12cqi)",
                 lineHeight:    0.9,
                 letterSpacing: "-0.04em",
                 textTransform: "uppercase",

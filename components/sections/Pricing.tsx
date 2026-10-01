@@ -527,6 +527,7 @@ export default function Pricing() {
 
           <motion.div
             className="lg:col-span-7"
+            style={{ containerType: "inline-size" }}
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-15%" }}
@@ -541,7 +542,7 @@ export default function Pricing() {
               style={{
                 fontFamily:    "var(--db-archivo)",
                 fontWeight:    900,
-                fontSize:      "clamp(2.5rem, 7vw, 6.5rem)",
+                fontSize:      "min(clamp(2.5rem, 7vw, 6.5rem), 11.8cqi)",
                 lineHeight:    0.9,
                 letterSpacing: "-0.04em",
                 textTransform: "uppercase",
