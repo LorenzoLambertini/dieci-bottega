@@ -28,6 +28,7 @@ const labelStyle: React.CSSProperties = {
 };
 
 function unitSuffix(svc: Service): string {
+  if (svc.priceNote) return ` ${svc.priceNote}`;
   if (svc.unit === "mese") return "/mese";
   if (svc.unit === "anno") return "/anno";
   return "";

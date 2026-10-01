@@ -166,7 +166,7 @@ export default async function ServizioDetail({ params }: { params: Promise<{ slu
                     <span style={{ fontFamily: "var(--db-archivo)", fontWeight: 900, fontSize: "1.75rem", color: "#E63B2E" }}>€</span>
                   </div>
                   <p className="text-ivory/45" style={{ fontFamily: "var(--db-archivo)", fontSize: "0.875rem" }}>
-                    {svc.unit === "one-shot" ? "una tantum" : svc.unit === "mese" ? "al mese (IVA escl.)" : "all'anno (IVA escl.)"}{unitSuffix && ""}
+                    {svc.priceNote ? svc.priceNote : svc.unit === "one-shot" ? "una tantum" : svc.unit === "mese" ? "al mese (IVA escl.)" : "all'anno (IVA escl.)"}{unitSuffix && ""}
                   </p>
 
                   <div className="my-6 pt-6 border-t border-ivory/12 grid grid-cols-2 gap-4">

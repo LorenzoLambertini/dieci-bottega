@@ -35,7 +35,7 @@ export default function CartView() {
   // Cross-sell: 3 popolari non già nel carrello
   const crossSell = useMemo(() => {
     const inCart = new Set(items.map(i => i.slug));
-    const popular = ["sito-vetrina", "manutenzione-care-plus", "google-business-setup", "casella-email-pro", "automazione-email-sequences", "crm-su-misura"];
+    const popular = ["sito-vetrina", "manutenzione-care-plus", "google-business-setup", "casella-email-pro", "automazione-email-sequences", "crm-su-misura", "video-spot"];
     return popular
       .filter(slug => !inCart.has(slug))
       .map(slug => getServiceBySlug(slug))
@@ -318,7 +318,7 @@ export default function CartView() {
                     </p>
                     <div className="flex items-center justify-between pt-3 border-t border-obsidian/8">
                       <span className="text-obsidian" style={{ fontFamily: "var(--db-archivo)", fontWeight: 700, fontSize: "0.9375rem" }}>
-                        {priceLabel(svc)}<span className="text-obsidian/40 ml-1" style={{ fontSize: "0.75rem", fontWeight: 500 }}>{unitLabel(svc.unit)}</span>
+                        {priceLabel(svc)}<span className="text-obsidian/40 ml-1" style={{ fontSize: "0.75rem", fontWeight: 500 }}>{svc.priceNote ?? unitLabel(svc.unit)}</span>
                       </span>
                       <span className="text-rosewood">→</span>
                     </div>

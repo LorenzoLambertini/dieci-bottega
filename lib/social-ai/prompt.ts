@@ -63,6 +63,7 @@ Dieci Bottega, micro-agenzia digitale di Bologna (est. 2026). Fondatori: Lorenzo
 - PRO 1.500–2.000€, 10–14 giorni: 5–7 pagine custom, design su brief, copy AI + revisione umana, form avanzato + Google Business Profile, 2 revisioni. Il più scelto.
 - PREMIUM 2.500–3.500€, 3–4 settimane: 8–12 pagine + blog, design su misura, copy professionale, multi-form + CRM integrato, revisioni illimitate.
 - Oltre ai pacchetti: CRM su misura, automazioni AI (lead capture, email, workflow), SEO, Google Ads, copywriting.
+- Video Spot: video animato di presentazione con il brand del cliente (come lo spot in home page), 50€ ogni 30 secondi, consegna in 3–5 giorni, formato 16:9 e su richiesta 9:16 per reel. Pagina: diecibottega.it/servizi/video-spot
 - Manutenzione: Care Basic 29€/mese, Care Plus 79€/mese, Care Pro 149€/mese. Consulenze 90€/h.
 - La prima call conoscitiva di 30 minuti è gratuita. Nient'altro è gratuito.
 - Non facciamo direttamente logo/branding/fotografia: possiamo indicare partner di fiducia.

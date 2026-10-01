@@ -27,6 +27,7 @@ const NAV = [
       { label: "Landing Page",        href: "/servizi/landing-page"              },
       { label: "E-commerce Light",    href: "/servizi/ecommerce-light"           },
       { label: "CRM Su Misura",       href: "/servizi/crm-su-misura"             },
+      { label: "Video Spot",          href: "/servizi/video-spot"                },
       { label: "Care Plus",           href: "/servizi/manutenzione-care-plus"    },
     ],
   },

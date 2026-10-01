@@ -5,6 +5,7 @@
  * preme play: in pagina c'è solo la copertina (26 KB). Da telefono parte la versione a 720p.
  */
 import { useRef, useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 
 const ease = [0.2, 0.8, 0.2, 1] as const;
@@ -122,6 +123,40 @@ export default function Spot() {
               </span>
             </button>
           )}
+        </motion.div>
+
+        {/* Invito: lo stesso tipo di video per la tua attività */}
+        <motion.div
+          className="mt-8 lg:mt-10 flex flex-col sm:flex-row sm:items-center justify-between gap-5 border border-ivory/10 px-5 py-5 lg:px-8 lg:py-6"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10%" }}
+          transition={{ duration: 0.8, ease, delay: 0.1 }}
+        >
+          <div>
+            <p className="text-ivory" style={{ fontFamily: "var(--db-archivo)", fontWeight: 900, fontSize: "clamp(1.25rem, 2.2vw, 1.75rem)", lineHeight: 1.05, letterSpacing: "-0.02em", textTransform: "uppercase" }}>
+              Vuoi anche tu un video così?
+            </p>
+            <p className="text-ivory/55 mt-1.5" style={{ fontFamily: "var(--db-archivo)", fontSize: "0.9375rem" }}>
+              Uno spot con il tuo brand, pronto per sito e social. <span className="text-ivory">50€ ogni 30 secondi</span>, consegna in 3–5 giorni.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3 shrink-0">
+            <Link
+              href="/inizia-progetto"
+              className="inline-flex items-center gap-2 bg-rosewood text-ivory px-5 py-3.5 hover:bg-ivory hover:text-obsidian transition-colors duration-200"
+              style={labelStyle}
+            >
+              Contattaci <span aria-hidden>→</span>
+            </Link>
+            <Link
+              href="/servizi/video-spot"
+              className="inline-flex items-center gap-2 border border-ivory/30 text-ivory px-5 py-3.5 hover:bg-ivory hover:text-obsidian transition-colors duration-200"
+              style={labelStyle}
+            >
+              Scopri il servizio
+            </Link>
+          </div>
         </motion.div>
       </div>
     </section>
