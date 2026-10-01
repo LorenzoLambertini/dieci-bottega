@@ -1,4 +1,5 @@
 import Hero            from "@/components/sections/Hero";
+import Spot            from "@/components/sections/Spot";
 import Soluzioni       from "@/components/sections/Services";
 import Transformation  from "@/components/sections/Transformation";
 import Deliverables    from "@/components/sections/Deliverables";
@@ -14,6 +15,9 @@ export default function Home() {
     <>
       {/* Hero con scroll-tilt 3D leggero (ContainerScroll) */}
       <Hero />
+
+      {/* Spot · il video di Dieci Bottega (si carica solo al play) */}
+      <Spot />
 
       {/* Soluzioni · 3 macro-aree espandibili */}
       <Soluzioni />
