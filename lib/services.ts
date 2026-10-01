@@ -33,6 +33,8 @@ export type Service = {
   useCases:     string[];
   related:      string[];     // slugs of related services
   featured?:    boolean;      // marker per "Più scelto"
+  /** Dicitura del prezzo al posto di "una tantum" (es. "ogni 30 secondi") */
+  priceNote?:   string;
 };
 
 export const CATEGORIES: Record<ServiceCategory, { label: string; blurb: string }> = {
@@ -338,6 +340,37 @@ export const SERVICES: Service[] = [
   },
 
   /* ─── MARKETING ────────────────────────────────────────── */
+  {
+    slug:         "video-spot",
+    title:        "Video Spot · 30 secondi",
+    category:     "marketing",
+    shortDesc:    "Uno spot animato con il tuo brand, pronto per sito e social. 50€ ogni 30 secondi.",
+    longDesc:     "Un breve video animato che racconta la tua attività in pochi secondi, come quello in home page di Dieci Bottega: testi d'impatto, i tuoi colori, il tuo logo, musica e ritmo pensati per tenere l'attenzione. Lo consegniamo in formato orizzontale (16:9) per sito e YouTube e, su richiesta, verticale (9:16) per reel e storie. Il prezzo è di 50€ ogni 30 secondi di video.",
+    price:        50,
+    unit:         "one-shot",
+    priceNote:    "ogni 30 secondi",
+    deliveryDays: "3–5",
+    forWho:       "Chi vuole presentare la propria attività in modo moderno su sito, Instagram, Facebook e WhatsApp senza organizzare riprese.",
+    features: [
+      "Video animato da 30 secondi (multipli di 30 secondi su richiesta)",
+      "Testi, colori e logo del tuo brand",
+      "Musica senza diritti d'autore",
+      "Formato 16:9 per sito e YouTube",
+      "Versione 9:16 per reel e storie su richiesta",
+      "1 revisione inclusa",
+    ],
+    benefits: [
+      "Ti presenti in pochi secondi, anche a chi scorre veloce",
+      "Contenuto pronto da pubblicare su tutti i canali",
+      "Nessuna ripresa, nessun set: bastano logo e due righe sulla tua attività",
+    ],
+    useCases: [
+      "Spot in home page del sito",
+      "Reel di presentazione su Instagram e Facebook",
+      "Video da mandare su WhatsApp ai nuovi clienti",
+    ],
+    related: ["sito-vetrina", "landing-page", "copywriting"],
+  },
   {
     slug:         "seo-on-page",
     title:        "SEO On-Page",

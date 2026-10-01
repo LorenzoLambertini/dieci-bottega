@@ -22,9 +22,11 @@ export function GET() {
 - PRO: 1.500–2.000€, 10–14 giorni. 5–7 pagine su misura, Google Business Profile, 2 revisioni.
 - PREMIUM: 2.500–3.500€, 3–4 settimane. 8–12 pagine, blog, CRM integrato.
 - Manutenzione: Care Basic 29€/mese, Care Plus 79€/mese, Care Pro 149€/mese.
+- Video Spot: video animato di presentazione da 30 secondi, 50€ ogni 30 secondi, consegna in 3–5 giorni.
 
 ## Pagine principali
 - [Servizi](https://diecibottega.it/servizi)
+- [Video Spot](https://diecibottega.it/servizi/video-spot)
 - [Progetti realizzati](https://diecibottega.it/progetti)
 - [Chi siamo](https://diecibottega.it/chi-siamo)
 - [Inizia un progetto](https://diecibottega.it/inizia-progetto)

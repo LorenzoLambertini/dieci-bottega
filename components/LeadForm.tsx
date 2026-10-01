@@ -8,7 +8,7 @@ import { getUtm, UTM_KEYS, type Utm } from "@/lib/utm";
 
 const ease = [0.2, 0.8, 0.2, 1] as const;
 
-type SiteType = "vetrina" | "ecommerce" | "landing" | "altro";
+type SiteType = "vetrina" | "ecommerce" | "landing" | "video" | "altro";
 type Source   = "facebook" | "instagram" | "google" | "referral" | "tiktok" | "altro";
 type Style    = "modern" | "minimal" | "elegant" | "colorful" | "dark" | "corporate";
 
@@ -34,6 +34,7 @@ const SITE_TYPES: { key: SiteType; label: string; desc: string }[] = [
   { key: "vetrina",   label: "Sito Vetrina",   desc: "5–7 pagine istituzionali" },
   { key: "ecommerce", label: "E-commerce",     desc: "Vendita online prodotti" },
   { key: "landing",   label: "Landing Page",   desc: "Una pagina, un obiettivo" },
+  { key: "video",     label: "Video Spot",     desc: "30 secondi con il tuo brand · 50€" },
   { key: "altro",     label: "Altro / Misto",  desc: "Discutiamone insieme" },
 ];
 

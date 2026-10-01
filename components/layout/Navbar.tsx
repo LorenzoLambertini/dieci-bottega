@@ -40,6 +40,7 @@ const NAV: NavItem[] = [
           { label: "SEO On-Page",        href: "/servizi/seo-on-page",                  desc: "Apparire su Google" },
           { label: "Google Ads",         href: "/servizi/google-ads-setup",             desc: "Setup pubblicità" },
           { label: "Email Sequences",    href: "/servizi/automazione-email-sequences",  desc: "Follow-up automatico" },
+          { label: "Video Spot",         href: "/servizi/video-spot",                   desc: "30 secondi, 50€" },
         ],
       },
     ],

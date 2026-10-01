@@ -27,8 +27,8 @@ const CATEGORIES: Category[] = [
     id:    "siti",
     index: "01",
     title: "Siti Web",
-    blurb: "Vetrine, landing, e-commerce snelli. Costruiti a mano, consegnati in dieci giorni.",
-    count: "3 SERVIZI",
+    blurb: "Vetrine, landing, e-commerce snelli e video spot. Costruiti a mano, consegnati in dieci giorni.",
+    count: "4 SERVIZI",
     services: [
       {
         name:   "Sito Vetrina",
@@ -50,6 +50,13 @@ const CATEGORIES: Category[] = [
         time:   "12–15 giorni",
         price:  "da €1.800",
         impact: "Vendita diretta, controllo del margine, niente intermediari",
+      },
+      {
+        name:   "Video Spot",
+        target: "Chi vuole presentarsi su sito e social in pochi secondi",
+        time:   "3–5 giorni",
+        price:  "€50 / 30 sec",
+        impact: "Ti presenti in mezzo minuto, anche a chi scorre veloce",
       },
     ],
   },
@@ -290,7 +297,7 @@ export default function Soluzioni() {
                     className="overflow-hidden"
                   >
                     <div className="border-t border-ivory/8">
-                      <div className="mx-auto max-w-[1480px] grid md:grid-cols-3">
+                      <div className={`mx-auto max-w-[1480px] grid ${cat.services.length === 4 ? "md:grid-cols-2 lg:grid-cols-4" : "md:grid-cols-3"}`}>
                         {cat.services.map((svc, k) => (
                           <motion.article
                             key={svc.name}
