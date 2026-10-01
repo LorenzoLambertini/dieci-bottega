@@ -143,23 +143,25 @@ export default function Contact() {
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-8 items-end mb-16">
-          <motion.h2
-            className="text-ivory"
-            initial={{ opacity: 0, y: 32 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease, delay: 0.05 }}
-            style={{
-              fontFamily:    "var(--db-archivo)",
-              fontWeight:    900,
-              fontSize:      "clamp(4rem, 12vw, 10rem)",
-              lineHeight:    0.9,
-              letterSpacing: "-0.04em",
-              textTransform: "uppercase",
-            }}
-          >
-            Parlaci.
-          </motion.h2>
+          <div style={{ containerType: "inline-size" }}>
+            <motion.h2
+              className="text-ivory"
+              initial={{ opacity: 0, y: 32 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, ease, delay: 0.05 }}
+              style={{
+                fontFamily:    "var(--db-archivo)",
+                fontWeight:    900,
+                fontSize:      "min(clamp(4rem, 12vw, 10rem), 20cqi)",
+                lineHeight:    0.9,
+                letterSpacing: "-0.04em",
+                textTransform: "uppercase",
+              }}
+            >
+              Parlaci.
+            </motion.h2>
+          </div>
           <motion.p
             className="text-ivory/45 max-w-md lg:ml-auto"
             initial={{ opacity: 0, y: 20 }}
