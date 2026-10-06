@@ -15,6 +15,12 @@ import crmPmi from "./posts/crm-piccole-imprese";
 import tempiSito from "./posts/quanto-tempo-per-fare-un-sito";
 import geoChatgpt from "./posts/farsi-trovare-su-chatgpt-geo";
 import manutenzione from "./posts/manutenzione-sito-web-costi";
+import sitoBnb from "./posts/sito-web-bb-case-vacanza";
+import wordpressWix from "./posts/wordpress-wix-o-sito-su-misura";
+import instagramSito from "./posts/instagram-o-sito-web";
+import videoSpot from "./posts/video-spot-aziendale-quanto-costa";
+import risposteAi from "./posts/risposte-automatiche-instagram-ai";
+import dominioEmail from "./posts/dominio-email-professionale";
 
 export const POSTS: BlogPost[] = [
   quantoCostaSito,
@@ -27,6 +33,12 @@ export const POSTS: BlogPost[] = [
   tempiSito,
   geoChatgpt,
   manutenzione,
+  sitoBnb,
+  wordpressWix,
+  instagramSito,
+  videoSpot,
+  risposteAi,
+  dominioEmail,
 ].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.title.localeCompare(b.title));
 
 export const CATEGORIES: BlogCategory[] = ["Siti web", "Prezzi", "SEO e GEO", "Google", "CRM e automazioni", "Settori"];
