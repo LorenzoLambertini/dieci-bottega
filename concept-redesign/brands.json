@@ -4,149 +4,155 @@
     "fullName": "The Lantern Pub",
     "descriptor": "Pub · Bologna est",
     "tagline": "La luce accesa in fondo alla strada.",
-    "essence": "Un pub di quartiere dove si torna. Birra seria, cucina fino a tardi, nessuna posa. La lanterna è il segnale: se è accesa, sei il benvenuto.",
+    "essence": "Un pub dove la luce dice due cose: siamo aperti, e cosa c'è alla spina.",
+    "promise": "Quello che leggi sulla lavagna è quello che trovi al banco.",
     "values": [
-      { "title": "Accogliente", "text": "Ci si conosce per nome. Anche alla seconda volta." },
-      { "title": "Competente", "text": "Sappiamo cosa c'è nel bicchiere e lo spieghiamo senza fare lezione." },
-      { "title": "Vivo", "text": "Spine che cambiano, partite, serate. Il sito lo deve dire ogni settimana." }
+      { "title": "Accogliente", "text": "Ci si conosce per nome. Anche alla seconda volta.", "habit": "Saluto entro 30 secondi dall'ingresso" },
+      { "title": "Competente", "text": "Sappiamo cosa c'è nel bicchiere e lo spieghiamo senza fare lezione.", "habit": "Assaggio offerto prima di ogni spina nuova" },
+      { "title": "Vivo", "text": "Spine che cambiano, partite, serate. Si vede ogni settimana.", "habit": "Lavagna aggiornata ogni lunedì" }
     ],
+    "keySign": {
+      "title": "Il punto acceso",
+      "text": "Pieno Ambra vuol dire che c'è adesso, il cerchio vuoto che è finita. Lo stesso segno sulla lavagna, sulla maniglia della spina, sulla tessera fedeltà e nella home del sito, che dice se il pub è aperto."
+    },
     "logo": {
-      "mark": "<svg viewBox='0 0 44 56' xmlns='http://www.w3.org/2000/svg'><path d='M14 2h16v6H14z' fill='#B8892F'/><path d='M8 10h28l4 12v20l-6 12H10L4 42V22z' fill='none' stroke='#E8A33D' stroke-width='4' stroke-linejoin='round'/><circle cx='22' cy='32' r='8' fill='#E8A33D'/><path d='M22 22v-6' stroke='#B8892F' stroke-width='3' stroke-linecap='round'/></svg>",
-      "wordmark": "The Lantern",
-      "wordmarkStyle": "font-family:'Bricolage Grotesque';font-weight:800;font-variation-settings:'wdth' 78;letter-spacing:-0.02em",
-      "concept": "Una lanterna stilizzata: il vetro è un esagono allungato, la fiamma un cerchio pieno color ambra. Si legge anche piccolissima, sulla spina o nel favicon.",
-      "rules": [
-        "Spazio libero attorno al logo: almeno l'altezza del cerchio della fiamma.",
-        "Dimensione minima: 24 px di altezza per il simbolo, 90 px di larghezza per il logo completo.",
-        "Su fondo chiaro il simbolo diventa Stout, la fiamma resta Ambra.",
-        "Mai ruotare, allungare o aggiungere ombre. Mai il logo su foto senza velatura scura."
-      ]
+      "svg": "<svg viewBox='0 0 64 96' xmlns='http://www.w3.org/2000/svg'><circle cx='32' cy='10' r='6.5' fill='none' stroke='currentColor' stroke-width='5'/><rect x='20' y='18' width='24' height='9' rx='3' fill='currentColor'/><rect x='11.5' y='29.5' width='41' height='51' rx='10' fill='none' stroke='currentColor' stroke-width='5'/><path d='M22 34v42M42 34v42' stroke='currentColor' stroke-width='3'/><circle cx='32' cy='55' r='7' fill='#E8A33D'/><rect x='16' y='85' width='32' height='8' rx='3' fill='currentColor'/></svg>",
+      "ratio": 0.667,
+      "concept": "Una lanterna vera: maniglia, cappello, vetro, base. Le due barre dentro il vetro sono le spine, la fiamma Ambra è l'unico punto caldo del segno."
     },
     "palette": [
-      { "name": "Stout", "hex": "#10291F", "role": "Sfondo principale, testo su chiaro", "share": 45 },
-      { "name": "Stout chiaro", "hex": "#173B2C", "role": "Superfici, lavagna delle spine", "share": 15 },
-      { "name": "Ambra", "hex": "#E8A33D", "role": "Azioni, pulsanti, fiamma del logo", "share": 12 },
-      { "name": "Ottone", "hex": "#B8892F", "role": "Dettagli, numeri, bordi", "share": 6 },
-      { "name": "Schiuma", "hex": "#FFFDF6", "role": "Titoli su scuro, fondo delle sezioni chiare", "share": 17 },
-      { "name": "Mogano", "hex": "#4A2318", "role": "Fasce fotografiche, stagioni", "share": 5 }
+      { "name": "Stout", "hex": "#10291F", "role": "Fondi, testo", "share": 55 },
+      { "name": "Bottiglia", "hex": "#1E4434", "role": "Superfici", "share": 15 },
+      { "name": "Schiuma", "hex": "#FFFDF6", "role": "Carta, testo", "share": 17 },
+      { "name": "Ambra", "hex": "#E8A33D", "role": "Solo «acceso»", "share": 8 },
+      { "name": "Mogano", "hex": "#4A2318", "role": "Stagionale, inverno", "share": 5 }
     ],
     "fonts": [
-      { "family": "Bricolage Grotesque", "role": "Titoli", "spec": "ExtraBold 800, larghezza 75–80, interlinea 0,9, tracking −2%", "sample": "Alla spina questa settimana", "css": "font-family:'Bricolage Grotesque';font-weight:800;font-variation-settings:'wdth' 78;letter-spacing:-0.02em" },
-      { "family": "Bricolage Grotesque", "role": "Testo e interfaccia", "spec": "Regular 400 e Bold 700, 17 px, interlinea 1,55", "sample": "Quattordici spine che cambiano ogni mese e una cucina aperta fino a mezzanotte.", "css": "font-family:'Bricolage Grotesque';font-weight:400" }
+      { "family": "Bricolage Grotesque", "role": "Un solo carattere, tre larghezze: stretto per insegne e titoli, normale per leggere" }
     ],
-    "googleFonts": "Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800",
     "tone": {
       "personality": ["Caldo", "Diretto", "Ironico quanto basta"],
-      "description": "Parliamo come il ragazzo al banco che ti consiglia la birra giusta: amichevole, preciso, mai saccente. Frasi corte, verbi concreti, qualche battuta ma mai a scapito dell'informazione.",
-      "do": ["Dire cosa c'è alla spina, con stile e gradazione", "Dare orari e disponibilità certi", "Usare il tu", "Chiamare le cose col loro nome: burger, crescentine, maxischermo"],
-      "dont": ["Inglesismi gratuiti (\"experience\", \"mood\")", "Superlativi vuoti (\"il miglior pub di Bologna\")", "Maiuscole urlate e punti esclamativi a raffica", "Promesse sul tavolo libero senza conferma"],
-      "examples": [
-        { "context": "Post nuova spina", "text": "Nuova alla spina: Mezzanotte, oatmeal stout della casa. 5,9%, morbida, sa di caffè. Si assaggia prima di scegliere." },
-        { "context": "Risposta a prenotazione", "text": "Fatto: tavolo per 4 venerdì alle 20:30, vicino al maxischermo. Se cambiate idea scriveteci, nessun problema." },
-        { "context": "Lavagna", "text": "Chiedi un assaggio. Non è una prova, è una conversazione." }
-      ]
+      "description": "Parliamo come il ragazzo al banco che ti consiglia la birra giusta: amichevole, preciso, mai saccente.",
+      "do": ["Cosa c'è alla spina, con stile e gradazione", "Orari e disponibilità certi", "Il tu, sempre"],
+      "dont": ["Inglesismi gratuiti: experience, mood", "Superlativi vuoti", "Tavoli promessi senza conferma"]
     },
-    "imagery": "Luce calda e bassa, bicchieri controluce, mani al banco, dehors con le lucine. Niente foto patinate di birra con gocce finte, niente volti in primo piano senza consenso.",
-    "applications": ["Lavagna delle spine (sito e banco)", "Sottobicchiere con il simbolo", "Storie Instagram \"Alla spina questa settimana\"", "Insegna con la lanterna accesa"]
+    "quote": { "context": "Spina finita", "text": "Finita la IPA. Si riaccende venerdì. Nel frattempo, chiedi della pils." },
+    "theme": { "bg": "#10291F", "surface": "#1E4434", "fg": "#FFFDF6", "muted": "rgba(255,253,246,.68)", "accent": "#E8A33D", "accentFg": "#10291F", "line": "rgba(255,253,246,.16)" },
+    "book": [
+      { "page": "01", "title": "Copertina" },
+      { "page": "05", "title": "Essenza e promessa" },
+      { "page": "12", "title": "Il logo" },
+      { "page": "14", "title": "Versioni e fondi" },
+      { "page": "17", "title": "Palette" },
+      { "page": "18", "title": "Carattere" },
+      { "page": "19", "title": "Il punto acceso" },
+      { "page": "24", "title": "Lavagna e carta" },
+      { "page": "27", "title": "Instagram" },
+      { "page": "28", "title": "Il sito" }
+    ]
   },
   "pizzeria-brace": {
     "name": "Brace",
     "fullName": "Pizzeria Brace",
     "descriptor": "Pizzeria · Forno a legna · Bologna",
     "tagline": "Forno a legna. Asporto senza telefonate.",
-    "essence": "Il fuoco vero, la pizza fatta come si deve, e l'ordine che arriva senza stare al telefono. Brace è calda, veloce e precisa: come novanta secondi nel forno.",
+    "essence": "La pizza del forno a legna, pronta all'orario che hai scelto.",
+    "promise": "Ti diciamo un orario. Lo rispettiamo.",
     "values": [
-      { "title": "Fuoco", "text": "Forno a legna, impasto a 48 ore. Il prodotto viene prima di tutto." },
-      { "title": "Chiarezza", "text": "Prezzi, orari, ingredienti: scritti e sempre aggiornati." },
-      { "title": "Velocità", "text": "Ordini in un minuto, ritiri all'orario scelto, calda." }
+      { "title": "Fuoco", "text": "Forno a legna, impasto a 48 ore. Il prodotto viene prima di tutto.", "habit": "Ogni pizza esce solo se il cornicione è giusto" },
+      { "title": "Chiarezza", "text": "Prezzi, orari, ingredienti: scritti e sempre aggiornati.", "habit": "Il prezzo sta sempre accanto al nome" },
+      { "title": "Velocità", "text": "Ordini in un minuto, ritiri all'orario scelto, calda.", "habit": "Conferma scritta entro 2 minuti" }
     ],
+    "keySign": {
+      "title": "Lo spicchio",
+      "text": "La pizza vista dall'alto e il quadrante: lo spicchio va da mezzogiorno alle tre ed è il quarto d'ora del ritiro. Sul sito si riempie un quarto alla volta: ricevuto, impasto, in forno, pronta."
+    },
     "logo": {
-      "mark": "<svg viewBox='0 0 56 56' xmlns='http://www.w3.org/2000/svg'><path d='M6 50V30a22 22 0 0 1 44 0v20z' fill='#24170F'/><path d='M28 48c-7 0-11-5-11-10 0-6 5-8 6-14 3 3 4 6 4 9 2-2 3-5 3-8 5 4 9 8 9 13 0 6-4 10-11 10z' fill='#D63A1F'/><path d='M28 48c-3 0-5-2-5-5 0-3 3-4 4-7 2 2 3 4 3 6 1-1 2-2 2-4 2 2 2 3 2 5 0 3-2 5-6 5z' fill='#F2B33D'/></svg>",
-      "wordmark": "Brace",
-      "wordmarkStyle": "font-family:'Archivo';font-weight:900;font-variation-settings:'wdth' 66;letter-spacing:-0.02em",
-      "concept": "La bocca del forno a legna, con la fiamma dentro. Il nome in Archivo condensato nerissimo: compatto come un cartone d'asporto, si legge da lontano.",
-      "rules": [
-        "Spazio libero attorno al logo: almeno metà della larghezza del forno.",
-        "Dimensione minima: 22 px di altezza per il simbolo, 80 px di larghezza per il logo completo.",
-        "Su fondo scuro il forno diventa Farina, la fiamma resta Pomodoro e Brace.",
-        "Mai il logo in verde, mai contorni, mai la fiamma senza il forno."
-      ]
+      "svg": "<svg viewBox='0 0 66 68' xmlns='http://www.w3.org/2000/svg'><path d='M30 38V10A28 28 0 1 0 58 38Z' fill='currentColor'/><path d='M36 32V4a28 28 0 0 1 28 28Z' fill='currentColor'/></svg>",
+      "ratio": 0.97,
+      "concept": "Un cerchio con il quarto in alto a destra spostato di 6 unità: si vede il taglio anche a 16 px. Il logotipo è Archivo Black maiuscolo, leggibile su un cartone stampato a un colore."
     },
     "palette": [
-      { "name": "Crosta", "hex": "#24170F", "role": "Testo, fondo dell'apertura", "share": 30 },
-      { "name": "Farina", "hex": "#EFE7D8", "role": "Sfondo principale", "share": 38 },
-      { "name": "Pomodoro", "hex": "#D63A1F", "role": "Azioni, prezzi, il pulsante d'ordine", "share": 14 },
-      { "name": "Brace", "hex": "#F2B33D", "role": "Cuore della fiamma, evidenziazioni", "share": 4 },
-      { "name": "Basilico", "hex": "#2F6B3A", "role": "Piatti vegetariani e vegani", "share": 6 },
-      { "name": "Carbone", "hex": "#3A2618", "role": "Superfici scure, comanda", "share": 8 }
+      { "name": "Carta", "hex": "#F4F1EA", "role": "Fondi, scontrino", "share": 40 },
+      { "name": "Pomodoro", "hex": "#C8341B", "role": "Simbolo, ordini", "share": 35 },
+      { "name": "Inchiostro", "hex": "#1E1A17", "role": "Testo, prezzi", "share": 17 },
+      { "name": "Cartone", "hex": "#C9A57A", "role": "Packaging", "share": 8 }
     ],
     "fonts": [
-      { "family": "Archivo", "role": "Titoli e logo", "spec": "Black 900, larghezza 62–70, interlinea 0,82, tracking −2%", "sample": "Forno a legna.", "css": "font-family:'Archivo';font-weight:900;font-variation-settings:'wdth' 64;letter-spacing:-0.02em" },
-      { "family": "Archivo", "role": "Testo, menu e comanda", "spec": "Regular 400, Bold 700 per i prezzi, 17 px", "sample": "Margherita · pomodoro San Marzano, fiordilatte, basilico · 7 €", "css": "font-family:'Archivo';font-weight:400" }
+      { "family": "Archivo Black", "role": "Titoli, logo e prezzi grandi, sempre maiuscolo" },
+      { "family": "IBM Plex Mono", "role": "Testo, comanda e orari, con numeri tabellari" }
     ],
-    "googleFonts": "Archivo:wdth,wght@62..125,300..900",
     "tone": {
       "personality": ["Schietto", "Caldo", "Pratico"],
-      "description": "Parliamo come il pizzaiolo che ti guarda negli occhi mentre inforna: poche parole, tutte utili. Si dice cosa c'è, quanto costa, quando è pronta.",
-      "do": ["Prezzi sempre scritti, in euro, senza asterischi", "Orari di ritiro precisi al quarto d'ora", "Ingredienti con l'origine quando conta (Agerola, San Marzano)", "Verbi d'azione: ordina, ritira, assaggia"],
-      "dont": ["\"Pizza gourmet\", \"esperienza unica\", \"artigianale\" usato a vuoto", "Promettere consegne o tempi non sicuri", "Dialetto forzato o napoletanità di maniera", "Testi lunghi sopra il menu"],
-      "examples": [
-        { "context": "Conferma ordine WhatsApp", "text": "Ricevuto! 2 Margherite e 1 Diavola, 22,50 €. Pronte alle 20:15, le trovi calde al banco." },
-        { "context": "Post del martedì", "text": "Il martedì il forno riposa. Da mercoledì si riaccende alle 18:30." },
-        { "context": "Menu", "text": "Senza glutine su richiesta, cotta in teglia separata." }
-      ]
+      "description": "Parliamo come il pizzaiolo che ti guarda negli occhi mentre inforna: poche parole, tutte utili. Ogni messaggio porta almeno un numero.",
+      "do": ["Prezzi sempre scritti, senza asterischi", "Orari di ritiro al quarto d'ora", "Verbi d'azione: ordina, ritira, assaggia"],
+      "dont": ["«Pizza gourmet», «esperienza unica»", "Promettere tempi non sicuri", "Napoletanità di maniera"]
     },
-    "imagery": "Pizza vista dall'alto con il cornicione vero, fiamme del forno, pala in movimento, cartoni pronti. Luce calda, niente filtri saturi, niente formaggio filante finto da pubblicità.",
-    "applications": ["Cartone d'asporto con il simbolo in Pomodoro", "Comanda online e scontrino", "Griglia Instagram con le pizze della casa", "Lavagna del banco con gli orari di ritiro"]
+    "quote": { "context": "Ritardo", "text": "Forno pieno stasera: il tuo ordine #047 sarà pronto alle 20:30 invece che alle 20:15. Scusa il quarto d'ora." },
+    "theme": { "bg": "#C8341B", "surface": "#F4F1EA", "fg": "#F4F1EA", "muted": "rgba(244,241,234,.8)", "accent": "#F4F1EA", "accentFg": "#C8341B", "line": "rgba(244,241,234,.3)" },
+    "book": [
+      { "page": "01", "title": "Copertina" },
+      { "page": "05", "title": "Essenza e promessa" },
+      { "page": "12", "title": "Il logo" },
+      { "page": "14", "title": "Versioni e colori" },
+      { "page": "17", "title": "Palette" },
+      { "page": "18", "title": "Tipografia" },
+      { "page": "19", "title": "Lo spicchio" },
+      { "page": "22", "title": "Il cartone" },
+      { "page": "27", "title": "Ordine online" },
+      { "page": "28", "title": "Instagram" }
+    ]
   },
   "trattoria-portico": {
-    "name": "del Portico",
+    "name": "Trattoria del Portico",
     "fullName": "Trattoria del Portico",
     "descriptor": "Trattoria · Bologna · dal 1970",
     "tagline": "La sfoglia si tira ancora a mano.",
-    "essence": "Una trattoria di famiglia sotto i portici, dal 1970. Cucina bolognese senza scorciatoie, la pasta tirata ogni mattina, il menu che cambia con il mercato. Il portico è la casa: riparo, ritmo, Bologna.",
+    "essence": "La sfoglia del mattino, sotto il portico, con la porta sempre aperta.",
+    "promise": "Quello che mangi oggi è stato fatto oggi.",
     "values": [
-      { "title": "Mano", "text": "Pasta tirata ogni mattina, ragù che cuoce sei ore. Si vede dalla vetrina." },
-      { "title": "Famiglia", "text": "Tre generazioni allo stesso bancone, le ricette scritte a matita." },
-      { "title": "Bologna", "text": "Il portico, i lampioni, il brodo la domenica. Niente folklore da cartolina." }
+      { "title": "Mano", "text": "Pasta tirata ogni mattina, ragù che cuoce sei ore. Si vede dalla vetrina.", "habit": "La sfoglia si tira in vetrina, non in laboratorio" },
+      { "title": "Famiglia", "text": "Tre generazioni allo stesso bancone, le ricette scritte a matita.", "habit": "Chi cucina è nominato nel menu del giorno" },
+      { "title": "Bologna", "text": "Il portico, il brodo la domenica. Niente folklore da cartolina.", "habit": "Il menu segue il mercato della settimana" }
     ],
+    "keySign": {
+      "title": "La porta",
+      "text": "Il portico è disegnato come un edificio, con trabeazione e base. La campata centrale è piena, color Mattone: è la porta della trattoria. Foto, menu e pagine si impaginano in tre campate, la centrale più alta."
+    },
     "logo": {
-      "mark": "<svg viewBox='0 0 60 44' xmlns='http://www.w3.org/2000/svg'><path d='M2 42V20a8 8 0 0 1 16 0v22M22 42V20a8 8 0 0 1 16 0v22M42 42V20a8 8 0 0 1 16 0v22' fill='none' stroke='#EDE6DA' stroke-width='3'/><path d='M0 42h60' stroke='#EDE6DA' stroke-width='3'/><circle cx='30' cy='6' r='3.5' fill='#F2C14E'/></svg>",
-      "wordmark": "del Portico",
-      "wordmarkStyle": "font-family:'Instrument Serif';font-weight:400;letter-spacing:-0.01em",
-      "concept": "Tre archi del portico disegnati con una linea sola, e il lampione acceso sopra. Il nome in un serif classico e sobrio: \"Trattoria\" è sottinteso, \"del Portico\" è il luogo.",
-      "rules": [
-        "Spazio libero attorno al logo: almeno la larghezza di un arco.",
-        "Dimensione minima: 20 px di altezza per il simbolo, 100 px di larghezza per il logo completo.",
-        "Su fondo chiaro gli archi diventano Notte, il lampione resta Lampione.",
-        "Mai il nome in maiuscolo, mai in corsivo nel logo, mai archi riempiti."
-      ]
+      "svg": "<svg viewBox='0 0 120 76' xmlns='http://www.w3.org/2000/svg'><path d='M2 3h116' stroke='currentColor' stroke-width='5'/><path d='M10 73V31a16.7 16.7 0 0 1 33.3 0v42M43.3 73V31a16.7 16.7 0 0 1 33.4 0v42M76.7 73V31a16.7 16.7 0 0 1 33.3 0v42' fill='none' stroke='currentColor' stroke-width='5'/><path d='M46 73V31a14 14 0 0 1 28 0v42Z' fill='#A6452D'/><path d='M2 73h116' stroke='currentColor' stroke-width='5'/></svg>",
+      "ratio": 1.58,
+      "concept": "Trabeazione, tre campate e una porta aperta. «Trattoria» in maiuscoletto spaziato, «del Portico» minuscolo in Newsreader."
     },
     "palette": [
-      { "name": "Notte", "hex": "#18212E", "role": "Sfondo principale, il portico la sera", "share": 42 },
-      { "name": "Notte chiara", "hex": "#223044", "role": "Superfici, prenotazione", "share": 12 },
-      { "name": "Lampione", "hex": "#F2C14E", "role": "Azioni, date, il lampione del logo", "share": 10 },
-      { "name": "Intonaco", "hex": "#EDE6DA", "role": "Testo su scuro, sezioni chiare", "share": 24 },
-      { "name": "Mattone", "hex": "#A6452D", "role": "Prezzi, dettagli, il menu di oggi", "share": 7 },
-      { "name": "Nebbia", "hex": "#9AA6B6", "role": "Testi secondari, didascalie", "share": 5 }
+      { "name": "Notte", "hex": "#18212E", "role": "Fondi, testo", "share": 45 },
+      { "name": "Intonaco", "hex": "#EDE6DA", "role": "Carta, menu", "share": 28 },
+      { "name": "Notte chiara", "hex": "#223044", "role": "Superfici", "share": 12 },
+      { "name": "Mattone", "hex": "#A6452D", "role": "La porta, i prezzi", "share": 10 },
+      { "name": "Nebbia", "hex": "#9AA6B6", "role": "Didascalie", "share": 5 }
     ],
     "fonts": [
-      { "family": "Instrument Serif", "role": "Titoli e logo", "spec": "Regular 400, corsivo solo per date e citazioni, interlinea 0,92", "sample": "Tre generazioni allo stesso bancone.", "css": "font-family:'Instrument Serif';font-weight:400;letter-spacing:-0.01em" },
-      { "family": "Familjen Grotesk", "role": "Testo, menu e interfaccia", "spec": "Regular 400, Semibold 600 per i piatti, 17 px", "sample": "Tortellini in brodo di cappone · 16 € · chiusi a mano la mattina", "css": "font-family:'Familjen Grotesk';font-weight:400" }
+      { "family": "Newsreader", "role": "Un solo serif con dimensioni ottiche: sottile nei titoli, robusto a 12 px nel menu" }
     ],
-    "googleFonts": "Familjen+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1",
     "tone": {
       "personality": ["Familiare", "Misurato", "Orgoglioso senza vantarsi"],
-      "description": "Parliamo come la signora in sala che ti racconta il piatto del giorno: con calma, con cura, con quel po' di orgoglio. Frasi brevi, parole di cucina vere, il dialetto solo dove è il nome del piatto.",
-      "do": ["Nominare i piatti per esteso, con due righe di racconto", "Dire chi cucina e da quando", "Indicare pranzo e cena separati, con orari", "Scrivere le stagioni: oggi, questa settimana, finché dura"],
-      "dont": ["\"Tradizione\" e \"autentico\" ripetuti a ogni frase", "Toni da guida turistica o da cartolina", "Prezzi nascosti o \"su richiesta\"", "Anglicismi (\"food\", \"brunch\", \"location\")"],
-      "examples": [
-        { "context": "Menu del giorno", "text": "Oggi la gramigna salsiccia e panna della nonna Iole. Finché dura." },
-        { "context": "Risposta a prenotazione", "text": "Vi aspettiamo domenica a pranzo, alle 12:30, in quattro. Il carrello dei bolliti esce all'una." },
-        { "context": "Instagram", "text": "Alle otto la sfoglia è già sul tagliere. Se passi sotto il portico, la vedi dalla vetrina." }
-      ]
+      "description": "Parliamo come la signora in sala che ti racconta il piatto del giorno: con calma, con cura, con quel po' di orgoglio.",
+      "do": ["I piatti per esteso, con due righe di racconto", "Chi cucina e da quando", "Le stagioni: oggi, finché dura"],
+      "dont": ["«Tradizione» e «autentico» a ogni frase", "Prezzi nascosti o «su richiesta»", "Anglicismi: food, brunch, location"]
     },
-    "imagery": "Il portico di sera con i lampioni, la sfoglia sul tagliere, piatti fumanti su tovaglie vere, mani al lavoro. Toni caldi e notturni, mai foto da catalogo o ingredienti volanti.",
-    "applications": ["Menu del giorno stampato su carta Intonaco", "Insegna sotto il portico con gli archi", "Biglietto da visita con il lampione in Lampione", "Post \"Oggi in cucina\" ogni mattina"]
+    "quote": { "context": "Piatto finito", "text": "I tortellini di oggi sono finiti alle 13:40. Domattina se ne chiudono altri." },
+    "theme": { "bg": "#18212E", "surface": "#223044", "fg": "#EDE6DA", "muted": "rgba(237,230,218,.7)", "accent": "#A6452D", "accentFg": "#EDE6DA", "line": "rgba(237,230,218,.16)" },
+    "book": [
+      { "page": "01", "title": "Copertina" },
+      { "page": "05", "title": "Essenza e promessa" },
+      { "page": "12", "title": "Il logo" },
+      { "page": "14", "title": "Versioni e colori" },
+      { "page": "17", "title": "Palette" },
+      { "page": "18", "title": "Carattere" },
+      { "page": "19", "title": "Le campate" },
+      { "page": "23", "title": "Il menu" },
+      { "page": "27", "title": "Il sito" },
+      { "page": "28", "title": "Instagram" }
+    ]
   }
 }

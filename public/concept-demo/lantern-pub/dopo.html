@@ -6,125 +6,141 @@
 <style>.top{top:var(--db-concept-bar,0px)!important}</style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>The Lantern Pub Bologna | 14 spine, cucina fino a mezzanotte, dehors</title>
-<meta name="description" content="Pub a Bologna est con 14 birre alla spina, cucina aperta fino a mezzanotte, partite su maxischermo e dehors estivo. Prenota un tavolo su WhatsApp.">
-<meta property="og:title" content="The Lantern Pub Bologna">
-<meta property="og:description" content="14 spine, cucina fino a mezzanotte, dehors estivo.">
-<meta property="og:image" content="https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=1200&q=70">
+<title>The Lantern · Pub a Bologna est | Alla spina questa settimana</title>
+<meta name="description" content="Pub di quartiere a Bologna est. Spine che cambiano ogni lunedì, cucina fino a mezzanotte, partite e dehors. Guarda cosa c'è alla spina e prenota su WhatsApp.">
+<meta name="theme-color" content="#10291F">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap" rel="stylesheet">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BarOrPub","name":"The Lantern Pub","servesCuisine":["Pub food","Birra artigianale"],
-"address":{"@type":"PostalAddress","streetAddress":"Via dei Lampioni 12","postalCode":"40100","addressLocality":"Bologna","addressCountry":"IT"},
-"telephone":"+39 051 000 0000","priceRange":"€€","acceptsReservations":true,
+{"@context":"https://schema.org","@type":"BarOrPub","name":"The Lantern","slogan":"La luce accesa in fondo alla strada.","servesCuisine":["Pub food","Birra artigianale"],
+"address":{"@type":"PostalAddress","streetAddress":"Via di fantasia 1","addressLocality":"Bologna","addressCountry":"IT"},
+"priceRange":"€€","acceptsReservations":true,
 "openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Tuesday","Wednesday","Thursday","Sunday"],"opens":"18:00","closes":"01:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":["Friday","Saturday"],"opens":"18:00","closes":"02:00"}]}
 </script>
 <style>
+/* The Lantern · Brand guidelines vol. 01: Stout, Bottiglia, Ambra, Schiuma, Mogano.
+   Un solo carattere (Bricolage Grotesque), niente sfumature, niente texture, raggio 16. */
 :root{
-  --stout:#10291F; --stout-2:#173B2C; --brass:#B8892F; --amber:#E8A33D;
-  --foam:#FFFDF6; --mahogany:#4A2318; --text:#E9E4D6; --muted:#A9B3A6;
-  --f: 'Bricolage Grotesque', system-ui, sans-serif;
+  --stout:#10291F; --bottiglia:#1E4434; --ambra:#E8A33D; --schiuma:#FFFDF6; --mogano:#4A2318;
+  --muted:#A8B8AE; --line:rgba(255,253,246,.14); --r:16px;
+  --f:'Bricolage Grotesque',system-ui,sans-serif;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--stout);color:var(--text);font-family:var(--f);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
-img,video{display:block;max-width:100%}
+body{margin:0;background:var(--stout);color:var(--schiuma);font-family:var(--f);font-size:17px;line-height:1.53;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
 a{color:inherit}
-:focus-visible{outline:3px solid var(--amber);outline-offset:3px;border-radius:4px}
-.skip{position:absolute;left:-9999px}.skip:focus{left:16px;top:16px;z-index:99;background:var(--amber);color:var(--stout);padding:8px 14px}
+:focus-visible{outline:3px solid var(--ambra);outline-offset:3px;border-radius:6px}
+.skip{position:absolute;left:-9999px}.skip:focus{left:16px;top:16px;z-index:99;background:var(--ambra);color:var(--stout);padding:8px 14px;border-radius:8px}
 .wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+.lbl{font-weight:700;font-size:13px;letter-spacing:.18em;text-transform:uppercase}
+.disp{font-weight:800;font-variation-settings:'wdth' 75;letter-spacing:-.02em;line-height:.9}
+.tit{font-weight:800;font-variation-settings:'wdth' 80;letter-spacing:-.015em;line-height:.95}
+.num{font-weight:600;font-variant-numeric:tabular-nums}
+/* il punto acceso: pieno = c'è, vuoto = finita */
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--ambra);flex:none}
+.dot.off{background:transparent;box-shadow:inset 0 0 0 2px var(--muted)}
+.dot.pulse{animation:pulse 2.4s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(232,163,61,.55)}100%{box-shadow:0 0 0 12px rgba(232,163,61,0)}}
 
 /* header */
-.top{position:fixed;inset:0 0 auto;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;transition:background .3s}
-.top.solid{background:rgba(16,41,31,.92);backdrop-filter:blur(8px)}
-.brand{font-weight:800;font-variation-settings:'wdth' 80;font-size:22px;text-decoration:none;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
-.brand svg{width:22px;height:28px}
-.top nav{display:none;gap:26px;font-size:15px}
-.top nav a{text-decoration:none;opacity:.85}.top nav a:hover{opacity:1}
-.pill{background:var(--amber);color:var(--stout);text-decoration:none;font-weight:700;padding:10px 18px;border-radius:999px;font-size:15px;white-space:nowrap}
+.top{position:sticky;top:var(--db-concept-bar,0px);z-index:20;background:var(--stout);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:68px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand svg{width:22px;height:33px}
+.brand span{font-weight:800;font-variation-settings:'wdth' 75;font-size:25px;letter-spacing:-.02em}
+.top nav{display:none;gap:28px;font-size:15px}
+.top nav a{text-decoration:none;opacity:.8}.top nav a:hover{opacity:1}
+.pill{background:var(--ambra);color:var(--stout);text-decoration:none;font-weight:700;padding:10px 18px;border-radius:999px;font-size:15px;white-space:nowrap}
 @media(min-width:900px){.top nav{display:flex}}
 
-/* hero */
-.hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;
-  background:radial-gradient(120% 80% at 70% 20%,#2b5a3f 0%,var(--stout) 55%,#081a13 100%)}
-.hero-media{position:absolute;inset:-10% 0 0;will-change:transform}
-.hero-media video,.hero-media img{width:100%;height:110%;object-fit:cover;opacity:.55}
-.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,41,31,.2) 0%,rgba(16,41,31,.55) 55%,var(--stout) 100%)}
-.hero-copy{position:relative;z-index:2;padding:0 20px 56px;max-width:1160px;margin:0 auto;width:100%}
-.status{display:inline-flex;align-items:center;gap:8px;font-size:15px;margin-bottom:18px;background:rgba(0,0,0,.25);padding:6px 12px;border-radius:999px}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--muted)}
-.dot.on{background:#6FD08C;box-shadow:0 0 0 0 rgba(111,208,140,.6);animation:pulse 2s infinite}
-@keyframes pulse{to{box-shadow:0 0 0 10px rgba(111,208,140,0)}}
-.hero h1{margin:0;font-weight:800;font-variation-settings:'wdth' 75;font-size:clamp(48px,12vw,148px);line-height:.88;letter-spacing:-.03em;color:var(--foam);max-width:12ch}
-.hero p{max-width:46ch;font-size:clamp(17px,2.2vw,21px);margin:22px 0 28px;color:var(--text)}
+/* hero: due domande, risposta subito */
+.hero{padding:56px 0 0}
+.status{display:inline-flex;align-items:center;gap:10px;color:var(--ambra);margin-bottom:22px}
+.status.closed{color:var(--muted)}
+.hero h1{margin:0;font-size:clamp(56px,11.5vw,150px);max-width:9ch}
+.hero p{max-width:44ch;font-size:clamp(17px,2.1vw,21px);color:#D9E2DC;margin:24px 0 30px}
 .actions{display:flex;gap:12px;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;padding:15px 24px;border-radius:999px;font-size:16px}
-.btn.primary{background:var(--amber);color:var(--stout)}
-.btn.ghost{border:1.5px solid rgba(233,228,214,.5)}
-.btn svg{width:18px;height:18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;font:inherit;font-weight:700;padding:15px 24px;border-radius:999px;font-size:16px;border:0;cursor:pointer}
+.btn.amb{background:var(--ambra);color:var(--stout)}
+.btn.line{box-shadow:inset 0 0 0 1.5px rgba(255,253,246,.45);color:var(--schiuma);background:transparent}
+.hero-photo{margin-top:52px;border-radius:var(--r) var(--r) 0 0;overflow:hidden;height:min(56vh,520px);background:var(--mogano);position:relative}
+.hero-photo img{width:100%;height:100%;object-fit:cover}
+.hero-photo::after{content:"";position:absolute;inset:0;background:rgba(16,41,31,.28)}
 
-/* tap board: the memorable element */
-.taps{padding-block:100px 80px}
-.taps-head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:28px}
-h2{font-weight:800;font-variation-settings:'wdth' 80;font-size:clamp(34px,6vw,64px);line-height:.95;letter-spacing:-.02em;margin:0;color:var(--foam)}
-.taps-head p{margin:0;color:var(--muted);max-width:34ch}
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
-.filters button{font:inherit;font-size:15px;background:transparent;color:var(--text);border:1.5px solid rgba(233,228,214,.25);padding:8px 16px;border-radius:999px;cursor:pointer}
-.filters button[aria-pressed="true"]{background:var(--foam);color:var(--stout);border-color:var(--foam)}
-.board{background:var(--stout-2);border:1px solid rgba(184,137,47,.35);border-radius:6px;padding:8px 0}
-.tap{display:grid;grid-template-columns:40px 1fr auto;gap:14px;align-items:center;padding:14px 18px;border-bottom:1px dashed rgba(233,228,214,.12)}
+/* lavagna delle spine */
+.taps{padding-top:96px;padding-bottom:80px}
+.taps-head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:26px}
+h2{margin:0;font-size:clamp(40px,6.5vw,76px)}
+.taps-head p{margin:8px 0 0;color:var(--muted)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.filters button{font:inherit;font-size:15px;background:transparent;color:var(--schiuma);border:1.5px solid var(--line);padding:8px 16px;border-radius:999px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--schiuma);color:var(--stout);border-color:var(--schiuma)}
+.board{background:var(--bottiglia);border-radius:var(--r);padding:6px 22px}
+.tap{display:grid;grid-template-columns:auto 42px 1fr auto;gap:14px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}
 .tap:last-child{border-bottom:0}
-.tap .n{font-variation-settings:'wdth' 75;font-weight:700;color:var(--brass);font-size:22px}
-.tap b{display:block;font-size:19px;color:var(--foam);font-weight:600}
-.tap span{font-size:14px;color:var(--muted)}
-.tap .glass{width:14px;height:40px;border-radius:2px 2px 4px 4px;position:relative;justify-self:end}
-.tap .meta{display:flex;align-items:center;gap:14px;text-align:right;font-size:15px}
+.tap .n{color:var(--ambra);font-size:18px}
+.tap.out .n,.tap.out b,.tap.out .abv{color:var(--muted)}
+.tap b{display:block;font-size:19px;font-weight:600}
+.tap small{color:var(--muted);font-size:14px}
+.tap .abv{font-size:17px}
 .tap[hidden]{display:none}
+.price{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:16px;color:var(--muted);font-size:15px}
+.price b{color:var(--schiuma)}
 
-/* parallax band */
-.band{position:relative;height:70vh;min-height:420px;overflow:hidden;background:linear-gradient(160deg,var(--mahogany),#2a140d)}
-.band img{position:absolute;inset:-15% 0;width:100%;height:130%;object-fit:cover;will-change:transform;opacity:.8}
-.band-copy{position:absolute;left:20px;right:20px;bottom:40px;max-width:1160px;margin:0 auto}
-.band-copy h2{max-width:14ch}
+/* oggi al pub */
+.today{display:grid;gap:14px;padding-bottom:96px}
+@media(min-width:860px){.today{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--bottiglia);border-radius:var(--r);padding:26px}
+.card .k{font-size:64px;color:var(--ambra);margin-bottom:12px}
+.card h3{margin:0 0 6px;font-size:23px}
+.card p{margin:0;color:#C9D6CE}
+.card.amb{background:var(--ambra);color:var(--stout)}
+.card.amb p{color:var(--stout)}
+.card.amb .k{color:var(--stout)}
 
-/* three things */
-.offer{padding-block:90px;display:grid;gap:44px}
-@media(min-width:860px){.offer{grid-template-columns:repeat(3,1fr);gap:36px}}
-.offer h3{font-size:24px;margin:0 0 8px;color:var(--foam);font-weight:700}
-.offer p{margin:0;color:var(--muted)}
-.offer .k{font-variation-settings:'wdth' 75;font-weight:800;font-size:72px;line-height:1;color:var(--amber);margin-bottom:10px}
+/* dehors */
+.band{position:relative;height:62vh;min-height:380px;overflow:hidden;background:var(--mogano)}
+.band img{position:absolute;inset:-12% 0;width:100%;height:124%;object-fit:cover;will-change:transform}
+.band::after{content:"";position:absolute;inset:0;background:rgba(16,41,31,.45)}
+.band .wrap{position:absolute;left:0;right:0;bottom:40px;z-index:2}
+.band h2{max-width:13ch}
 
-/* booking */
-.book{background:var(--foam);color:var(--stout);padding:90px 0;border-radius:28px 28px 0 0}
+/* tessera */
+.loyal{padding-top:90px;padding-bottom:90px;display:grid;gap:30px;align-items:center}
+@media(min-width:860px){.loyal{grid-template-columns:1.1fr 1fr}}
+.pints{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;background:var(--bottiglia);border-radius:var(--r);padding:26px}
+.pints .dot{width:28px;height:28px;justify-self:center}
+
+/* prenota */
+.book{background:var(--schiuma);color:var(--stout);padding:90px 0;border-radius:24px 24px 0 0}
 .book h2{color:var(--stout)}
-.book-grid{display:grid;gap:40px}
+.book-grid{display:grid;gap:44px}
 @media(min-width:860px){.book-grid{grid-template-columns:1fr 1fr;gap:70px}}
-form{display:grid;gap:16px}
-label{font-size:15px;font-weight:600;display:grid;gap:6px}
-input,select{font:inherit;padding:14px 16px;border:1.5px solid #cfc9b8;border-radius:12px;background:#fff;color:var(--stout)}
+form{display:grid;gap:16px;margin-top:24px}
+label{font-size:15px;font-weight:700;display:grid;gap:6px}
+input,select{font:inherit;padding:14px 16px;border:1.5px solid #CFD7D1;border-radius:12px;background:#fff;color:var(--stout)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-form .btn{justify-content:center;border:0;cursor:pointer;background:var(--stout);color:var(--foam)}
-.hours{list-style:none;padding:0;margin:20px 0 0;font-size:16px}
-.hours li{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #e6e0cf}
+form .btn{background:var(--stout);color:var(--schiuma)}
+.hours{list-style:none;padding:0;margin:22px 0 0}
+.hours li{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid #E3E7E1}
 .hours li.today{font-weight:700}
-.where{margin-top:28px;font-size:16px}
+.hours li.today span:first-child::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--stout);margin-right:8px}
+.where{margin-top:26px}
 .where a{font-weight:700}
 
-footer{background:var(--foam);color:#5b6b60;padding:30px 20px 110px;font-size:14px;text-align:center}
-@media(min-width:900px){footer{padding-bottom:30px}}
-
-/* mobile sticky bar */
-.dock{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:30;display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:8px;background:rgba(16,41,31,.95);backdrop-filter:blur(8px);padding:8px;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-.dock a{text-align:center;text-decoration:none;font-weight:700;font-size:15px;padding:12px 6px;border-radius:999px;color:var(--foam)}
-.dock a.main{background:var(--amber);color:var(--stout)}
+footer{background:var(--schiuma);color:#47584D;padding:26px 20px 112px;font-size:14px;text-align:center;border-top:1px solid #E3E7E1}
+@media(min-width:900px){footer{padding-bottom:28px}}
+.dock{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:30;display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:8px;background:var(--stout);padding:8px;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.35);border:1px solid var(--line)}
+.dock a{text-align:center;text-decoration:none;font-weight:700;font-size:15px;padding:12px 6px;border-radius:999px}
+.dock a.main{background:var(--ambra);color:var(--stout)}
 @media(min-width:900px){.dock{display:none}}
 
-/* single orchestrated load moment */
-.hero h1,.hero p,.hero .actions,.status{opacity:0;transform:translateY(24px);animation:in .9s cubic-bezier(.2,.7,.2,1) forwards}
-.status{animation-delay:.1s}.hero h1{animation-delay:.2s}.hero p{animation-delay:.45s}.hero .actions{animation-delay:.6s}
+.in{opacity:0;transform:translateY(18px);animation:in .4s cubic-bezier(.2,.7,.2,1) forwards}
+.in.d1{animation-delay:.08s}.in.d2{animation-delay:.16s}.in.d3{animation-delay:.24s}
 @keyframes in{to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.hero h1,.hero p,.hero .actions,.status{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.in{opacity:1;transform:none}}
 </style>
 </head>
 <body>
@@ -135,43 +151,45 @@ footer{background:var(--foam);color:#5b6b60;padding:30px 20px 110px;font-size:14
 <script>(function(){var b=document.getElementById('db-concept-bar');function s(){document.documentElement.style.setProperty('--db-concept-bar',b.offsetHeight+'px')}s();addEventListener('resize',s)})();</script>
 <a class="skip" href="#main">Vai al contenuto</a>
 
-<header class="top" id="top">
-  <a class="brand" href="#" aria-label="The Lantern Pub, home">
-    <svg aria-hidden="true" viewBox="0 0 44 56" xmlns="http://www.w3.org/2000/svg"><path d="M14 2h16v6H14z" fill="#B8892F"/><path d="M8 10h28l4 12v20l-6 12H10L4 42V22z" fill="none" stroke="#E8A33D" stroke-width="4" stroke-linejoin="round"/><circle cx="22" cy="32" r="8" fill="#E8A33D"/><path d="M22 22v-6" stroke="#B8892F" stroke-width="3" stroke-linecap="round"/></svg>
-    The Lantern
-  </a>
-  <nav aria-label="Principale">
-    <a href="#spine">Alla spina</a>
-    <a href="#cucina">Cucina e sport</a>
-    <a href="#prenota">Orari e dove siamo</a>
-  </nav>
-  <a class="pill" href="#prenota">Prenota un tavolo</a>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#" aria-label="The Lantern, home">
+      <svg viewBox="0 0 64 96" aria-hidden="true"><circle cx="32" cy="10" r="6.5" fill="none" stroke="#FFFDF6" stroke-width="5"/><rect x="20" y="18" width="24" height="9" rx="3" fill="#FFFDF6"/><rect x="11.5" y="29.5" width="41" height="51" rx="10" fill="none" stroke="#FFFDF6" stroke-width="5"/><path d="M22 34v42M42 34v42" stroke="#FFFDF6" stroke-width="3"/><circle cx="32" cy="55" r="7" fill="#E8A33D"/><rect x="16" y="85" width="32" height="8" rx="3" fill="#FFFDF6"/></svg>
+      <span>The Lantern</span>
+    </a>
+    <nav aria-label="Principale">
+      <a href="#spine">Alla spina</a>
+      <a href="#oggi">Cucina e partite</a>
+      <a href="#prenota">Orari e dove siamo</a>
+    </nav>
+    <a class="pill" href="#prenota">Prenota</a>
+  </div>
 </header>
 
 <main id="main">
 <section class="hero" aria-label="Benvenuto">
-  <div class="hero-media" data-speed="0.35">
-    <!-- Video stock consigliato: spillatura birra al rallentatore (Pexels/Coverr), mp4 720p < 3MB -->
-    <video autoplay muted loop playsinline preload="metadata" poster="https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=1600&q=70">
-      <source src="media/lantern-hero.webm" type="video/webm">
-      <source src="media/lantern-hero.mp4" type="video/mp4">
-    </video>
-  </div>
-  <div class="hero-copy">
-    <div class="status" aria-live="polite"><span class="dot" id="dot"></span><span id="statusText">Orari di oggi</span></div>
-    <h1>Il pub di Bologna est.</h1>
-    <p>Quattordici spine che cambiano ogni mese, cucina aperta fino a mezzanotte e un dehors dove d'estate si sta fuori fino a tardi.</p>
-    <div class="actions">
-      <a class="btn primary" href="#prenota">Prenota un tavolo</a>
-      <a class="btn ghost" href="#spine">Cosa c'è alla spina</a>
+  <div class="wrap">
+    <p class="status lbl in" id="status" aria-live="polite"><span class="dot pulse" id="statusDot"></span><span id="statusText">Accesa ora</span></p>
+    <h1 class="disp in d1">La luce accesa in fondo alla strada.</h1>
+    <p class="in d2">Pub di quartiere a Bologna est. Quattordici spine che cambiano ogni mese, cucina fino a mezzanotte, partite e dehors.</p>
+    <div class="actions in d3">
+      <a class="btn amb" href="#prenota">Prenota un tavolo</a>
+      <a class="btn line" href="#spine">Cosa c'è alla spina</a>
     </div>
+  </div>
+  <div class="wrap">
+    <div class="hero-photo"><img src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=1600&q=70" alt="Il banco del pub con le luci basse e calde della sera" fetchpriority="high"></div>
   </div>
 </section>
 
 <section class="taps wrap" id="spine" aria-labelledby="spine-t">
   <div class="taps-head">
-    <h2 id="spine-t">Alla spina questa settimana</h2>
-    <p>Lista aggiornata dal banco ogni lunedì. Chiedi un assaggio prima di scegliere.</p>
+    <div>
+      <p class="lbl" style="color:var(--ambra);margin:0 0 10px">Alla spina questa settimana</p>
+      <h2 class="tit" id="spine-t">La lavagna</h2>
+      <p id="updated">Aggiornata lunedì</p>
+    </div>
+    <p style="max-width:32ch">Punto acceso: c'è adesso. Cerchio vuoto: finita, si riaccende presto.</p>
   </div>
   <div class="filters" role="group" aria-label="Filtra per stile">
     <button aria-pressed="true" data-f="all">Tutte</button>
@@ -180,26 +198,37 @@ footer{background:var(--foam);color:#5b6b60;padding:30px 20px 110px;font-size:14
     <button aria-pressed="false" data-f="scura">Scure</button>
   </div>
   <div class="board" id="board"></div>
+  <div class="price"><span><b class="num">0,2 L 3,5 €</b> · <b class="num">0,4 L 6 €</b></span><span>Chiedi un assaggio. Non è una prova, è una conversazione.</span></div>
+</section>
+
+<section class="wrap today" id="oggi" aria-label="Cucina, partite, dehors">
+  <div class="card"><div class="k disp num">00:00</div><h3 class="tit">Cucina fino a mezzanotte</h3><p>Burger, crescentine, taglieri, fish and chips. Opzioni vegetariane e senza glutine.</p></div>
+  <div class="card amb"><div class="k disp num">21:00</div><h3 class="tit">Partita alle 21</h3><p>Due maxischermi. Tavoli vicino allo schermo solo su prenotazione.</p></div>
+  <div class="card"><div class="k disp num">14</div><h3 class="tit">Spine a rotazione</h3><p>Artigianali italiane, belghe e inglesi. Le bottiglie sono altre quaranta.</p></div>
 </section>
 
 <section class="band" aria-label="Il dehors">
-  <img data-speed="0.25" src="https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=1600&q=70" alt="Tavoli all'aperto illuminati da lucine la sera" loading="lazy">
-  <div class="band-copy wrap">
-    <h2>Da maggio a settembre si beve fuori.</h2>
-  </div>
+  <img data-speed="0.22" src="https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=1600&q=70" alt="Il dehors con le lucine accese la sera" loading="lazy">
+  <div class="wrap"><h2 class="tit">Da maggio a settembre si beve fuori.</h2></div>
 </section>
 
-<section class="wrap offer" id="cucina" aria-label="Cosa trovi">
-  <div><div class="k">14</div><h3>Spine a rotazione</h3><p>Birre artigianali italiane, belghe e inglesi. Le bottiglie sono altre quaranta.</p></div>
-  <div><div class="k">00:00</div><h3>Cucina fino a mezzanotte</h3><p>Burger, fish and chips, taglieri e crescentine. Opzioni vegetariane e senza glutine.</p></div>
-  <div><div class="k">2</div><h3>Maxischermi per lo sport</h3><p>Serie A, Champions, rugby e Premier. Nelle serate di partita conviene prenotare.</p></div>
+<section class="wrap loyal" aria-labelledby="loyal-t">
+  <div>
+    <p class="lbl" style="color:var(--ambra);margin:0 0 10px">Tessera fedeltà</p>
+    <h2 class="tit" id="loyal-t">Dieci pinte, una offerta.</h2>
+    <p style="color:#C9D6CE;max-width:40ch">Un punto acceso per ogni pinta, come sulla lavagna. Alla decima la birra la offre la casa.</p>
+  </div>
+  <div class="pints" aria-hidden="true">
+    <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    <span class="dot"></span><span class="dot"></span><span class="dot off"></span><span class="dot off"></span><span class="dot off"></span>
+  </div>
 </section>
 
 <section class="book" id="prenota" aria-labelledby="book-t">
   <div class="wrap book-grid">
     <div>
-      <h2 id="book-t">Prenota un tavolo</h2>
-      <p>Scegli giorno, ora e persone: ti si apre WhatsApp con il messaggio già scritto. Rispondiamo entro un'ora.</p>
+      <h2 class="tit" id="book-t">Prenota un tavolo</h2>
+      <p>Scegli giorno, ora e persone: si apre WhatsApp con il messaggio già scritto. Ti confermiamo il tavolo, mai promesso senza conferma.</p>
       <form id="bookForm">
         <div class="row2">
           <label>Giorno<input type="date" name="d" required></label>
@@ -214,16 +243,16 @@ footer{background:var(--foam);color:#5b6b60;padding:30px 20px 110px;font-size:14
       </form>
     </div>
     <div>
-      <h2 style="font-size:clamp(28px,4vw,40px)">Orari</h2>
+      <h2 class="tit" style="font-size:clamp(30px,4vw,44px)">Accesa mar–dom, dalle 18</h2>
       <ul class="hours" id="hours"></ul>
-      <p class="where">Via dei Lampioni 12, 40100 Bologna. Parcheggio gratuito in via del Faro, a due minuti a piedi.<br>
-        <a href="https://maps.google.com/?q=Via+dei+Lampioni+12+Bologna">Apri in Google Maps</a> · <a href="tel:+390510000000">051 000 0000</a></p>
+      <p class="where">Via di fantasia 1, Bologna est. Parcheggio a due minuti a piedi.<br>
+        <a href="https://maps.google.com/?q=Bologna">Apri in Google Maps</a> · <a href="tel:+390510000000">051 000 0000</a></p>
     </div>
   </div>
 </section>
 </main>
 
-<footer>The Lantern Pub · Via dei Lampioni 12, Bologna · P.IVA 00000000000 · © <span id="y"></span> · <a href="#">Privacy</a><br>Concept redesign di Dieci Bottega, attività di fantasia.</footer>
+<footer>The Lantern · Via di fantasia 1, Bologna · © <span id="y"></span> · <a href="#">Privacy</a><br>Concept di Dieci Bottega · attività di fantasia, nessun rapporto con locali reali.</footer>
 
 <nav class="dock" aria-label="Azioni rapide">
   <a href="tel:+390510000000">Chiama</a>
@@ -232,47 +261,47 @@ footer{background:var(--foam);color:#5b6b60;padding:30px 20px 110px;font-size:14
 </nav>
 
 <script>
-// tap list
+// lavagna: [numero, nome, stile, gradazione, famiglia, c'è?]
 const taps=[
- ["Pils della Bassa","Pils · Emilia","4,8%","chiara","#F2D46B"],
- ["Lanterna Session","Session IPA · casa","4,2%","chiara","#E9C25A"],
- ["Weizen Ponente","Weiss · Baviera","5,3%","chiara","#F0C860"],
- ["Brass Pale Ale","APA · Veneto","5,6%","ambrata","#D99A3A"],
- ["Red Lamp","Irish Red · Irlanda","4,6%","ambrata","#B5582A"],
- ["Tripel d'Abbazia","Tripel · Belgio","8,5%","ambrata","#E3A743"],
- ["Mezzanotte","Oatmeal Stout · casa","5,9%","scura","#2A140D"],
- ["Porter del Faro","London Porter · Inghilterra","5,2%","scura","#3B1E12"]
+ ["01","Mezzanotte","oatmeal stout","5,9%","scura",true],
+ ["02","Via Larga","pils","4,8%","chiara",true],
+ ["03","Strada Maggiore","IPA","6,2%","ambrata",false],
+ ["04","Sidro di casa","sidro","5,0%","chiara",true],
+ ["05","Fuori Porta","saison","6,0%","chiara",true],
+ ["06","San Vitale","red ale","5,4%","ambrata",true]
 ];
 const board=document.getElementById('board');
-board.innerHTML=taps.map((t,i)=>`<div class="tap" data-s="${t[3]}"><span class="n">${String(i+1).padStart(2,'0')}</span><div><b>${t[0]}</b><span>${t[1]}</span></div><div class="meta"><span>${t[2]}</span><i class="glass" style="background:${t[4]}" aria-hidden="true"></i></div></div>`).join('');
+board.innerHTML=taps.map(t=>`<div class="tap ${t[5]?'':'out'}" data-s="${t[4]}"><span class="dot ${t[5]?'':'off'}" aria-hidden="true"></span><span class="n num">${t[0]}</span><div><b>${t[1]}</b><small>${t[2]}${t[5]?'':' · finita, si riaccende venerdì'}</small></div><span class="abv num">${t[3]}</span></div>`).join('');
 document.querySelectorAll('.filters button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.filters button').forEach(x=>x.setAttribute('aria-pressed',x===b));
   board.querySelectorAll('.tap').forEach(r=>r.hidden=!(b.dataset.f==='all'||r.dataset.s===b.dataset.f));
 }));
+const now=new Date();
+const monday=new Date(now);monday.setDate(now.getDate()-((now.getDay()+6)%7));
+document.getElementById('updated').textContent='Aggiornata '+monday.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'});
 
-// hours + open status
+// orari e stato: la luce dice se il pub è aperto
 const days=['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
 const H={0:[18,25],1:null,2:[18,25],3:[18,25],4:[18,25],5:[18,26],6:[18,26]};
-const now=new Date(),d=now.getDay(),h=now.getHours()+now.getMinutes()/60;
-document.getElementById('hours').innerHTML=[1,2,3,4,5,6,0].map(i=>`<li class="${i===d?'today':''}"><span>${days[i]}</span><span>${H[i]?`18:00 – ${String(H[i][1]-24).padStart(2,'0')}:00`:'Chiuso'}</span></li>`).join('');
-const prev=H[(d+6)%7], open=(H[d]&&h>=H[d][0])||(prev&&h<prev[1]-24);
-document.getElementById('dot').classList.toggle('on',!!open);
-document.getElementById('statusText').textContent=open?'Aperto ora':(H[d]&&h<H[d][0]?'Apriamo alle 18:00':'Chiuso oggi, ci vediamo domani');
+const d=now.getDay(),h=now.getHours()+now.getMinutes()/60,prev=H[(d+6)%7];
+document.getElementById('hours').innerHTML=[2,3,4,5,6,0,1].map(i=>`<li class="${i===d?'today':''}"><span>${days[i]}</span><span class="num">${H[i]?`18:00 – ${String(H[i][1]-24).padStart(2,'0')}:00`:'Riposo'}</span></li>`).join('');
+const openNow=(H[d]&&h>=H[d][0])||(prev&&h<prev[1]-24);
+const until=openNow?(H[d]&&h>=H[d][0]?H[d][1]-24:prev[1]-24):null;
+const st=document.getElementById('status'),dot=document.getElementById('statusDot');
+if(openNow){document.getElementById('statusText').textContent=`Accesa ora · fino all'${String(until).padStart(1,'0')}:00`;}
+else{st.classList.add('closed');dot.classList.remove('pulse');dot.classList.add('off');document.getElementById('statusText').textContent=H[d]&&h<H[d][0]?'Si accende alle 18:00':'Spenta oggi · ci vediamo domani';}
 document.getElementById('y').textContent=now.getFullYear();
 
-// booking -> whatsapp
+// prenotazione → WhatsApp con il messaggio già scritto
 const f=document.getElementById('bookForm');f.d.valueAsDate=now;
 f.addEventListener('submit',e=>{e.preventDefault();
-  const m=`Ciao! Vorrei prenotare un tavolo per ${f.p.value} il ${new Date(f.d.value).toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'})} alle ${f.t.value} (${f.w.value}). A nome ${f.n.value}.`;
+  const m=`Ciao! Vorrei prenotare un tavolo per ${f.p.value} ${new Date(f.d.value).toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'})} alle ${f.t.value} (${f.w.value}). A nome ${f.n.value}.`;
   window.open('https://wa.me/390000000000?text='+encodeURIComponent(m),'_blank');});
 
-// header + parallax
-const top_=document.getElementById('top'),par=[...document.querySelectorAll('[data-speed]')];
-const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-let ticking=false;
-function frame(){const y=scrollY;top_.classList.toggle('solid',y>40);
-  if(!reduce)par.forEach(el=>{const r=el.parentElement.getBoundingClientRect();el.style.transform=`translate3d(0,${(-r.top)*el.dataset.speed}px,0)`});ticking=false}
-addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(frame);ticking=true}},{passive:true});frame();
+// parallax leggero sul dehors
+const par=[...document.querySelectorAll('[data-speed]')],reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;let tk=false;
+function fr(){if(!reduce)par.forEach(el=>{const r=el.parentElement.getBoundingClientRect();el.style.transform=`translate3d(0,${-r.top*el.dataset.speed}px,0)`});tk=false}
+addEventListener('scroll',()=>{if(!tk){requestAnimationFrame(fr);tk=true}},{passive:true});fr();
 </script>
 </body>
 </html>
