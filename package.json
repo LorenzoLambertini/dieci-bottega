@@ -8,7 +8,11 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "concept:demos": "node concept-redesign/build-demos.mjs",
+    "concept:shots": "node concept-redesign/shots.mjs",
+    "concept:measure": "node concept-redesign/measure.mjs",
+    "concept:assets": "node concept-redesign/fetch-assets.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.128.0",

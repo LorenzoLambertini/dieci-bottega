@@ -5,6 +5,7 @@ import { getSector, SECTORS } from "@/lib/sectors";
 import { getPost } from "@/lib/blog";
 import { getProject } from "@/lib/projects";
 import { whatsappUrl } from "@/lib/contacts";
+import { CONCEPTS } from "@/lib/concepts";
 
 const SITE = "https://diecibottega.it";
 
@@ -137,6 +138,24 @@ export default async function SectorPage({ params }: { params: Promise<{ slug: s
                   <p className="font-archivo font-black uppercase text-2xl text-obsidian group-hover:text-rosewood transition-colors">{caseStudy.name}</p>
                   <p className="mt-2 text-obsidian/65">{caseStudy.desc}</p>
                 </Link>
+              </section>
+            )}
+
+            {s.concepts && (
+              <section className="mt-14">
+                <h2 className={h2}>Come li rifaremmo: tre concept</h2>
+                <p className="mb-5 text-obsidian/60">Locali di fantasia, difetti veri. Concept non commissionati, nessun rapporto con locali reali.</p>
+                <ul className="grid sm:grid-cols-3 gap-px bg-obsidian/10 border border-obsidian/10">
+                  {CONCEPTS.map((c) => (
+                    <li key={c.slug} className="bg-ivory">
+                      <Link href={`/concept/${c.slug}`} className="group block p-5 h-full">
+                        <p className={`${label} text-rosewood mb-1.5`}>{c.type}</p>
+                        <p className="font-archivo font-bold text-obsidian group-hover:text-rosewood transition-colors">{c.name}</p>
+                        <p className="text-obsidian/60 text-[0.95rem] mt-1.5 leading-relaxed">{c.keyFeature}</p>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </section>
             )}
 

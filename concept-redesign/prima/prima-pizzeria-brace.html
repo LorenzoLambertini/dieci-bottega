@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pizzeria Brace – Prima (presenza online attuale)</title>
+<style>
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#e9eaee;color:#202124;padding:20px}
+  .wrap{max-width:420px;margin:auto}
+  .label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#666;margin:24px 0 8px}
+  .card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+  .photo{height:180px;background:url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&q=80') center/cover;filter:blur(1.5px) saturate(.6) brightness(.8);position:relative}
+  .photo span{position:absolute;bottom:8px;right:10px;color:#fff;font-size:11px;filter:none;opacity:.8}
+  .info{padding:14px 16px}
+  .info h1{font-size:20px;margin:0 0 4px;font-weight:500}
+  .stars{color:#e7711b;font-size:14px}
+  .muted{color:#70757a;font-size:13px}
+  .actions{display:flex;justify-content:space-around;border-top:1px solid #eee;border-bottom:1px solid #eee;padding:10px 0;margin:12px -16px}
+  .actions div{text-align:center;font-size:12px;color:#1a73e8}
+  .actions .off{color:#bbb}
+  .row{font-size:13px;padding:6px 0;display:flex;gap:10px}
+  .row b{min-width:70px;color:#555;font-weight:normal}
+  .warn{color:#d93025}
+  .rev{border-top:1px solid #eee;padding-top:10px;margin-top:8px;font-size:13px}
+  .ig-head{display:flex;align-items:center;gap:12px;padding:14px 16px}
+  .ig-avatar{width:56px;height:56px;border-radius:50%;background:#c9b8a6}
+  .ig-stats{font-size:13px}
+  .ig-bio{padding:0 16px 12px;font-size:13px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+  .grid div{aspect-ratio:1;background:#bfb4a8;display:flex;align-items:flex-end;justify-content:flex-end;font-size:10px;color:#fff;padding:4px;box-sizing:border-box}
+  .grid div:nth-child(2n){background:#a89c8f}
+  .grid div:nth-child(3n){background:#8f8378}
+  .note{font-size:12px;color:#555;background:#fff8e1;border:1px solid #f0d98c;border-radius:8px;padding:10px 12px;margin-top:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="label">1 · Cosa trova chi cerca "pizzeria" in zona</div>
+  <div class="card">
+    <div class="photo"><span>Foto del titolare · 2021</span></div>
+    <div class="info">
+      <h1>Pizzeria Brace</h1>
+      <div><span class="stars">★★★★☆</span> <span class="muted">4,4 (213) · Pizzeria · €</span></div>
+      <div class="muted">Chiuso · Apre alle 18:30</div>
+      <div class="actions">
+        <div>Indicazioni</div>
+        <div>Chiama</div>
+        <div class="off">Sito web</div>
+        <div class="off">Menu</div>
+      </div>
+      <div class="row"><b>Indirizzo</b> Via del Forno, 8, Bologna</div>
+      <div class="row"><b>Orari</b> <span class="warn">Gli orari potrebbero essere cambiati</span></div>
+      <div class="row"><b>Sito</b> <span class="muted">Nessun sito web</span></div>
+      <div class="row"><b>Menu</b> <span class="muted">Foto del menu caricate dai clienti (2022)</span></div>
+      <div class="rev">"Pizza buonissima ma non si riesce mai a sapere se fanno asporto la domenica" <span class="muted">· 3 mesi fa</span></div>
+      <div class="rev">"Ho chiamato 4 volte, sempre occupato. Peccato" <span class="muted">· 5 mesi fa</span></div>
+    </div>
+  </div>
+
+  <div class="label">2 · Il profilo Instagram</div>
+  <div class="card">
+    <div class="ig-head">
+      <div class="ig-avatar"></div>
+      <div>
+        <div><b>pizzeria_brace</b></div>
+        <div class="ig-stats">38 post · 412 follower · 190 seguiti</div>
+      </div>
+    </div>
+    <div class="ig-bio">🍕 Pizzeria a Bologna<br>📞 Prenotazioni solo telefoniche<br>Link in bio ⬇️ <span class="muted">(nessun link)</span></div>
+    <div class="grid">
+      <div style="background:url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=300&q=80') center/cover;filter:brightness(.85)">apr 2024</div>
+      <div style="background:url('https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=300&q=80') center/cover;filter:brightness(.85)">mar 2024</div>
+      <div style="background:url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&q=80') center/cover;filter:brightness(.85)">mar 2024</div>
+      <div style="background:url('https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=300&q=80') center/cover;filter:brightness(.85)">dic 2023</div>
+      <div style="background:url('https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=300&q=80') center/cover;filter:brightness(.85)">nov 2023</div>
+      <div style="background:url('https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=300&q=80') center/cover;filter:brightness(.85)">set 2023</div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Il problema:</b> nessun sito, menu solo da foto dei clienti, orari non confermati, ordini e prenotazioni solo al telefono, ultimo post di oltre due anni fa. Chi cerca "pizza asporto" sceglie un concorrente che si vede meglio.
+  </div>
+
+</div>
+</body>
+</html>

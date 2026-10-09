@@ -2,6 +2,7 @@ import Hero            from "@/components/sections/Hero";
 import Spot            from "@/components/sections/Spot";
 import Soluzioni       from "@/components/sections/Services";
 import Transformation  from "@/components/sections/Transformation";
+import ConceptTeaser   from "@/components/sections/ConceptTeaser";
 import Deliverables    from "@/components/sections/Deliverables";
 import BottegaAperta   from "@/components/sections/Portfolio";
 import Promise         from "@/components/sections/Promise";
@@ -24,6 +25,9 @@ export default function Home() {
 
       {/* Transformation · Before/After slider */}
       <Transformation />
+
+      {/* Concept · siti di locali di fantasia rifatti, prima e dopo */}
+      <ConceptTeaser />
 
       {/* Deliverables · cosa ti consegniamo il giorno dieci */}
       <Deliverables />

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trattoria del Portico Bologna | Pasta tirata a mano dal 1970</title>
+<meta name="description" content="Trattoria bolognese sotto i portici dal 1970: tortellini in brodo, tagliatelle al ragù e bolliti. Prenota pranzo o cena online, rispondiamo entro un'ora.">
+<meta property="og:title" content="Trattoria del Portico · Bologna">
+<meta property="og:image" content="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&q=70">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Restaurant","name":"Trattoria del Portico","foundingDate":"1970","servesCuisine":"Cucina bolognese","priceRange":"€€",
+"address":{"@type":"PostalAddress","streetAddress":"Via degli Archi 21","postalCode":"40100","addressLocality":"Bologna","addressCountry":"IT"},
+"telephone":"+39 051 000 0002","acceptsReservations":true,
+"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"12:00","closes":"14:30"},
+{"@type":"OpeningHoursSpecification","dayOfWeek":["Tuesday","Wednesday","Thursday","Friday","Saturday"],"opens":"19:30","closes":"22:30"}]}
+</script>
+<style>
+:root{--notte:#18212E;--notte-2:#223044;--lampione:#F2C14E;--intonaco:#EDE6DA;--mattone:#A6452D;--fog:#9AA6B6;
+  --sans:'Familjen Grotesk',system-ui,sans-serif;--serif:'Instrument Serif',Georgia,serif}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--notte);color:var(--intonaco);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+img,video{display:block;max-width:100%}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--lampione);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.skip{position:absolute;left:-9999px}.skip:focus{left:16px;top:16px;z-index:99;background:var(--lampione);color:var(--notte);padding:8px 14px}
+
+header.bar{position:absolute;z-index:10;inset:0 0 auto;display:flex;justify-content:space-between;align-items:center;padding:18px 20px}
+.logo{font-family:var(--serif);font-size:26px;text-decoration:none;line-height:1}
+.bar a.b{background:var(--lampione);color:var(--notte);text-decoration:none;font-weight:700;padding:10px 18px;border-radius:999px;font-size:15px}
+
+/* hero: the portico. Arches in two depth layers move at different speeds */
+.hero{position:relative;height:100svh;min-height:620px;overflow:hidden;background:radial-gradient(70% 60% at 50% 40%,#3a3f4f 0%,var(--notte) 70%)}
+.hero-media{position:absolute;inset:0;will-change:transform}
+.hero-media video{width:100%;height:100%;object-fit:cover;opacity:.7}
+.arches{position:absolute;left:0;right:0;bottom:0;height:120%;pointer-events:none;will-change:transform}
+.arches svg{width:100%;height:100%}
+.hero-copy{position:absolute;z-index:3;left:0;right:0;bottom:56px}
+.hero .since{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--lampione);margin:0 0 6px}
+.hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(52px,10.5vw,132px);line-height:.92;margin:0;letter-spacing:-.01em;max-width:11ch}
+.hero p{max-width:44ch;font-size:19px;margin:20px 0 26px;color:#d9d3c8}
+.btn{display:inline-flex;align-items:center;justify-content:center;font:inherit;font-weight:700;text-decoration:none;padding:15px 24px;border-radius:999px;border:0;cursor:pointer;font-size:16px}
+.btn.y{background:var(--lampione);color:var(--notte)}
+.btn.o{box-shadow:inset 0 0 0 1.5px rgba(237,230,218,.5);color:var(--intonaco)}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+
+/* menu del giorno */
+.oggi{padding-block:110px 90px}
+.oggi-grid{display:grid;gap:50px}
+@media(min-width:880px){.oggi-grid{grid-template-columns:.9fr 1.1fr;gap:80px}}
+h2{font-family:var(--serif);font-weight:400;font-size:clamp(40px,6.5vw,76px);line-height:1;margin:0 0 16px}
+.oggi .lead{color:var(--fog);max-width:40ch}
+.date{font-size:15px;color:var(--lampione);margin-bottom:6px}
+.dishes{list-style:none;margin:0;padding:0}
+.dishes li{display:grid;grid-template-columns:1fr auto;gap:6px 16px;padding:18px 0;border-bottom:1px solid rgba(237,230,218,.14)}
+.dishes .nm{font-family:var(--serif);font-size:28px;line-height:1.15}
+.dishes .pr{font-size:18px;font-weight:600;align-self:baseline}
+.dishes .ds{grid-column:1/-1;color:var(--fog);font-size:15px}
+.dishes .course{font-size:14px;color:var(--fog);padding-top:26px;border:0}
+.note{font-size:15px;color:var(--fog);margin-top:18px}
+
+/* parallax photo stack */
+.stack{position:relative;height:110vh;min-height:640px;overflow:hidden;background:var(--notte-2)}
+.stack figure{position:absolute;margin:0;will-change:transform;box-shadow:0 30px 60px rgba(0,0,0,.4)}
+.stack img{width:100%;height:100%;object-fit:cover}
+.stack .a{width:62%;height:58%;left:6%;top:12%;background:#2d3a4f}
+.stack .b{width:44%;height:44%;right:5%;top:42%;background:#3a2a24}
+.stack .c{width:30%;height:26%;left:30%;bottom:6%;background:#33302a}
+.stack .cap{position:absolute;left:20px;right:20px;top:40px;z-index:2;max-width:1120px;margin:0 auto}
+.stack .cap h2{max-width:12ch;text-shadow:0 2px 20px rgba(0,0,0,.5)}
+
+/* story */
+.story{padding-block:100px;display:grid;gap:30px}
+@media(min-width:880px){.story{grid-template-columns:1fr 1fr;gap:80px}}
+.story p{margin:0 0 16px;font-size:18px;color:#d9d3c8;max-width:52ch}
+
+/* reviews */
+.rev{padding-block:0 100px;display:grid;gap:30px}
+@media(min-width:880px){.rev{grid-template-columns:repeat(3,1fr)}}
+.rev blockquote{margin:0;font-family:var(--serif);font-size:24px;line-height:1.25}
+.rev cite{display:block;font-style:normal;font-size:15px;color:var(--fog);margin-top:10px}
+
+/* booking */
+.book{background:var(--intonaco);color:var(--notte);padding:90px 0 100px}
+.book h2{color:var(--notte)}
+.book-grid{display:grid;gap:40px}
+@media(min-width:880px){.book-grid{grid-template-columns:1.1fr .9fr;gap:80px}}
+.seg{display:inline-flex;background:#ddd4c5;border-radius:999px;padding:4px;margin:6px 0 20px}
+.seg button{font:inherit;font-weight:700;border:0;background:transparent;padding:10px 20px;border-radius:999px;cursor:pointer;color:var(--notte)}
+.seg button[aria-pressed="true"]{background:var(--notte);color:var(--intonaco)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 20px}
+.chips button{font:inherit;font-weight:600;border:1.5px solid #c9bfae;background:#fff;color:var(--notte);padding:9px 14px;border-radius:10px;cursor:pointer}
+.chips button[aria-pressed="true"]{border-color:var(--mattone);background:var(--mattone);color:#fff}
+.lbl{font-size:15px;font-weight:700;display:block}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.fields label{display:grid;gap:6px;font-size:15px;font-weight:700}
+.fields input,.fields select{font:inherit;padding:13px 14px;border:1.5px solid #c9bfae;border-radius:10px;background:#fff;color:var(--notte)}
+.book .btn{background:var(--notte);color:var(--intonaco);width:100%}
+.book .side p{margin:0 0 10px}
+.book .side h3{font-family:var(--serif);font-weight:400;font-size:32px;margin:0 0 10px}
+.book .side table{border-collapse:collapse;width:100%;font-size:16px;margin-bottom:24px}
+.book .side td{padding:9px 0;border-bottom:1px solid #d6cdbd}
+.book .side td+td{text-align:right}
+
+footer{background:var(--intonaco);color:#6a6458;text-align:center;font-size:14px;padding:0 20px 110px}
+@media(min-width:880px){footer{padding-bottom:30px}}
+.dock{position:fixed;z-index:30;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));display:grid;grid-template-columns:1fr 1.4fr;gap:8px;background:rgba(24,33,46,.95);backdrop-filter:blur(8px);padding:8px;border-radius:999px}
+.dock a{text-align:center;text-decoration:none;font-weight:700;padding:12px;border-radius:999px}
+.dock a.m{background:var(--lampione);color:var(--notte)}
+@media(min-width:880px){.dock{display:none}}
+
+.hero .since,.hero h1,.hero p,.hero .cta{opacity:0;animation:fade 1.1s ease forwards}
+.hero h1{animation-delay:.15s}.hero p{animation-delay:.5s}.hero .cta{animation-delay:.65s}
+.arches{animation:rise 1.6s cubic-bezier(.2,.7,.2,1) both}
+@keyframes fade{to{opacity:1}}
+@keyframes rise{from{opacity:0;translate:0 60px}to{opacity:1;translate:0 0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.hero .since,.hero h1,.hero p,.hero .cta{opacity:1}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Vai al contenuto</a>
+<header class="bar">
+  <a class="logo" href="#">del Portico</a>
+  <a class="b" href="#prenota">Prenota</a>
+</header>
+
+<main id="main">
+<section class="hero" aria-label="Benvenuto">
+  <div class="hero-media" data-speed="0.4">
+    <!-- Video stock consigliato: mani che tirano la sfoglia col mattarello, luce calda -->
+    <video autoplay muted loop playsinline preload="metadata" poster="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1600&q=70">
+      <source src="media/portico-hero.webm" type="video/webm">
+      <source src="media/portico-hero.mp4" type="video/mp4">
+    </video>
+  </div>
+  <!-- back arches -->
+  <div class="arches" data-speed="0.18" aria-hidden="true">
+    <svg viewBox="0 0 1200 900" preserveAspectRatio="xMidYMax slice">
+      <defs><mask id="m1"><rect width="1200" height="900" fill="#fff"/>
+        <path d="M60 900V430a140 140 0 0 1 280 0V900zM460 900V430a140 140 0 0 1 280 0V900zM860 900V430a140 140 0 0 1 280 0V900z" fill="#000"/></mask></defs>
+      <rect width="1200" height="900" fill="#18212E" opacity=".55" mask="url(#m1)"/>
+    </svg>
+  </div>
+  <!-- front arches -->
+  <div class="arches" data-speed="0.05" aria-hidden="true">
+    <svg viewBox="0 0 1200 900" preserveAspectRatio="xMidYMax slice">
+      <defs><mask id="m2"><rect width="1200" height="900" fill="#fff"/>
+        <path d="M-120 900V340a240 240 0 0 1 480 0V900zM480 900V340a240 240 0 0 1 480 0V900zM1080 900V340a240 240 0 0 1 480 0V900z" fill="#000"/></mask>
+        <linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#18212E"/><stop offset="1" stop-color="#18212E"/></linearGradient></defs>
+      <rect width="1200" height="900" fill="url(#lg)" mask="url(#m2)"/>
+      <circle cx="420" cy="140" r="7" fill="#F2C14E"/><circle cx="420" cy="140" r="40" fill="#F2C14E" opacity=".12"/>
+    </svg>
+  </div>
+  <div class="hero-copy wrap">
+    <p class="since">Sotto i portici dal 1970</p>
+    <h1>La sfoglia si tira ancora a mano.</h1>
+    <p>Tortellini in brodo, tagliatelle al ragù e il carrello dei bolliti la domenica. Cucina bolognese, senza scorciatoie.</p>
+    <div class="cta">
+      <a class="btn y" href="#prenota">Prenota pranzo o cena</a>
+      <a class="btn o" href="#oggi">Il menu di oggi</a>
+    </div>
+  </div>
+</section>
+
+<section class="wrap oggi" id="oggi" aria-labelledby="oggi-t">
+  <div class="oggi-grid">
+    <div>
+      <div class="date" id="today"></div>
+      <h2 id="oggi-t">Oggi in cucina</h2>
+      <p class="lead">Il menu cambia con la stagione e con quello che arriva dal mercato. La carta completa è al tavolo, qui trovi i piatti del giorno.</p>
+    </div>
+    <ul class="dishes">
+      <li class="course">Primi</li>
+      <li><span class="nm">Tortellini in brodo di cappone</span><span class="pr">16 €</span><span class="ds">Ripieno di lombo, prosciutto e mortadella, chiusi a mano la mattina</span></li>
+      <li><span class="nm">Tagliatelle al ragù</span><span class="pr">13 €</span><span class="ds">Ragù di manzo e maiale cotto sei ore</span></li>
+      <li><span class="nm">Gramigna salsiccia e panna</span><span class="pr">12 €</span><span class="ds">La ricetta della nonna Iole</span></li>
+      <li class="course">Secondi</li>
+      <li><span class="nm">Cotoletta alla bolognese</span><span class="pr">18 €</span><span class="ds">Prosciutto crudo, Parmigiano 30 mesi, brodo</span></li>
+      <li><span class="nm">Friggione con salsiccia</span><span class="pr">14 €</span><span class="ds">Cipolle e pomodoro cotti piano</span></li>
+    </ul>
+  </div>
+  <p class="note">Piatti vegetariani ogni giorno. Allergeni disponibili su richiesta.</p>
+</section>
+
+<section class="stack" aria-label="La trattoria">
+  <div class="cap"><h2>Quaranta coperti, una cucina a vista.</h2></div>
+  <figure class="a" data-speed="0.12"><img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1400&q=70" alt="La sala della trattoria apparecchiata" loading="lazy"></figure>
+  <figure class="b" data-speed="0.32"><img src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=900&q=70" alt="Piatto di pasta fresca al ragù" loading="lazy"></figure>
+  <figure class="c" data-speed="0.5"><img src="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=700&q=70" alt="Sfoglia appena tirata e tagliata" loading="lazy"></figure>
+</section>
+
+<section class="wrap story" aria-labelledby="story-t">
+  <h2 id="story-t">Tre generazioni allo stesso bancone.</h2>
+  <div>
+    <p>Il nonno Ermes ha aperto nel 1970 con sei tavoli e una pentola di brodo sempre sul fuoco. Oggi in cucina c'è la nipote Chiara, ma il ragù segue ancora la sua ricetta, scritta a matita su un quaderno.</p>
+    <p>La pasta si fa ogni mattina dalle otto. Se passi sotto il portico presto, la vedi dalla vetrina.</p>
+  </div>
+</section>
+
+<section class="wrap rev" aria-label="Recensioni">
+  <div><blockquote>"I tortellini in brodo più buoni che abbia mangiato fuori da casa di mia nonna."</blockquote><cite>Giorgio, recensione Google</cite></div>
+  <div><blockquote>"Atmosfera vera, servizio veloce anche a pranzo. Prenotare dal sito è comodissimo."</blockquote><cite>Anna, recensione Google</cite></div>
+  <div><blockquote>"La cotoletta alla bolognese da sola vale il viaggio."</blockquote><cite>Mark, TripAdvisor</cite></div>
+</section>
+
+<section class="book" id="prenota" aria-labelledby="book-t">
+  <div class="wrap book-grid">
+    <div>
+      <h2 id="book-t">Prenota un tavolo</h2>
+      <span class="lbl">Quando</span>
+      <div class="seg" role="group" aria-label="Pranzo o cena"><button aria-pressed="true" data-s="pranzo">Pranzo</button><button aria-pressed="false" data-s="cena">Cena</button></div>
+      <span class="lbl">Orario</span>
+      <div class="chips" id="chips" role="group" aria-label="Orario"></div>
+      <div class="fields">
+        <label>Giorno<input type="date" id="d"></label>
+        <label>Persone<select id="p"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7+</option></select></label>
+      </div>
+      <div class="fields" style="grid-template-columns:1fr"><label>Nome<input id="n" autocomplete="name"></label></div>
+      <button class="btn" id="go">Invia la richiesta su WhatsApp</button>
+    </div>
+    <div class="side">
+      <h3>Orari</h3>
+      <table>
+        <tr><td>Martedì – sabato</td><td>12:00–14:30 · 19:30–22:30</td></tr>
+        <tr><td>Domenica</td><td>12:00–14:30</td></tr>
+        <tr><td>Lunedì</td><td>Chiuso</td></tr>
+      </table>
+      <h3>Dove siamo</h3>
+      <p>Via degli Archi 21, sotto il portico, 40100 Bologna</p>
+      <p><a href="https://maps.google.com/?q=Via+degli+Archi+21+Bologna">Apri in Google Maps</a></p>
+      <p><a href="tel:+390510000002">051 000 0002</a></p>
+    </div>
+  </div>
+</section>
+</main>
+<footer>Trattoria del Portico · P.IVA 00000000000 · <a href="#">Privacy</a><br>Concept di Dieci Bottega, attività di fantasia.</footer>
+
+<nav class="dock" aria-label="Azioni rapide"><a href="tel:+390510000002">Chiama</a><a class="m" href="#prenota">Prenota un tavolo</a></nav>
+
+<script>
+const now=new Date();
+document.getElementById('today').textContent=now.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'});
+const T={pranzo:['12:00','12:30','13:00','13:30','14:00'],cena:['19:30','20:00','20:30','21:00','21:30']};
+let s='pranzo',t=null;
+function chips(){document.getElementById('chips').innerHTML=T[s].map(x=>`<button aria-pressed="${x===t}">${x}</button>`).join('')}
+document.querySelector('.seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;s=b.dataset.s;t=null;
+  document.querySelectorAll('.seg button').forEach(x=>x.setAttribute('aria-pressed',x===b));chips()});
+document.getElementById('chips').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;t=b.textContent;chips()});
+chips();
+const d=document.getElementById('d');d.valueAsDate=now;
+document.getElementById('go').addEventListener('click',()=>{
+  if(!t){document.querySelector('#chips button').focus();return}
+  const day=new Date(d.value).toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'});
+  const n=document.getElementById('n').value.trim();
+  const m=`Buongiorno, vorrei prenotare per ${document.getElementById('p').value} persone ${day} a ${s} alle ${t}${n?`, a nome ${n}`:''}. Grazie!`;
+  window.open('https://wa.me/390000000002?text='+encodeURIComponent(m),'_blank')});
+const par=[...document.querySelectorAll('[data-speed]')],reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;let tk=false;
+function f(){if(!reduce)par.forEach(el=>{const r=el.parentElement.getBoundingClientRect();el.style.transform=`translate3d(0,${-r.top*el.dataset.speed}px,0)`});tk=false}
+addEventListener('scroll',()=>{if(!tk){requestAnimationFrame(f);tk=true}},{passive:true});f();
+</script>
+</body>
+</html>

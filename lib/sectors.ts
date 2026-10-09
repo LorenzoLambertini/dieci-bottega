@@ -27,6 +27,8 @@ export interface Sector {
   posts: string[];
   /** Slug di un caso studio collegato */
   caseStudy?: string;
+  /** Mostra i concept prima/dopo dei locali (/concept) */
+  concepts?: boolean;
   /** Messaggio WhatsApp precompilato */
   whatsapp: string;
 }
@@ -61,6 +63,7 @@ export const SECTORS: Sector[] = [
       { q: "Il sito si collega al sistema di prenotazione che uso già?", a: "Nella maggior parte dei casi sì: inseriamo il pulsante o il widget del servizio che usi, oppure WhatsApp." },
     ],
     posts: ["sito-web-ristorante", "google-business-profile-guida", "come-ottenere-recensioni-google"],
+    concepts: true,
     whatsapp: "Ciao Dieci Bottega, ho un ristorante e vorrei informazioni per un sito",
   },
   {

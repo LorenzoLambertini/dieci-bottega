@@ -6,6 +6,7 @@ import { BLOG_URL, POSTS } from "@/lib/blog";
 import { catalogLines } from "@/lib/services";
 import { PROJECTS } from "@/lib/projects";
 import { SECTORS } from "@/lib/sectors";
+import { CONCEPTS, CONCEPT_DISCLAIMER } from "@/lib/concepts";
 
 export const dynamic = "force-static";
 
@@ -36,6 +37,8 @@ ${catalogLines()}
 - [Video Spot](https://diecibottega.it/servizi/video-spot)
 - [Progetti realizzati](https://diecibottega.it/progetti)
 ${PROJECTS.map((p) => `- [Caso studio: ${p.name}](https://diecibottega.it/progetti/${p.slug})`).join("\n")}
+- [Concept prima/dopo](https://diecibottega.it/concept): ${CONCEPT_DISCLAIMER}
+${CONCEPTS.map((c) => `- [Concept: ${c.name}](https://diecibottega.it/concept/${c.slug})`).join("\n")}
 - [Siti web per settore](https://diecibottega.it/settori)
 ${SECTORS.map((s) => `- [Sito web per ${s.name}](https://diecibottega.it/settori/${s.slug})`).join("\n")}
 - [Chi siamo](https://diecibottega.it/chi-siamo)

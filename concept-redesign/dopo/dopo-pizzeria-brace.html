@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pizzeria Brace Bologna | Pizza al forno a legna, asporto e tavoli</title>
+<meta name="description" content="Pizzeria con forno a legna a Bologna. Ordina l'asporto su WhatsApp e scegli l'orario di ritiro, oppure prenota un tavolo. Aperti dalle 18:30, chiusi il martedì.">
+<meta property="og:title" content="Pizzeria Brace · Forno a legna a Bologna">
+<meta property="og:image" content="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200&q=70">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Restaurant","name":"Pizzeria Brace","servesCuisine":"Pizza","priceRange":"€",
+"address":{"@type":"PostalAddress","streetAddress":"Via del Forno 8","postalCode":"40100","addressLocality":"Bologna","addressCountry":"IT"},
+"telephone":"+39 051 000 0001","hasMenu":"#menu","acceptsReservations":true,
+"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"18:30","closes":"23:00"}],
+"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.4","reviewCount":"213"}}
+</script>
+<style>
+:root{--crust:#24170F;--char:#3A2618;--flour:#EFE7D8;--tomato:#D63A1F;--basil:#2F6B3A;--white:#FFFFFF;--ink:#24170F;--muted:#7A6B5E;
+  --f:'Archivo',system-ui,sans-serif}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--f);background:var(--flour);color:var(--ink);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+img,video{display:block;max-width:100%}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--tomato);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.skip{position:absolute;left:-9999px}.skip:focus{left:16px;top:16px;z-index:99;background:var(--tomato);color:#fff;padding:8px 14px}
+
+/* hero */
+.hero{position:relative;min-height:100svh;color:var(--white);overflow:hidden;display:flex;flex-direction:column;
+  background:radial-gradient(90% 70% at 50% 100%,#c2410c 0%,#7c2d12 30%,var(--crust) 70%)}
+.hero-media{position:absolute;inset:-12% 0 0;will-change:transform}
+.hero-media video{width:100%;height:115%;object-fit:cover;opacity:.6}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(36,23,15,.65),rgba(36,23,15,.1) 40%,rgba(36,23,15,.85))}
+.bar{position:relative;z-index:3;display:flex;justify-content:space-between;align-items:center;padding:16px 20px}
+.logo{font-weight:900;font-variation-settings:'wdth' 70;font-size:26px;text-decoration:none;letter-spacing:-.01em}
+.bar a.call{text-decoration:none;font-weight:700;font-size:15px;border:1.5px solid rgba(255,255,255,.6);padding:9px 16px;border-radius:8px}
+.hero-copy{position:relative;z-index:2;margin-top:auto;padding:0 20px 44px;max-width:1180px;width:100%;margin-left:auto;margin-right:auto}
+.hero h1{margin:0;font-weight:900;font-variation-settings:'wdth' 62;text-transform:none;font-size:clamp(64px,17vw,220px);line-height:.82;letter-spacing:-.02em}
+.hero h1 span{display:block}
+.hero p{font-size:clamp(18px,2.4vw,22px);max-width:40ch;margin:22px 0 26px}
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;font:inherit;font-weight:800;text-decoration:none;border:0;cursor:pointer;padding:16px 26px;border-radius:10px;font-size:17px}
+.btn.red{background:var(--tomato);color:#fff}
+.btn.line{background:transparent;color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.6)}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.facts{display:flex;gap:22px;flex-wrap:wrap;margin-top:30px;font-size:15px;opacity:.9}
+
+/* steps (a real sequence) */
+.how{padding-block:80px 30px;display:grid;gap:28px}
+@media(min-width:820px){.how{grid-template-columns:repeat(3,1fr)}}
+.how div{border-top:3px solid var(--ink);padding-top:14px}
+.how b{font-variation-settings:'wdth' 62;font-weight:900;font-size:44px;line-height:1;display:block;color:var(--tomato)}
+.how h3{margin:8px 0 4px;font-size:21px}
+.how p{margin:0;color:var(--muted)}
+
+/* menu + comanda: the memorable element */
+.menu{padding-block:60px 100px}
+h2{font-weight:900;font-variation-settings:'wdth' 66;font-size:clamp(44px,8vw,96px);line-height:.9;margin:0 0 10px;letter-spacing:-.01em}
+.menu-intro{color:var(--muted);max-width:52ch;margin:0 0 30px}
+.layout{display:grid;gap:30px}
+@media(min-width:960px){.layout{grid-template-columns:1.5fr 1fr;align-items:start}}
+.cat{font-weight:800;font-variation-settings:'wdth' 90;font-size:20px;margin:30px 0 6px}
+.cat:first-child{margin-top:0}
+.item{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:16px 0;border-bottom:1px solid #d9cfbe}
+.item b{font-size:19px;font-weight:700}
+.item small{display:block;color:var(--muted);font-size:15px;margin-top:2px}
+.item .tag{font-size:12px;font-weight:700;color:var(--basil);margin-left:6px}
+.qty{display:flex;align-items:center;gap:6px}
+.qty .p{min-width:56px;text-align:right;font-weight:700;margin-right:6px}
+.qty button{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--ink);background:transparent;font:inherit;font-size:20px;font-weight:700;cursor:pointer;color:var(--ink)}
+.qty button.add{background:var(--ink);color:var(--flour)}
+.qty output{min-width:18px;text-align:center;font-weight:800}
+
+.ticket{position:sticky;top:20px;background:var(--white);padding:24px 22px 26px;border-radius:4px;box-shadow:0 1px 0 #d9cfbe;
+  -webkit-mask:radial-gradient(circle 7px at 50% 100%,transparent 98%,#000) 0 0/18px 100% repeat-x;mask:radial-gradient(circle 7px at 50% 100%,transparent 98%,#000) 0 0/18px 100% repeat-x;padding-bottom:34px}
+.ticket h3{margin:0 0 4px;font-variation-settings:'wdth' 70;font-weight:900;font-size:30px}
+.ticket .empty{color:var(--muted);margin:10px 0 18px}
+.lines{list-style:none;margin:12px 0;padding:0;font-size:16px}
+.lines li{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #ddd}
+.total{display:flex;justify-content:space-between;font-weight:900;font-size:22px;margin:14px 0 18px}
+.slots{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 18px}
+.slots button{font:inherit;font-size:15px;font-weight:700;padding:8px 12px;border-radius:8px;border:1.5px solid #cbbfae;background:#fff;cursor:pointer;color:var(--ink)}
+.slots button[aria-pressed="true"]{background:var(--basil);border-color:var(--basil);color:#fff}
+.ticket label{font-size:14px;font-weight:700}
+.ticket input{width:100%;font:inherit;padding:12px 14px;border:1.5px solid #cbbfae;border-radius:8px;margin:6px 0 16px}
+.ticket .btn{width:100%}
+.ticket .btn[disabled]{opacity:.4;cursor:not-allowed}
+
+/* parallax wall */
+.oven{position:relative;height:80vh;min-height:460px;overflow:hidden;background:linear-gradient(180deg,var(--char),var(--crust))}
+.oven img{position:absolute;width:100%;height:135%;top:-20%;object-fit:cover;will-change:transform;opacity:.85}
+.oven .q{position:absolute;left:0;right:0;bottom:40px;color:#fff}
+.oven blockquote{margin:0;font-weight:800;font-variation-settings:'wdth' 75;font-size:clamp(28px,5vw,56px);line-height:1.02;max-width:20ch}
+.oven cite{display:block;margin-top:12px;font-style:normal;font-size:16px;opacity:.85}
+
+.info{padding-block:80px 120px;display:grid;gap:40px}
+@media(min-width:820px){.info{grid-template-columns:1fr 1fr}}
+.info h3{font-size:26px;margin:0 0 10px;font-variation-settings:'wdth' 80;font-weight:900}
+.info p{margin:0 0 6px}
+footer{border-top:1px solid #d9cfbe;padding:24px 20px 120px;font-size:14px;color:var(--muted);text-align:center}
+@media(min-width:960px){footer{padding-bottom:24px}}
+
+/* mobile cart */
+.cart{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:20;display:flex;justify-content:space-between;align-items:center;gap:10px;
+  background:var(--ink);color:#fff;padding:10px 10px 10px 18px;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.3);transform:translateY(140%);transition:transform .35s}
+.cart.show{transform:none}
+.cart a{background:var(--tomato);color:#fff;text-decoration:none;font-weight:800;padding:12px 16px;border-radius:10px}
+@media(min-width:960px){.cart{display:none}}
+
+.hero h1 span{opacity:0;transform:translateY(40px);animation:up .8s cubic-bezier(.2,.7,.2,1) forwards}
+.hero h1 span:nth-child(2){animation-delay:.12s}
+@keyframes up{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.hero h1 span{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#menu">Vai al menu</a>
+<header class="hero">
+  <div class="hero-media" data-speed="0.3">
+    <!-- Video stock consigliato: fiamme del forno a legna / pizza infornata con pala -->
+    <video autoplay muted loop playsinline preload="metadata" poster="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1600&q=70">
+      <source src="media/brace-hero.webm" type="video/webm">
+      <source src="media/brace-hero.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="bar">
+    <a class="logo" href="#">Brace</a>
+    <a class="call" href="tel:+390510000001">051 000 0001</a>
+  </div>
+  <div class="hero-copy">
+    <h1><span>Forno</span><span>a legna.</span></h1>
+    <p>Impasto a 48 ore, mozzarella di Agerola, cottura in 90 secondi. Ordina l'asporto da qui e passa a ritirarla calda.</p>
+    <div class="cta">
+      <a class="btn red" href="#menu">Ordina l'asporto</a>
+      <a class="btn line" href="https://wa.me/390000000001?text=Ciao!%20Vorrei%20prenotare%20un%20tavolo">Prenota un tavolo</a>
+    </div>
+    <div class="facts"><span>★ 4,4 su 213 recensioni</span><span>Aperti dalle 18:30, chiusi il martedì</span><span>Via del Forno 8</span></div>
+  </div>
+</header>
+
+<main>
+<section class="wrap how" aria-label="Come ordinare l'asporto">
+  <div><b>1</b><h3>Scegli le pizze</h3><p>Aggiungile alla comanda dal menu qui sotto.</p></div>
+  <div><b>2</b><h3>Scegli l'orario</h3><p>Ritiro ogni 15 minuti, dalle 18:45 alle 22:30.</p></div>
+  <div><b>3</b><h3>Invia su WhatsApp</h3><p>Ti confermiamo l'ordine in pochi minuti. Paghi al ritiro.</p></div>
+</section>
+
+<section class="wrap menu" id="menu" aria-labelledby="menu-t">
+  <h2 id="menu-t">Il menu</h2>
+  <p class="menu-intro">Tutte le pizze sono disponibili anche con impasto integrale (+1 €). Senza glutine su richiesta, cotta in teglia separata.</p>
+  <div class="layout">
+    <div id="list"></div>
+    <aside class="ticket" aria-labelledby="ticket-t">
+      <h3 id="ticket-t">La tua comanda</h3>
+      <p class="empty" id="empty">Ancora vuota. Aggiungi una pizza dal menu.</p>
+      <ul class="lines" id="lines"></ul>
+      <div class="total" id="totalRow" hidden><span>Totale</span><span id="total">0 €</span></div>
+      <div id="pickup" hidden>
+        <label>Orario di ritiro</label>
+        <div class="slots" id="slots" role="group" aria-label="Orario di ritiro"></div>
+        <label for="nm">Nome per il ritiro</label>
+        <input id="nm" autocomplete="given-name" placeholder="Es. Giulia">
+      </div>
+      <button class="btn red" id="send" disabled>Invia l'ordine su WhatsApp</button>
+    </aside>
+  </div>
+</section>
+
+<section class="oven" aria-label="Recensione">
+  <img data-speed="0.22" src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=1600&q=70" alt="Pizza margherita appena sfornata" loading="lazy">
+  <div class="q wrap">
+    <blockquote>"Cornicione alto, leggera, e finalmente si ordina senza stare al telefono."</blockquote>
+    <cite>Recensione Google, 5 stelle</cite>
+  </div>
+</section>
+
+<section class="wrap info" aria-label="Orari e indirizzo">
+  <div>
+    <h3>Orari</h3>
+    <p>Lunedì, mercoledì–domenica: 18:30–23:00</p>
+    <p>Martedì: chiuso</p>
+    <p>Asporto fino alle 22:30</p>
+  </div>
+  <div>
+    <h3>Dove siamo</h3>
+    <p>Via del Forno 8, 40100 Bologna</p>
+    <p><a href="https://maps.google.com/?q=Via+del+Forno+8+Bologna">Apri in Google Maps</a></p>
+    <p><a href="tel:+390510000001">051 000 0001</a> · <a href="https://instagram.com/">Instagram</a></p>
+  </div>
+</section>
+</main>
+
+<footer>Pizzeria Brace · P.IVA 00000000000 · <a href="#">Privacy</a> · <a href="#">Allergeni</a><br>Concept di Dieci Bottega, attività di fantasia.</footer>
+
+<div class="cart" id="cart" aria-live="polite"><span id="cartTxt">0 pizze · 0 €</span><a href="#ticket-t">Vedi comanda</a></div>
+
+<script>
+const M={"Le classiche":[
+  ["Margherita","Pomodoro San Marzano, fiordilatte, basilico",7,"veg"],
+  ["Marinara","Pomodoro, aglio, origano, olio EVO",6,"vegan"],
+  ["Diavola","Pomodoro, fiordilatte, salame piccante",8.5],
+  ["Napoli","Pomodoro, fiordilatte, acciughe, capperi",8.5]],
+ "Della casa":[
+  ["Brace","Fiordilatte, salsiccia, friarielli, provola affumicata",10.5],
+  ["Mortadella e pistacchio","Fiordilatte, mortadella IGP, crema e granella di pistacchio",11],
+  ["Ortolana","Fiordilatte, verdure di stagione grigliate, pesto",9.5,"veg"]],
+ "Da bere":[
+  ["Birra artigianale 33cl","Bionda o rossa",4.5],
+  ["Bibita in lattina","Cola, aranciata, chinotto",2.5]]};
+const cart={};const eur=n=>n.toLocaleString('it-IT',{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2})+' €';
+const flat=[];
+document.getElementById('list').innerHTML=Object.entries(M).map(([c,items])=>`<h3 class="cat">${c}</h3>`+items.map(it=>{const i=flat.push(it)-1;
+ return `<div class="item"><div><b>${it[0]}</b>${it[3]?`<span class="tag">${it[3]==='veg'?'vegetariana':'vegana'}</span>`:''}<small>${it[1]}</small></div>
+ <div class="qty"><span class="p">${eur(it[2])}</span><button aria-label="Togli ${it[0]}" data-i="${i}" data-d="-1">−</button><output id="q${i}">0</output><button class="add" aria-label="Aggiungi ${it[0]}" data-i="${i}" data-d="1">+</button></div></div>`}).join('')).join('');
+document.getElementById('list').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ const i=b.dataset.i;cart[i]=Math.max(0,(cart[i]||0)+ +b.dataset.d);document.getElementById('q'+i).textContent=cart[i];render()});
+let slot=null;
+const slots=[];for(let m=18*60+45;m<=22*60+30;m+=15)slots.push(`${Math.floor(m/60)}:${String(m%60).padStart(2,'0')}`);
+const now=new Date(),nowM=now.getHours()*60+now.getMinutes()+20;
+const avail=slots.filter(s=>{const[h,m]=s.split(':');return h*60+ +m>=nowM});const show=(avail.length?avail:slots).slice(0,8);
+document.getElementById('slots').innerHTML=show.map(s=>`<button aria-pressed="false">${s}</button>`).join('');
+document.getElementById('slots').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;slot=b.textContent;
+ document.querySelectorAll('#slots button').forEach(x=>x.setAttribute('aria-pressed',x===b));render()});
+function render(){const rows=Object.entries(cart).filter(([,q])=>q>0);let tot=0,n=0;
+ document.getElementById('lines').innerHTML=rows.map(([i,q])=>{const it=flat[i];tot+=it[2]*q;n+=q;return `<li><span>${q} × ${it[0]}</span><span>${eur(it[2]*q)}</span></li>`}).join('');
+ const has=rows.length>0;
+ document.getElementById('empty').hidden=has;document.getElementById('totalRow').hidden=!has;document.getElementById('pickup').hidden=!has;
+ document.getElementById('total').textContent=eur(tot);
+ document.getElementById('send').disabled=!(has&&slot);
+ document.getElementById('send').textContent=has&&!slot?"Scegli l'orario di ritiro":"Invia l'ordine su WhatsApp";
+ document.getElementById('cart').classList.toggle('show',has);
+ document.getElementById('cartTxt').textContent=`${n} ${n===1?'articolo':'articoli'} · ${eur(tot)}`;}
+document.getElementById('send').addEventListener('click',()=>{
+ const rows=Object.entries(cart).filter(([,q])=>q>0).map(([i,q])=>`${q} × ${flat[i][0]}`).join('\n');
+ const nm=document.getElementById('nm').value.trim();
+ const msg=`Ciao! Ordine da asporto:\n${rows}\nTotale: ${document.getElementById('total').textContent}\nRitiro alle ${slot}${nm?`\nNome: ${nm}`:''}`;
+ window.open('https://wa.me/390000000001?text='+encodeURIComponent(msg),'_blank')});
+render();
+
+const par=[...document.querySelectorAll('[data-speed]')],reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;let tk=false;
+function f(){if(!reduce)par.forEach(el=>{const r=el.parentElement.getBoundingClientRect();el.style.transform=`translate3d(0,${-r.top*el.dataset.speed}px,0)`});tk=false}
+addEventListener('scroll',()=>{if(!tk){requestAnimationFrame(f);tk=true}},{passive:true});f();
+</script>
+</body>
+</html>
