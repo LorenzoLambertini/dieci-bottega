@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { WHATSAPP_URL } from "@/lib/contacts";
-import { getUtm, UTM_KEYS, type Utm } from "@/lib/utm";
+import { getAttribution, getUtm, UTM_KEYS, type Utm } from "@/lib/utm";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -84,9 +84,10 @@ export default function Contact() {
     setLoading(true);
     setError(null);
 
-    const utmFields = Object.fromEntries(
-      UTM_KEYS.map(k => [k, (fd.get(k) as string) || undefined]),
-    );
+    const utmFields = {
+      ...getAttribution(),
+      ...Object.fromEntries(UTM_KEYS.map(k => [k, (fd.get(k) as string) || undefined]).filter(([, v]) => v)),
+    };
     const payload = {
       name:           String(fd.get("name") ?? ""),
       email:          String(fd.get("email") ?? ""),

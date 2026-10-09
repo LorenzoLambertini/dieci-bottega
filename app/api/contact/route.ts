@@ -1,3 +1,5 @@
+import { saveAttribution } from "@/lib/crm/attribution";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { notifyTeam } from "@/lib/crm/notify";
 import { NextRequest, NextResponse } from "next/server";
 import { generateSlots, signSlot, type Slot } from "@/lib/scheduling";
@@ -24,6 +26,8 @@ interface ContactPayload {
   utm_source?:    string;
   utm_medium?:    string;
   utm_campaign?:  string;
+  landing_page?:  string;
+  referrer?:      string;
   recommendation?: QuizRecommendation;
 }
 
@@ -343,6 +347,7 @@ export async function POST(req: NextRequest) {
   // 1. Save lead in CRM (Edge Function)
   const captured = await captureLead(body);
   const leadId = captured?.id ?? null;
+  if (leadId) await saveAttribution(createAdminClient(), leadId, body).catch((e: Error) => console.warn("[contact] attribuzione:", e.message));
   // Notifica push al team (se configurata); non blocca la risposta
   await notifyTeam({ title: "✨ Nuovo contatto dal sito", body: `${body.name}${body.company ? ` · ${body.company}` : ""}`, url: leadId ? `/crm/leads/${leadId}` : "/crm/leads" }).catch(() => 0);
 

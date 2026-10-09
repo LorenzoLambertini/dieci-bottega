@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getServiceBySlug, getRelatedServices, SERVICES, CATEGORIES, priceLabel } from "@/lib/services";
+import { getServiceBySlug, getRelatedServices, SERVICES, CATEGORIES, priceLabel, priceText } from "@/lib/services";
+import { whatsappUrl } from "@/lib/contacts";
 import AddToCartButton from "@/components/AddToCartButton";
+import VideoPortfolio from "@/components/VideoPortfolio";
+
+const SITE = "https://diecibottega.it";
 
 export async function generateStaticParams() {
   return SERVICES.map(s => ({ slug: s.slug }));
@@ -12,8 +16,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const svc = getServiceBySlug(slug);
   if (!svc) return { title: "Servizio non trovato" };
   return {
-    title:       `${svc.title} · Dieci Bottega`,
+    title:       `${svc.title} · ${priceText(svc)} · Dieci Bottega`,
     description: svc.shortDesc,
+    alternates:  { canonical: `/servizi/${svc.slug}` },
   };
 }
 
@@ -31,9 +36,50 @@ export default async function ServizioDetail({ params }: { params: Promise<{ slu
 
   const related = getRelatedServices(slug);
   const unitSuffix = svc.unit === "mese" ? "/mese" : svc.unit === "anno" ? "/anno" : "";
+  const url = `${SITE}/servizi/${svc.slug}`;
+
+  // Dati strutturati: servizio con prezzo (Google e assistenti AI leggono prezzi e area servita)
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      name: svc.title,
+      description: svc.longDesc,
+      url,
+      category: CATEGORIES[svc.category].label,
+      audience: { "@type": "Audience", audienceType: svc.forWho },
+      areaServed: [{ "@type": "City", name: "Bologna" }, { "@type": "Country", name: "Italia" }],
+      provider: { "@type": "ProfessionalService", name: "Dieci Bottega", url: SITE, address: { "@type": "PostalAddress", addressLocality: "Bologna", addressCountry: "IT" } },
+      offers: {
+        "@type": "Offer",
+        url,
+        priceCurrency: "EUR",
+        price: svc.price,
+        availability: "https://schema.org/InStock",
+        priceSpecification: {
+          "@type": svc.unit === "one-shot" ? "PriceSpecification" : "UnitPriceSpecification",
+          priceCurrency: "EUR",
+          minPrice: svc.price,
+          ...(svc.priceMax ? { maxPrice: svc.priceMax } : {}),
+          ...(svc.unit === "mese" ? { unitText: "mese" } : svc.unit === "anno" ? { unitText: "anno" } : {}),
+          valueAddedTaxIncluded: false,
+        },
+      },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: SITE },
+        { "@type": "ListItem", position: 2, name: "Servizi", item: `${SITE}/servizi` },
+        { "@type": "ListItem", position: 3, name: svc.title, item: url },
+      ],
+    },
+  ];
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* Breadcrumb */}
       <div className="bg-ivory pt-24 lg:pt-28 pb-4">
         <div className="mx-auto max-w-[1480px] px-6 lg:px-12 flex items-center gap-2 text-obsidian/40" style={{ ...labelStyle, fontSize: "0.5625rem", letterSpacing: "0.14em" }}>
@@ -193,6 +239,15 @@ export default async function ServizioDetail({ params }: { params: Promise<{ slu
                     >
                       Vai al carrello →
                     </Link>
+                    <a
+                      href={whatsappUrl(`Ciao Dieci Bottega, mi interessa il servizio "${svc.title}" (${priceText(svc)}). Potete darmi qualche informazione?`)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full border border-rosewood/60 hover:bg-rosewood text-ivory transition-all duration-300 py-3"
+                      style={labelStyle}
+                    >
+                      Chiedi su WhatsApp
+                    </a>
                   </div>
 
                   <p className="text-ivory/30 mt-5 text-center" style={{ ...labelStyle, fontSize: "0.5rem", letterSpacing: "0.18em" }}>
@@ -208,6 +263,8 @@ export default async function ServizioDetail({ params }: { params: Promise<{ slu
           </div>
         </div>
       </section>
+
+      {svc.slug === "video-spot" && <VideoPortfolio />}
 
       {/* Related */}
       {related.length > 0 && (

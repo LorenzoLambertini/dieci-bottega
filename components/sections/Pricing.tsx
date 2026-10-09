@@ -19,17 +19,17 @@ type TypeKey = "vetrina" | "landing" | "ecommerce" | "crm" | "automazione";
 type Complexity = "base" | "standard" | "premium";
 
 const TYPES: { key: TypeKey; label: string; base: number; minPages: number; maxPages: number; defaultPages: number; sub: string }[] = [
-  { key: "vetrina",      label: "Sito Vetrina",      base: 800,  minPages: 3,  maxPages: 10, defaultPages: 5,  sub: "Presenza istituzionale" },
-  { key: "landing",      label: "Landing Page",      base: 600,  minPages: 1,  maxPages: 3,  defaultPages: 1,  sub: "Una pagina, un obiettivo" },
-  { key: "ecommerce",    label: "E-commerce Light",  base: 1500, minPages: 4,  maxPages: 12, defaultPages: 6,  sub: "Vendita diretta" },
-  { key: "crm",          label: "CRM Su Misura",     base: 2200, minPages: 5,  maxPages: 15, defaultPages: 8,  sub: "Strumento interno" },
+  { key: "vetrina",      label: "Sito Vetrina",      base: 1500, minPages: 5,  maxPages: 12, defaultPages: 5,  sub: "Presenza istituzionale" },
+  { key: "landing",      label: "Landing Page",      base: 800,  minPages: 1,  maxPages: 3,  defaultPages: 1,  sub: "Una pagina, un obiettivo" },
+  { key: "ecommerce",    label: "E-commerce Light",  base: 1800, minPages: 4,  maxPages: 12, defaultPages: 6,  sub: "Vendita diretta" },
+  { key: "crm",          label: "CRM Su Misura",     base: 2500, minPages: 5,  maxPages: 15, defaultPages: 8,  sub: "Strumento interno" },
   { key: "automazione",  label: "Automazione AI",    base: 700,  minPages: 1,  maxPages: 6,  defaultPages: 2,  sub: "Workflow ricorrenti" },
 ];
 
 const COMPLEXITIES: { key: Complexity; label: string; mult: number; time: [number, number]; desc: string }[] = [
   { key: "base",     label: "Base",     mult: 1.0, time: [5, 7],   desc: "Solidità, niente fronzoli." },
-  { key: "standard", label: "Standard", mult: 1.4, time: [8, 12],  desc: "Su misura, due round revisioni." },
-  { key: "premium",  label: "Premium",  mult: 2.0, time: [14, 21], desc: "Design custom, revisioni illimitate." },
+  { key: "standard", label: "Standard", mult: 1.2, time: [8, 12],  desc: "Su misura, due round revisioni." },
+  { key: "premium",  label: "Premium",  mult: 1.6, time: [14, 21], desc: "Design custom, revisioni illimitate." },
 ];
 
 
@@ -50,7 +50,7 @@ function Configurator() {
 
   const subtotal = useMemo(() => {
     const extraPages = Math.max(0, clampedPages - currentType.minPages);
-    const raw = (currentType.base + extraPages * 150) * currentComplexity.mult;
+    const raw = (currentType.base + extraPages * 100) * currentComplexity.mult;
     return Math.round(raw / 100) * 100;
   }, [currentType, clampedPages, currentComplexity]);
 
@@ -309,7 +309,7 @@ const PLANS = [
     tier: "TIER 01",
     name: "Basic",
     min: "800",
-    max: "1.200",
+    max: "1.000",
     time: "7 giorni",
     desc: "Per chi parte da zero e ha bisogno di una presenza digitale credibile, subito.",
     features: [
@@ -327,7 +327,7 @@ const PLANS = [
     badge: "PIÙ SCELTO",
     name: "Pro",
     min: "1.500",
-    max: "2.200",
+    max: "2.000",
     time: "10–14 giorni",
     desc: "L'equilibrio giusto tra qualità, funzionalità e velocità. La scelta più richiesta.",
     features: [
@@ -344,7 +344,7 @@ const PLANS = [
     tier: "TIER 03",
     name: "Premium",
     min: "2.500",
-    max: "3.800",
+    max: "3.500",
     time: "3–4 settimane",
     desc: "Design su misura, copy professionale, revisioni illimitate. Soluzione completa.",
     features: [

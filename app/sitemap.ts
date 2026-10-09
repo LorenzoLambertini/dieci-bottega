@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { SERVICES } from "@/lib/services";
 import { POSTS } from "@/lib/blog";
+import { PROJECTS } from "@/lib/projects";
+import { SECTORS } from "@/lib/sectors";
 
 const BASE = "https://diecibottega.it";
 
@@ -8,7 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
   const pages: MetadataRoute.Sitemap = [
     { url: BASE, lastModified: now, changeFrequency: "monthly", priority: 1 },
-    ...["/servizi", "/soluzioni", "/progetti", "/chi-siamo", "/contatti", "/inizia-progetto"].map((p) => ({
+    ...["/servizi", "/soluzioni", "/settori", "/progetti", "/chi-siamo", "/contatti", "/inizia-progetto"].map((p) => ({
       url: `${BASE}${p}`,
       lastModified: now,
       changeFrequency: "monthly" as const,
@@ -24,5 +26,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly" as const,
     priority: 0.7,
   }));
-  return [...pages, ...services, ...posts];
+  const projects = PROJECTS.map((p) => ({ url: `${BASE}/progetti/${p.slug}`, lastModified: now, changeFrequency: "yearly" as const, priority: 0.6 }));
+  const sectors = SECTORS.map((s) => ({ url: `${BASE}/settori/${s.slug}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.7 }));
+  return [...pages, ...services, ...sectors, ...projects, ...posts];
 }

@@ -3,13 +3,17 @@ import { POSTS, getPost, relatedPosts, readingMinutes } from "@/lib/blog";
 import { extractHeadings, slugifyHeading } from "@/lib/blog/markdown";
 import { validateComment } from "@/lib/blog/comments";
 import { SERVICES } from "@/lib/services";
+import { SECTORS } from "@/lib/sectors";
+import { PROJECTS } from "@/lib/projects";
 
-const STATIC = new Set(["/servizi", "/inizia-progetto", "/progetti", "/contatti", "/chi-siamo", "/privacy", "/blog", "/llms.txt", "/guide/checklist-sito-web-pmi"]);
+const STATIC = new Set(["/settori", "/servizi", "/inizia-progetto", "/progetti", "/contatti", "/chi-siamo", "/privacy", "/blog", "/llms.txt", "/guide/checklist-sito-web-pmi"]);
 const validLink = (href: string) => {
   const path = href.split("#")[0];
   if (STATIC.has(path)) return true;
   if (path.startsWith("/servizi/")) return SERVICES.some((s) => `/servizi/${s.slug}` === path);
   if (path.startsWith("/blog/")) return POSTS.some((p) => `/blog/${p.slug}` === path);
+  if (path.startsWith("/settori/")) return SECTORS.some((s) => `/settori/${s.slug}` === path);
+  if (path.startsWith("/progetti/")) return PROJECTS.some((p) => `/progetti/${p.slug}` === path);
   return false;
 };
 

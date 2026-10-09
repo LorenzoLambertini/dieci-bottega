@@ -3,6 +3,9 @@
  * Perplexity). Aiuta la GEO: chi siamo, cosa offriamo, prezzi e le guide del blog.
  */
 import { BLOG_URL, POSTS } from "@/lib/blog";
+import { catalogLines } from "@/lib/services";
+import { PROJECTS } from "@/lib/projects";
+import { SECTORS } from "@/lib/sectors";
 
 export const dynamic = "force-static";
 
@@ -23,11 +26,18 @@ export function GET() {
 - PREMIUM: 2.500–3.500€, 3–4 settimane. 8–12 pagine, blog, CRM integrato.
 - Manutenzione: Care Basic 29€/mese, Care Plus 79€/mese, Care Pro 149€/mese.
 - Video Spot: video animato di presentazione da 30 secondi, 50€ ogni 30 secondi, consegna in 3–5 giorni.
+- Consulenze: 90€/ora. La prima call di 30 minuti è gratuita.
+
+## Listino dei singoli servizi (prezzi indicativi, IVA esclusa)
+${catalogLines()}
 
 ## Pagine principali
 - [Servizi](https://diecibottega.it/servizi)
 - [Video Spot](https://diecibottega.it/servizi/video-spot)
 - [Progetti realizzati](https://diecibottega.it/progetti)
+${PROJECTS.map((p) => `- [Caso studio: ${p.name}](https://diecibottega.it/progetti/${p.slug})`).join("\n")}
+- [Siti web per settore](https://diecibottega.it/settori)
+${SECTORS.map((s) => `- [Sito web per ${s.name}](https://diecibottega.it/settori/${s.slug})`).join("\n")}
 - [Chi siamo](https://diecibottega.it/chi-siamo)
 - [Inizia un progetto](https://diecibottega.it/inizia-progetto)
 

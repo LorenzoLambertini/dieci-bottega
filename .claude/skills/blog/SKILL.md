@@ -43,7 +43,8 @@ Campi:
   PREMIUM 2.500–3.500€ 3–4 settimane, Care 29/79/149€ al mese) e con `lib/services.ts`. Niente statistiche inventate:
   se un numero non è verificabile, usa "in genere", "indicativamente".
 - **GEO**: una tabella di confronto o prezzi quando ha senso, definizioni chiare in una frase ("X è…"), dati precisi.
-- **Link interni** (almeno 3): altri articoli `/blog/<slug>`, servizi `/servizi/<slug>`, e sempre `/inizia-progetto`
+- **Link interni** (almeno 3): altri articoli `/blog/<slug>`, servizi `/servizi/<slug>`, pagine per settore `/settori/<slug>`
+  (`lib/sectors.ts`), casi studio `/progetti/<slug>` (`lib/projects.ts`), e sempre `/inizia-progetto`
   nella chiusura. Link esterni solo a fonti autorevoli.
 - Chiudi con `## In sintesi` + invito all'azione.
 - Se l'argomento è collegato ai lead magnet (es. "errori"), ricorda: "scrivi ERRORI in DM a @diecibottega o nella chat del sito".

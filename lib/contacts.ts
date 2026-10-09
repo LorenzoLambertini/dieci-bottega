@@ -19,3 +19,8 @@ export const SOCIAL_LINKS = [
   { platform: "facebook",  label: "Facebook",  href: "https://www.facebook.com/1309642035566812" },
   { platform: "linkedin",  label: "LinkedIn",  href: "https://www.linkedin.com/company/diecibottega/" },
 ] as const;
+
+/** Link WhatsApp con un messaggio già scritto (es. il servizio che interessa). */
+export function whatsappUrl(message: string): string {
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+}

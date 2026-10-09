@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/lib/cart";
-import { getUtm, UTM_KEYS, type Utm } from "@/lib/utm";
+import { getAttribution, getUtm, UTM_KEYS, type Utm } from "@/lib/utm";
 
 const ease = [0.2, 0.8, 0.2, 1] as const;
 
@@ -113,7 +113,7 @@ export default function LeadForm({ onSuccess }: { onSuccess?: () => void }) {
           company: businessName.trim(),
           message,
           goal:    goal.trim(),
-          ...getUtm(),
+          ...getAttribution(),
           source:  cartItems.length > 0 ? "website-cart" : "website-form",
           page_url: typeof window !== "undefined" ? window.location.href : undefined,
         }),

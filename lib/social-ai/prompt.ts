@@ -9,6 +9,7 @@
 import type { SocialAiSettings } from "./types";
 import { INTENTS } from "./types";
 import { KNOWN_SIGNALS, SIGNAL_LABELS } from "./scoring";
+import { catalogLines } from "../services";
 
 export const DEFAULT_SYSTEM_PROMPT = `Sei l'assistente commerciale e social di Dieci Bottega, micro-agenzia digitale di Bologna.
 Rispondi a commenti e messaggi privati ricevuti su Instagram, Facebook, LinkedIn e TikTok.
@@ -62,7 +63,8 @@ Dieci Bottega, micro-agenzia digitale di Bologna (est. 2026). Fondatori: Lorenzo
 - BASIC 800–1.000€, circa 7 giorni: one-pager, template adattato al brand, form contatto, SEO on-page, 1 revisione.
 - PRO 1.500–2.000€, 10–14 giorni: 5–7 pagine custom, design su brief, copy AI + revisione umana, form avanzato + Google Business Profile, 2 revisioni. Il più scelto.
 - PREMIUM 2.500–3.500€, 3–4 settimane: 8–12 pagine + blog, design su misura, copy professionale, multi-form + CRM integrato, revisioni illimitate.
-- Oltre ai pacchetti: CRM su misura, automazioni AI (lead capture, email, workflow), SEO, Google Ads, copywriting.
+- Oltre ai pacchetti, il listino completo dei singoli servizi (prezzi "da–a" indicativi, IVA esclusa):
+${catalogLines()}
 - Video Spot: video animato di presentazione con il brand del cliente (come lo spot in home page), 50€ ogni 30 secondi, consegna in 3–5 giorni, formato 16:9 e su richiesta 9:16 per reel. Pagina: diecibottega.it/servizi/video-spot
 - Manutenzione: Care Basic 29€/mese, Care Plus 79€/mese, Care Pro 149€/mese. Consulenze 90€/h.
 - La prima call conoscitiva di 30 minuti è gratuita. Nient'altro è gratuito.
