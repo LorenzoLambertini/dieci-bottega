@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { CONCEPTS } from "@/lib/concepts";
 import { conceptShots } from "@/lib/concept-assets";
 import ConceptDisclaimer from "@/components/ConceptDisclaimer";
+import { ConceptThumb } from "@/components/ConceptPreview";
 
 export const metadata: Metadata = {
   title: "Concept: siti di locali rifatti da Dieci Bottega",
@@ -40,10 +41,7 @@ export default function ConceptIndex() {
                     {shots ? (
                       <Image src={shots.dopo.desktop} alt={`Il nuovo sito di ${c.name}, concept di Dieci Bottega`} fill sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]" />
                     ) : (
-                      <div className="absolute inset-0 flex flex-col justify-between p-5">
-                        <span className={`${label} opacity-70`}>{c.type}</span>
-                        <span className="font-archivo font-black uppercase leading-[0.9] tracking-tight text-4xl lg:text-5xl">{c.name}</span>
-                      </div>
+                      <ConceptThumb slug={c.slug} name={c.name} />
                     )}
                   </div>
                   <p className={`${label} text-obsidian/45 mb-1.5`}>{c.type}</p>
