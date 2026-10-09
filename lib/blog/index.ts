@@ -21,6 +21,10 @@ import instagramSito from "./posts/instagram-o-sito-web";
 import videoSpot from "./posts/video-spot-aziendale-quanto-costa";
 import risposteAi from "./posts/risposte-automatiche-instagram-ai";
 import dominioEmail from "./posts/dominio-email-professionale";
+import recensioniGoogle from "./posts/come-ottenere-recensioni-google";
+import studioProfessionale from "./posts/sito-web-studio-professionale";
+import velocitaSito from "./posts/velocita-sito-web";
+import preventiviOnline from "./posts/preventivi-online-accettazione";
 
 export const POSTS: BlogPost[] = [
   quantoCostaSito,
@@ -39,6 +43,10 @@ export const POSTS: BlogPost[] = [
   videoSpot,
   risposteAi,
   dominioEmail,
+  recensioniGoogle,
+  studioProfessionale,
+  velocitaSito,
+  preventiviOnline,
 ].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.title.localeCompare(b.title));
 
 export const CATEGORIES: BlogCategory[] = ["Siti web", "Prezzi", "SEO e GEO", "Google", "CRM e automazioni", "Settori"];

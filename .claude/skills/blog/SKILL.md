@@ -26,7 +26,8 @@ Campi:
 - `keywords`: 4–6, la prima è la keyword principale.
 - `publishedAt`: data di oggi (YYYY-MM-DD). Se aggiorni un articolo esistente usa `updatedAt`.
 - `author`: `lorenzo` (siti, tecnica, SEO, AI) o `tommaso` (prezzi, strategia, clienti, settori).
-- `cover`: `glyph` di 1–4 caratteri (simbolo o sigla forte: "€", "SEO", "B&B"…), `variant` alternando `rosewood` / `obsidian` / `ivory`, `label` breve.
+- `cover`: `glyph` di 1–4 caratteri (simbolo o sigla forte: "€", "SEO", "B&B", "§"…), `variant` alternando `rosewood` / `obsidian` / `ivory`, `label` breve.
+  Usa solo lettere, numeri e simboli latini comuni: emoji e simboli come ★ non esistono nel font della copertina di condivisione.
 - `tldr`: 3–5 frasi che **rispondono subito** alla domanda, con numeri concreti (è la parte che citano le AI).
 - `faq`: 3–5 domande reali con risposte di 1–2 frasi autosufficienti.
 - `related`: 3 slug di articoli esistenti.
