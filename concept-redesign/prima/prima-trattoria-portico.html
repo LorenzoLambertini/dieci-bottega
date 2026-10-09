@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;font-family:'Poppins',sans-serif;color:#333;background:#fff}
+  header{display:flex;justify-content:space-between;align-items:center;padding:18px 40px;flex-wrap:wrap}
+  header .brand{font-weight:600;font-size:20px}
+  header nav a{margin-left:22px;color:#333;text-decoration:none;font-size:14px}
+  .hero{background:#f3efe9;padding:90px 40px;text-align:center}
+  .hero h1{font-size:44px;margin:0 0 10px}
+  .hero p{color:#777;max-width:560px;margin:0 auto 25px}
+  .btn{display:inline-block;padding:12px 26px;background:#b5562d;color:#fff;text-decoration:none;border-radius:30px;margin:5px;font-size:14px}
+  .btn.ghost{background:transparent;border:1px solid #b5562d;color:#b5562d}
+  .row{display:flex;gap:30px;padding:70px 40px;max-width:1100px;margin:auto;flex-wrap:wrap;align-items:center}
+  .row>div{flex:1 1 320px}
+  .ph{background:#ddd url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=2400&q=80') center/cover;color:#fff!important;height:300px;border-radius:10px;display:flex;align-items:flex-end;padding:10px;box-sizing:border-box;font-size:11px;color:#888}
+  h2{font-size:30px}
+  .cards{display:flex;gap:20px;padding:0 40px 70px;max-width:1100px;margin:auto;flex-wrap:wrap}
+  .card{flex:1 1 230px;border:1px solid #eee;border-radius:10px;overflow:hidden}
+  .card .img{height:170px;background:#e9e9e9 center/cover}
+  .card h3{margin:14px 16px 4px;font-size:17px}
+  .card p{margin:0 16px 16px;font-size:13px;color:#888}
+  .test{background:#f7f7f7;padding:70px 40px;text-align:center}
+  .test .empty{color:#bbb;font-style:italic;font-size:13px}
+  footer{background:#222;color:#aaa;padding:40px;font-size:13px;text-align:center}
+  footer a{color:#ddd}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Trattoria del Portico</div>
+  <nav>
+    <a href="#">Home</a>
+    <a href="#about">About</a>
+    <a href="#menu">Menù</a>
+    <a href="#">Button</a>
+    <a href="#contatti">Contattaci</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <h1>Welcome to Trattoria del Portico</h1>
+  <p>Lorem ipsum dolor sit amet, cucina tipica bolognese consectetur adipiscing elit, sed do eiusmod tempor.</p>
+  <a class="btn" href="tel:000000000">Chiama per prenotazioni</a>
+  <a class="btn ghost" href="#">Button</a>
+</div>
+
+<div class="row" id="about">
+  <div class="ph">Photo By: John Doe</div>
+  <div>
+    <h2>Our Story</h2>
+    <p>Dal 1970 la nostra trattoria porta in tavola la tradizione. Pasta fatta a mano, tortellini in brodo e i secondi di carne della casa.</p>
+    <p>Discover more about our journey and passion for food.</p>
+    <a class="btn" href="#">Read more</a>
+  </div>
+</div>
+
+<div class="cards" id="menu">
+  <div class="card"><div class="img" style="background-image:url('https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=2000&q=80')"></div><h3>Sands of Time</h3><p>Lorem ipsum dolor sit amet.</p></div>
+  <div class="card"><div class="img" style="background-image:url('https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=2000&q=80')"></div><h3>Beyond Boundaries</h3><p>Lorem ipsum dolor sit amet.</p></div>
+  <div class="card"><div class="img" style="background-image:url('https://images.unsplash.com/photo-1600891964092-4316c288032e?w=2000&q=80')"></div><h3>Whispers of Nature</h3><p>Lorem ipsum dolor sit amet.</p></div>
+</div>
+
+<div class="test">
+  <h2>Cosa dicono di noi</h2>
+  <p class="empty">&nbsp;</p>
+  <a class="btn ghost" href="#">Button</a>
+</div>
+
+<div class="row" style="justify-content:center;text-align:center">
+  <div>
+    <h2>Il nostro Menù</h2>
+    <p>Scopri tutti i nostri piatti.</p>
+    <a class="btn" href="#">Vai al Menù</a>
+  </div>
+</div>
+
+<footer id="contatti">
+  <p><strong>Trattoria del Portico</strong></p>
+  <p>Chiama per prenotazioni · <a href="#">WhatsApp</a> · <a href="#">Facebook</a> · <a href="#">Instagram</a></p>
+  <p>P.I. 00000000000 · <a href="#">Privacy</a> · <a href="#">Cookie</a></p>
+  <p>Made with ♥ by Website Builder</p>
+</footer>
+</body>
+</html>

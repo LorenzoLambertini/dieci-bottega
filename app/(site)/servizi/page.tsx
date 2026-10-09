@@ -1,3 +1,4 @@
+import ConceptTeaser from "@/components/sections/ConceptTeaser";
 import ServiceCatalog from "@/components/ServiceCatalog";
 
 export const metadata = {
@@ -60,6 +61,7 @@ export default function ServiziPage() {
       </section>
 
       <ServiceCatalog />
+      <ConceptTeaser tone="ivory" />
     </>
   );
 }
