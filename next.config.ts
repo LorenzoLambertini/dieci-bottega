@@ -13,7 +13,11 @@ const CSP = [
 
 // Siti demo dei concept (public/concept-demo): stessa policy, ma con le foto stock di Unsplash
 // finché non sono scaricate in locale. Mai indicizzati: Google vede solo i casi studio /concept/<slug>.
-const DEMO_CSP = CSP.replace("img-src 'self' data: blob:", "img-src 'self' data: blob: https://images.unsplash.com");
+const DEMO_CSP = CSP
+  .replace("img-src 'self' data: blob:", "img-src 'self' data: blob: https://images.unsplash.com")
+  // le demo si possono mostrare in anteprima dentro le pagine del sito stesso
+  .replace("frame-ancestors 'none'", "frame-ancestors 'self'");
+const SAMEORIGIN = { key: "X-Frame-Options", value: "SAMEORIGIN" };
 const NOINDEX = { key: "X-Robots-Tag", value: "noindex, nofollow" };
 
 const nextConfig: NextConfig = {
@@ -39,8 +43,8 @@ const nextConfig: NextConfig = {
         ],
       },
       // Le regole successive sovrascrivono la CSP generale solo per i siti demo
-      { source: "/concept/:slug/:version(prima|dopo)", headers: [NOINDEX, { key: "Content-Security-Policy", value: DEMO_CSP }] },
-      { source: "/concept-demo/:path*",                headers: [NOINDEX, { key: "Content-Security-Policy", value: DEMO_CSP }] },
+      { source: "/concept/:slug/:version(prima|dopo)", headers: [NOINDEX, SAMEORIGIN, { key: "Content-Security-Policy", value: DEMO_CSP }] },
+      { source: "/concept-demo/:path*",                headers: [NOINDEX, SAMEORIGIN, { key: "Content-Security-Policy", value: DEMO_CSP }] },
     ];
   },
 };

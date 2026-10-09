@@ -7,6 +7,8 @@ import { conceptShots } from "@/lib/concept-assets";
 import { whatsappUrl } from "@/lib/contacts";
 import BeforeAfter from "@/components/ui/BeforeAfter";
 import ConceptDisclaimer from "@/components/ConceptDisclaimer";
+import ConceptPreview from "@/components/ConceptPreview";
+import { getConceptBrand } from "@/lib/concept-brands";
 
 const SITE = "https://diecibottega.it";
 
@@ -58,6 +60,7 @@ export default async function ConceptPage({ params }: { params: Promise<{ slug: 
   if (!c) notFound();
   const shots = conceptShots(c.slug);
   const metrics = CONCEPT_METRICS[c.slug];
+  const brand = getConceptBrand(c.slug);
   const others = CONCEPTS.filter((x) => x.slug !== c.slug);
   const url = `${SITE}/concept/${c.slug}`;
 
@@ -108,6 +111,10 @@ export default async function ConceptPage({ params }: { params: Promise<{ slug: 
           </div>
         </header>
 
+        <section className="mt-14 lg:mt-20" aria-label="Anteprima dal vivo">
+          <ConceptPreview slug={c.slug} name={c.name} primaLabel={c.primaLabel} />
+        </section>
+
         <div className="grid lg:grid-cols-[minmax(0,1fr)_300px] gap-12 lg:gap-16 mt-16 lg:mt-20">
           <div className="min-w-0 max-w-[760px] text-[1.075rem] leading-[1.8] text-obsidian/80">
             <section>
@@ -147,6 +154,40 @@ export default async function ConceptPage({ params }: { params: Promise<{ slug: 
                 ))}
               </ul>
             </section>
+
+            {brand && (
+              <section className="mt-14" aria-labelledby="brand">
+                <h2 id="brand" className={h2}>La nuova brand identity</h2>
+                <p className="mb-6">{brand.essence}</p>
+                <a href={`/concept/${c.slug}/brand-identity.pdf`} target="_blank" rel="noopener" className="group block border border-obsidian/15 overflow-hidden hover:border-rosewood transition-colors duration-200">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`/concept/${c.slug}/brand-cover.webp`} alt={`Copertina della brand identity di ${brand.fullName}: logo e motto "${brand.tagline}"`} width={1200} height={848} loading="lazy" className="w-full h-auto block" />
+                </a>
+                <p className={`${label} text-obsidian/45 mt-8 mb-3`}>Palette</p>
+                <ul className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                  {brand.palette.map((p) => (
+                    <li key={p.hex}>
+                      <span className="block aspect-square border border-obsidian/10" style={{ background: p.hex }} aria-hidden />
+                      <span className="block font-semibold text-sm mt-1.5 text-obsidian">{p.name}</span>
+                      <span className="block font-mono text-[11px] text-obsidian/50">{p.hex}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="grid sm:grid-cols-2 gap-6 mt-8">
+                  <div>
+                    <p className={`${label} text-obsidian/45 mb-2`}>Caratteri</p>
+                    <ul className="space-y-1.5 text-[0.95rem]">
+                      {brand.fonts.map((f) => <li key={f.role}><b className="text-obsidian">{f.family}</b> · {f.role}</li>)}
+                    </ul>
+                  </div>
+                  <div>
+                    <p className={`${label} text-obsidian/45 mb-2`}>Tono di voce</p>
+                    <p className="text-[0.95rem]"><b className="text-obsidian">{brand.tone.personality.join(" · ")}.</b> {brand.tone.description}</p>
+                  </div>
+                </div>
+                <a href={`/concept/${c.slug}/brand-identity.pdf`} target="_blank" rel="noopener" className={`${btnDark} mt-8`}>Scarica la brand identity (PDF) ↓</a>
+              </section>
+            )}
 
             {metrics && (
               <section className="mt-14" aria-labelledby="misure">
@@ -189,6 +230,7 @@ export default async function ConceptPage({ params }: { params: Promise<{ slug: 
               <div className="flex flex-col gap-2">
                 <a href={`/concept/${c.slug}/dopo`} target="_blank" rel="noopener" className={btnDark}>Il sito nuovo ↗</a>
                 <a href={`/concept/${c.slug}/prima`} target="_blank" rel="noopener" className={btnLine}>Com&apos;era prima ↗</a>
+                {brand && <a href={`/concept/${c.slug}/brand-identity.pdf`} target="_blank" rel="noopener" className={btnLine}>Brand identity PDF ↓</a>}
               </div>
             </div>
             <p className="text-obsidian/50 text-sm leading-relaxed">

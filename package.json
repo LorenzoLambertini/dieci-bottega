@@ -12,7 +12,8 @@
     "concept:demos": "node concept-redesign/build-demos.mjs",
     "concept:shots": "node concept-redesign/shots.mjs",
     "concept:measure": "node concept-redesign/measure.mjs",
-    "concept:assets": "node concept-redesign/fetch-assets.mjs"
+    "concept:assets": "node concept-redesign/fetch-assets.mjs",
+    "concept:brand": "node concept-redesign/brand-book.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.128.0",
