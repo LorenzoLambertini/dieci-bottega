@@ -53,6 +53,7 @@ export default async function LeadDetailPage({
   if (!lead) notFound();
   const currentUser = await getCrmUser();
   const aiMemory = ((lead.metadata ?? {}) as { ai_memory?: { text?: string; at?: string } }).ai_memory;
+  const attribution = (lead.metadata ?? {}) as { landing_page?: string; referrer?: string };
   const sdb = await createSocialClient();
   const [templatesRes, quotesRes, meRes, projectsRes] = await Promise.all([
     sdb.from("email_templates").select("id, name, subject, body").order("position"),
@@ -270,27 +271,40 @@ export default async function LeadDetailPage({
               </div>
             </div>
 
-            {/* UTM if present */}
-            {(lead.utm_source || lead.utm_medium || lead.utm_campaign) && (
+            {/* Provenienza: UTM (o fonte dedotta) + pagina d'ingresso */}
+            {(lead.utm_source || lead.utm_medium || lead.utm_campaign || attribution.landing_page || attribution.referrer) && (
               <div className="mt-4 pt-4 border-t border-white/[0.06]">
-                <p className="text-white/30 text-xs uppercase tracking-wider mb-2">UTM</p>
+                <p className="text-white/30 text-xs uppercase tracking-wider mb-2">Provenienza</p>
                 <div className="flex flex-wrap gap-2">
                   {lead.utm_source && (
-                    <span className="text-xs bg-white/[0.05] text-white/40 px-2 py-0.5 rounded">
-                      source: {lead.utm_source}
+                    <span className="text-xs bg-white/[0.05] text-white/60 px-2 py-0.5 rounded">
+                      fonte: {lead.utm_source}
                     </span>
                   )}
                   {lead.utm_medium && (
                     <span className="text-xs bg-white/[0.05] text-white/40 px-2 py-0.5 rounded">
-                      medium: {lead.utm_medium}
+                      canale: {lead.utm_medium}
                     </span>
                   )}
                   {lead.utm_campaign && (
                     <span className="text-xs bg-white/[0.05] text-white/40 px-2 py-0.5 rounded">
-                      campaign: {lead.utm_campaign}
+                      campagna: {lead.utm_campaign}
+                    </span>
+                  )}
+                  {attribution.referrer && (
+                    <span className="text-xs bg-white/[0.05] text-white/40 px-2 py-0.5 rounded">
+                      da: {attribution.referrer}
                     </span>
                   )}
                 </div>
+                {attribution.landing_page && (
+                  <p className="text-xs text-white/40 mt-2">
+                    Prima pagina vista:{" "}
+                    <a href={attribution.landing_page} target="_blank" rel="noreferrer" className="text-white/70 underline underline-offset-2 hover:text-white break-all">
+                      {attribution.landing_page}
+                    </a>
+                  </p>
+                )}
               </div>
             )}
 

@@ -9,6 +9,7 @@
  */
 
 import { notifyTeam } from "@/lib/crm/notify";
+import { saveAttribution } from "@/lib/crm/attribution";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { linkWebVisitor, VISITOR_RE } from "@/lib/social-ai/web-chat";
 import { NextRequest, NextResponse } from "next/server";
@@ -27,6 +28,11 @@ interface LeadPayload {
   source?:  string;
   /** Id del visitatore della chat: collega il form alla conversazione già nel CRM */
   visitorId?: string;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  landing_page?: string;
+  referrer?: string;
 }
 
 function escapeHtml(s: string): string {
@@ -68,6 +74,9 @@ async function captureLead(p: LeadPayload): Promise<{ id: string } | null> {
         company: p.business?.trim(),
         message,
         source:  p.source ?? `chatbot-${p.type}`,
+        utm_source: p.utm_source,
+        utm_medium: p.utm_medium,
+        utm_campaign: p.utm_campaign,
         recommendation,
       }),
     });
@@ -301,6 +310,7 @@ export async function POST(req: NextRequest) {
     const captured = await captureLead(payload);
     leadId = captured?.id ?? null;
   }
+  if (leadId) await saveAttribution(createAdminClient(), leadId, payload).catch((e: Error) => console.warn("[lead] attribuzione:", e.message));
   await notifyTeam({ title: "💬 Nuovo contatto dal chatbot", body: payload.name + (payload.business ? ` · ${payload.business}` : ""), url: leadId ? `/crm/leads/${leadId}` : "/crm/leads" }).catch(() => 0);
 
   // 2. Build clickable slots

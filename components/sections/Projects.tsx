@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
+import { PROJECTS } from "@/lib/projects";
 
 const ease = [0.2, 0.8, 0.2, 1] as const;
 
@@ -11,49 +13,6 @@ const labelStyle: React.CSSProperties = {
   letterSpacing: "0.12em",
   textTransform: "uppercase",
 };
-
-interface Project {
-  name:       string;
-  type:       string;
-  desc:       string;
-  tags:       [string, string, string];
-  image:      string;
-  alt:        string;
-  url:        string;
-  secondary?: { label: string; url: string };
-}
-
-/** Solo lavori reali, in quest'ordine. */
-const PROJECTS: Project[] = [
-  {
-    name:  "Villa Pet Sitter",
-    type:  "SITO VETRINA · Bologna",
-    desc:  "Pet sitter professionale a Bologna. Dal vecchio sito WordPress a un sito vetrina multipagina: servizi, prezzi, attestati, recensioni, galleria, WhatsApp a un tocco.",
-    tags:  ["Sito Vetrina", "SEO locale", "Mobile-first"],
-    image: "/lavori/villa-pet-sitter/dopo-desktop-v2.webp",
-    alt:   "Home page del nuovo sito di Villa Pet Sitter, pet sitter professionale a Bologna",
-    url:   "https://villa-pet-sitter.vercel.app",
-    secondary: { label: "Il sito di prima", url: "https://villapetsitter.eu" },
-  },
-  {
-    name:  "Virtus Bologna",
-    type:  "WEB APP · Basket EuroLeague",
-    desc:  "Welcome Kit per i nuovi giocatori della stagione 2026/27. Una web app in quattro lingue con tutto quello che serve per ambientarsi a Bologna.",
-    tags:  ["Web App", "Multilingua", "PWA-ready"],
-    image: "/lavori/virtus-welcome-kit/desktop-v2.webp",
-    alt:   "Home della web app Welcome Kit di Virtus Bologna per i nuovi giocatori",
-    url:   "https://virtus-welcome-kit.vercel.app",
-  },
-  {
-    name:  "LAMBO",
-    type:  "PORTFOLIO · DJ",
-    desc:  "Portfolio per Giulio Lambertini, DJ house e tech house: sound, gallery, set su SoundCloud e booking diretto.",
-    tags:  ["Portfolio", "Musica", "One-page"],
-    image: "/lavori/lambo/desktop-v2.webp",
-    alt:   "Home del portfolio di LAMBO, DJ house e tech house",
-    url:   "https://djlambogiulio.vercel.app",
-  },
-];
 
 export default function Projects() {
   return (
@@ -164,6 +123,13 @@ export default function Projects() {
                     Guarda il progetto
                     <span className="inline-block transition-transform duration-300 ease-out group-hover:translate-x-1">→</span>
                   </a>
+                  <Link
+                    href={`/progetti/${p.slug}`}
+                    className="inline-flex items-center gap-2 border border-obsidian/25 text-obsidian hover:bg-obsidian hover:text-ivory transition-colors duration-200 ease-out px-5 py-3"
+                    style={{ ...labelStyle, fontWeight: 700 }}
+                  >
+                    Leggi il caso studio
+                  </Link>
                   {p.secondary && (
                     <a
                       href={p.secondary.url}

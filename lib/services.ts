@@ -54,10 +54,10 @@ export const SERVICES: Service[] = [
     category:     "siti",
     shortDesc:    "Un sito che ti fa prendere sul serio. Trovato su Google, aggiornabile da te.",
     longDesc:     "Un sito vetrina fatto bene è il biglietto da visita digitale della tua attività. Cinque-sette pagine costruite a mano: home, chi siamo, servizi, contatti, eventuali pagine extra. Design su misura adattato al tuo brand, mobile-first, indicizzato su Google, gestibile da te o da noi. È il punto di partenza per chiunque voglia essere preso sul serio nel digitale.",
-    price:        1200,
-    priceMax:     1800,
+    price:        1500,
+    priceMax:     2000,
     unit:         "one-shot",
-    deliveryDays: "10",
+    deliveryDays: "10–14",
     forWho:       "Ristoranti, studi professionali, artigiani, negozi locali, agenzie immobiliari singole, palestre.",
     features: [
       "5–7 pagine custom (Home, Chi siamo, Servizi/Menu, Contatti, extra)",
@@ -91,7 +91,7 @@ export const SERVICES: Service[] = [
     shortDesc:    "Una pagina, un obiettivo: farti contattare.",
     longDesc:     "Quando hai un solo prodotto, un evento, una campagna pubblicitaria — non ti serve un sito intero, ti serve una pagina che converta. La nostra landing page è costruita con struttura testata: hero, benefit, social proof, FAQ, form. Copy AI-assistito + revisione umana. Obiettivo Lighthouse: sopra 95.",
     price:        800,
-    priceMax:     1100,
+    priceMax:     1000,
     unit:         "one-shot",
     deliveryDays: "5–7",
     forWho:       "Chi lancia un prodotto, un servizio specifico, una campagna ads, un evento.",
@@ -357,7 +357,7 @@ export const SERVICES: Service[] = [
       "Musica senza diritti d'autore",
       "Formato 16:9 per sito e YouTube",
       "Versione 9:16 per reel e storie su richiesta",
-      "1 revisione inclusa",
+      "2 revisioni incluse",
     ],
     benefits: [
       "Ti presenti in pochi secondi, anche a chi scorre veloce",
@@ -442,6 +442,7 @@ export const SERVICES: Service[] = [
     price:        80,
     priceMax:     150,
     unit:         "one-shot",
+    priceNote:    "a pagina",
     deliveryDays: "su richiesta",
     forWho:       "Chi sa cosa vuole dire ma non sa come dirlo bene.",
     features: [
@@ -701,4 +702,20 @@ export function priceLabel(s: Service): string {
     return `€${formatPrice(s.price)}–${formatPrice(s.priceMax)}`;
   }
   return `€${formatPrice(s.price)}`;
+}
+
+/** Prezzo leggibile con unità: "800–1.000€", "29€/mese", "50€ ogni 30 secondi". */
+export function priceText(s: Service): string {
+  const base = s.priceMax && s.priceMax !== s.price
+    ? `${formatPrice(s.price)}–${formatPrice(s.priceMax)}€`
+    : `${formatPrice(s.price)}€`;
+  if (s.priceNote) return `${base} ${s.priceNote}`;
+  return s.unit === "mese" ? `${base}/mese` : s.unit === "anno" ? `${base}/anno` : base;
+}
+
+/** Listino completo in testo semplice (chatbot, llms.txt): una riga per servizio. */
+export function catalogLines(): string {
+  return SERVICES.map((s) =>
+    `- ${s.title}: ${priceText(s)}${s.deliveryDays && /\d/.test(s.deliveryDays) && s.unit === "one-shot" ? `, consegna ${s.deliveryDays}${/giorn/.test(s.deliveryDays) ? "" : " giorni"}` : ""}. https://diecibottega.it/servizi/${s.slug}`,
+  ).join("\n");
 }

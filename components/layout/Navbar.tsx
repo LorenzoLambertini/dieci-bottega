@@ -24,6 +24,7 @@ const NAV: NavItem[] = [
           { label: "Sito Vetrina",     href: "/servizi/sito-vetrina",     desc: "Presenza credibile, in 10 giorni" },
           { label: "Landing Page",     href: "/servizi/landing-page",     desc: "Una pagina, un obiettivo" },
           { label: "E-commerce Light", href: "/servizi/ecommerce-light",  desc: "Vendita diretta artigiana" },
+          { label: "Per il tuo settore", href: "/settori",              desc: "Ristoranti, B&B, studi, artigiani…" },
         ],
       },
       {

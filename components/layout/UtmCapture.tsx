@@ -2,11 +2,11 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { captureUtm } from "@/lib/utm";
+import { captureFirstTouch, captureUtm } from "@/lib/utm";
 
-/** Salva gli UTM in sessionStorage a ogni cambio pagina. Non renderizza nulla. */
+/** Salva gli UTM a ogni cambio pagina e, la prima volta, la pagina d'ingresso. Non renderizza nulla. */
 export default function UtmCapture() {
   const pathname = usePathname();
-  useEffect(() => { captureUtm(); }, [pathname]);
+  useEffect(() => { captureFirstTouch(); captureUtm(); }, [pathname]);
   return null;
 }

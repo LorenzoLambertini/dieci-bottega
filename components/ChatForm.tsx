@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { getAttribution } from '@/lib/utm'
 
 type FormType = 'quote' | 'contact'
 type PkgKey = 'BASIC' | 'PRO' | 'PREMIUM' | null
@@ -67,6 +68,7 @@ export default function ChatForm({ type, selectedPackage, onSuccess, visitorId }
           package: selectedPackage,
           source: 'chatbot',
           visitorId,
+          ...getAttribution(),
         }),
       })
       setStatus('done')

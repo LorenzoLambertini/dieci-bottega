@@ -34,7 +34,7 @@ const CATEGORIES: Category[] = [
         name:   "Sito Vetrina",
         target: "PMI locali, studi, attività di quartiere",
         time:   "10 giorni",
-        price:  "da €1.200",
+        price:  "da €1.500",
         impact: "Un sito che ti fa prendere sul serio. Trovato su Google, aggiornabile da te.",
       },
       {

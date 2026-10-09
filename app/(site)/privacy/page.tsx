@@ -26,6 +26,15 @@ export default function PrivacyPage() {
             nome utente e l&apos;immagine del profilo resi disponibili dalle piattaforme tramite le loro API ufficiali.
           </li>
           <li>Dati tecnici di navigazione necessari al funzionamento del sito.</li>
+          <li>
+            Statistiche di visita anonime e aggregate (pagine viste, provenienza, tipo di dispositivo) tramite Vercel Web
+            Analytics, che non usa cookie e non permette di identificarti.
+          </li>
+          <li>
+            Se ci scrivi da un form o dalla chat, la prima pagina che hai visitato e il sito da cui sei arrivato (ad esempio
+            Google o Instagram): restano nel tuo browser solo per la durata della visita e ci vengono inviati soltanto
+            insieme alla tua richiesta, per capire quali contenuti sono utili.
+          </li>
         </ul>
       </section>
 

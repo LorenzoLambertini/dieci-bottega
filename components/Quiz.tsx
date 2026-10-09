@@ -129,16 +129,16 @@ function recommend(a: Answers): Recommendation {
       return {
         product: "Automazione AI mirata",
         tier:    "TIER 01–02",
-        price:   "da €900",
+        price:   "da €700",
         time:    "7–10 giorni",
-        reason:  "Identifichiamo i 2 processi che ti rubano più tempo e li automatizziamo. ROI in poche settimane.",
+        reason:  "Identifichiamo i 2 processi che ti rubano più tempo e li automatizziamo. Recuperi ore di lavoro da subito.",
         features: ["Workflow design + setup", "Integrazione tool esistenti", "Email/notifiche automatiche", "Dashboard semplice"],
       };
     }
     return {
       product: "CRM Su Misura + Automazioni",
       tier:    "TIER 03 · PREMIUM",
-      price:   "da €2.800",
+      price:   "da €2.500",
       time:    "3–4 settimane",
       reason:  "Strumento interno cucito sul tuo workflow. Niente abbonamenti software, codice tuo, scala con te.",
       features: ["CRM su misura (Next + Supabase)", "Pipeline lead drag&drop", "Email sequences", "Dashboard analytics"],
@@ -207,7 +207,7 @@ function recommend(a: Answers): Recommendation {
     tier:    "TIER 02 · PRO",
     price:   "da €1.500",
     time:    "10–14 giorni",
-    reason:  "L'equilibrio più richiesto: qualità, funzionalità, velocità. Il pacchetto che sceglie il 60% dei nostri clienti.",
+    reason:  "L'equilibrio più richiesto: qualità, funzionalità, velocità. Il pacchetto che consigliamo alla maggior parte delle attività.",
     features: ["5–7 pagine custom", "Design su brief", "Copy AI-assistito + revisione", "Form + Google Business"],
   };
 }
