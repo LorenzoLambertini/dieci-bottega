@@ -35,3 +35,10 @@ Tre casi studio "concept non commissionato" per diecibottega.it. Attività di fa
 3. `npm run concept:demos`, poi con il sito avviato:
    `BASE_URL=http://localhost:3000 npm run concept:shots` e `BASE_URL=http://localhost:3000 npm run concept:measure`.
 4. Togliere `https://images.unsplash.com` dalla CSP delle demo in `next.config.ts`.
+
+## Brand book
+
+I brand book dei tre locali sono PDF forniti da Dieci Bottega, in `public/concept/<slug>/brand-identity.pdf`.
+`brands.json` riassume i dati usati nella pagina del caso studio (palette, valori, tono, logo SVG) e
+`public/concept/<slug>/book/<pagina>.webp` sono le pagine esportate per la galleria (1600 px, 16:9).
+Se un brand book cambia, sostituire il PDF, riesportare le pagine elencate in `book` e aggiornare `brands.json`.
