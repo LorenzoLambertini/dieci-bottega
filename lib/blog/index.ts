@@ -26,6 +26,7 @@ import studioProfessionale from "./posts/sito-web-studio-professionale";
 import velocitaSito from "./posts/velocita-sito-web";
 import preventiviOnline from "./posts/preventivi-online-accettazione";
 import quantoCostaEcommerce from "./posts/quanto-costa-un-ecommerce";
+import sitoPalestra from "./posts/sito-web-palestra-centro-sportivo";
 
 export const POSTS: BlogPost[] = [
   quantoCostaSito,
@@ -49,6 +50,7 @@ export const POSTS: BlogPost[] = [
   velocitaSito,
   preventiviOnline,
   quantoCostaEcommerce,
+  sitoPalestra,
 ].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || a.title.localeCompare(b.title));
 
 export const CATEGORIES: BlogCategory[] = ["Siti web", "Prezzi", "SEO e GEO", "Google", "CRM e automazioni", "Settori"];
